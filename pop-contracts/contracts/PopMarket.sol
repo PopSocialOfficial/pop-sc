@@ -74,6 +74,7 @@ contract PopMarketPlace is
         uint256 indexed orderId,
         uint256 bidIndex,
         address bidder,
+        uint16 copies,
         uint256 pricePerNFT,
         uint256 startTime,
         uint256 endTime
@@ -189,7 +190,7 @@ contract PopMarketPlace is
     ) external payable nonReentrant {
         Order storage _order = order[orderId];
         require(_order.seller != address(0), "Invalid order request"); // if order is deleted
-        require(_order.endTime > block.timestamp, "Order expired ");
+        require(_order.endTime > block.timestamp, "Order expired");
         require(copies <= _order.copies, "not enough quantity");
 
         bool isNative = _order.paymentToken == address(0);
@@ -290,7 +291,8 @@ contract PopMarketPlace is
             msg.sender,
             copies,
             pricePerNFT,
-            block.timestamp
+            block.timestamp,
+            endTime 
         );
     }
 
