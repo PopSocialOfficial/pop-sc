@@ -1,0 +1,21 @@
+{
+  "name": "pop-subgraph",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "codegen": "graph codegen local.subgraph.yaml",
+    "build": "graph build local.subgraph.yaml",
+    "deploy": "graph deploy --studio pop-market",
+    "create-local": "graph create local --node http://localhost:8020/ ",
+    "remove-local": "graph remove local --node http://localhost:8020/ ",
+    "deploy-local": "graph deploy local --node http://localhost:8020/ --ipfs http://localhost:5001 local.subgraph.yaml ",
+    "test": "graph test"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-cli": "^0.50.1",
+    "@graphprotocol/graph-ts": "0.29.1"
+  },
+  "devDependencies": {
+    "matchstick-as": "0.5.0"
+  }
+}

@@ -1,0 +1,38 @@
+enum NftType {
+  ERC1155
+  ERC721
+}
+
+type Order @entity {
+  id: ID!
+  tokenId: BigInt!
+  price: BigInt!
+  seller: String!
+  copies: Int!
+  startTime: BigInt!
+  endTime: BigInt!
+  paymentToken: String!
+  nftContract: String!
+  status: Boolean!
+  nftType: NftType!
+  buyer: String
+  bids: [Bid!]! @derivedFrom(field: "order")
+}
+
+type Bid @entity {
+  id: ID!
+  bidder: String!
+  copies: Int!
+  price: BigInt!
+  startTime: BigInt!
+  endTime: BigInt!
+  status: Int!
+  order: Order!
+}
+
+type Purchase @entity {
+  id: ID!
+  order: Order!
+  copies: Int!
+  buyer: String!
+}
