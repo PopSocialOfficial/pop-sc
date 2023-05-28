@@ -1,22 +1,68 @@
+import { ipfs, json } from "@graphprotocol/graph-ts";
 import {
-  OrderCreated as OrderCreatedEvent,
-  OrderCancelled as OrderCancelledEvent,
-  OrderPurchased as OrderPurchasedEvent,
-  BidPlaced as BidPlacedEvent,
-  BidWithdraw as BidWithdrawEvent,
-  BidRejected as BidRejectedEvent,
   BidAccepted as BidAcceptedEvent,
-} from "../generated/PopMarketPlace/PopMarketPlace"
+  BidPlaced as BidPlacedEvent,
+  BidRejected as BidRejectedEvent,
+  BidWithdraw as BidWithdrawEvent,
+  OrderCancelled as OrderCancelledEvent,
+  OrderCreated as OrderCreatedEvent,
+  OrderPurchased as OrderPurchasedEvent,
+} from "../generated/PopMarketPlace/PopMarketPlace";
+import {
+  NFT as NFTContract
+} from "../generated/PopMarketPlace/NFT";
 
-import { Order, Bid, Purchase } from "../generated/schema"
+import { Bid, NftMeta, Order, Purchase } from "../generated/schema";
+
+
+class BidStatus {
+  static Placed: string = "placed";
+  static Accepted: string = "accepted";
+  static Rejected: string = "rejected";
+  static Withdraw: string = "withdraw";
+}
+class NftType {
+  static ERC1155: string = "ERC1155";
+  static ERC721: string = "ERC721";
+}
+
 
 export function handleOrderCreate(event: OrderCreatedEvent): void {
   const orderId = event.params.orderId.toString();
+  const nftAddress = event.params.nftContract.toHex();
 
-  const order = Order.load(orderId);
+  let OrderInfo = Order.load(orderId);
+  let NftMetaInfo = NftMeta.load(`${nftAddress}-${event.params.tokenId}`);
+  if (!NftMetaInfo) {
+    const nftContract = NFTContract.bind(event.params.nftContract);
+    const tokenUri = nftContract.tokenURI(event.params.tokenId);
+    if (tokenUri) {
+      NftMetaInfo = new NftMeta(`${nftAddress}-${event.params.tokenId}`);
 
-  if (!order) {
-    const OrderInfo = new Order(orderId);
+      NftMetaInfo.tokenId = event.params.tokenId;
+      NftMetaInfo.nftContract = nftAddress;
+      NftMetaInfo.tokenUri = tokenUri;
+
+      let data = ipfs.cat(tokenUri)
+      if (data) {
+        let value = json.fromBytes(data).toObject()
+        if (value) {
+          const name = value.get("name")
+          if (name) {
+            NftMetaInfo.name = name.toString();
+          }
+          const image = value.get("image")
+          if (image) {
+            NftMetaInfo.image = image.toString();
+          }
+        }
+        NftMetaInfo.save()
+      }
+    }
+  }
+
+  if (!OrderInfo) {
+    OrderInfo = new Order(orderId);
     OrderInfo.price = event.params.pricePerNFT;
     OrderInfo.seller = event.params.seller.toHex();
     OrderInfo.startTime = event.params.startTime;
@@ -24,11 +70,15 @@ export function handleOrderCreate(event: OrderCreatedEvent): void {
     OrderInfo.tokenId = event.params.tokenId;
     OrderInfo.copies = event.params.copies;
     OrderInfo.paymentToken = event.params.paymentToken.toHex();
-    OrderInfo.nftContract = event.params.nftContract.toHex();
+    OrderInfo.nftContract = nftAddress
     OrderInfo.status = true;
-    OrderInfo.nftType = event.params.copies === 0 ? "ERC721" : "ERC1155"
-    OrderInfo.save();
+    OrderInfo.nftType = event.params.copies === 0 ? NftType.ERC721 : NftType.ERC1155
+    OrderInfo.transactionHash = event.transaction.hash.toHex();
+    if (NftMetaInfo) {
+      OrderInfo.nftMetadata = NftMetaInfo.id
+    }
   }
+  OrderInfo.save();
 }
 
 export function handleOrderCancel(event: OrderCancelledEvent): void {
@@ -55,7 +105,8 @@ export function handleOrderPurchase(event: OrderPurchasedEvent): void {
     order.save();
     purchase.copies = event.params.copies;
     purchase.buyer = event.params.buyer.toHex();
-    purchase.order = orderId
+    purchase.order = orderId;
+    purchase.timeStamp = event.block.timestamp;
     purchase.save();
   }
 }
@@ -72,8 +123,9 @@ export function handleBidPlace(event: BidPlacedEvent): void {
     newBid.price = event.params.pricePerNFT;
     newBid.startTime = event.params.startTime;
     newBid.endTime = event.params.endTime;
-    newBid.status = 0;
+    newBid.status = BidStatus.Placed;
     newBid.order = orderId;
+    newBid.transactionHash = event.transaction.hash.toString();
     newBid.save();
   }
 }
@@ -94,9 +146,10 @@ export function handleBidAccepted(event: BidAcceptedEvent): void {
     purchase.copies = event.params.copies;
     purchase.buyer = bid.bidder;
     purchase.order = orderId;
+    purchase.timeStamp = event.block.timestamp;
     purchase.save();
 
-    bid.status = 1;
+    bid.status = BidStatus.Accepted;
     bid.save();
   }
 }
@@ -106,7 +159,7 @@ export function handleBidReject(event: BidRejectedEvent): void {
   const bid = Bid.load(orderId + "-" + bidId);
 
   if (bid) {
-    bid.status = 2;
+    bid.status = BidStatus.Rejected;
     bid.save();
   }
 }
@@ -117,7 +170,7 @@ export function handleBidWithdraw(event: BidWithdrawEvent): void {
   const bid = Bid.load(orderId + "-" + bidId);
 
   if (bid) {
-    bid.status = 3;
+    bid.status = BidStatus.Withdraw;
     bid.save();
   }
 }
