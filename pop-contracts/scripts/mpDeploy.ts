@@ -11,6 +11,10 @@ async function main() {
   await PopMarketPlace.deployed();
 
   console.log("PopMarketPlace deployed to:", PopMarketPlace.address);
+
+  // proxy : 0xB8A8B6aeB881cc050cad45d0391ec089f47d86F6
+  // implementation: 0x0F1663440E34FEDFa719ff9a2a2D2E68E4Abe8ee
+
 }
 
 // We recommend this pattern to be able to use async/await everywhere
