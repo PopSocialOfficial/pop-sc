@@ -56,8 +56,8 @@ export function handleOrderCreate(event: OrderCreatedEvent): void {
             NftMetaInfo.image = image.toString();
           }
         }
-        NftMetaInfo.save()
       }
+      NftMetaInfo.save()
     }
   }
 
