@@ -128,7 +128,7 @@ export function handleBidPlace(event: BidPlacedEvent): void {
     newBid.endTime = event.params.endTime;
     newBid.status = BidStatus.Placed;
     newBid.order = orderId;
-    newBid.transactionHash = event.transaction.hash.toString();
+    newBid.transactionHash = event.transaction.hash.toHex();
     newBid.save();
   }
 }

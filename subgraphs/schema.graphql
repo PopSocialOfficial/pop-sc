@@ -4,10 +4,10 @@ enum NftType {
 }
 
 enum BidStatus {
-  Placed
-  Accepted
-  Rejected
-  Withdraw
+  placed
+  accepted
+  rejected
+  withdraw
 }
 
 type NftMeta @entity {
