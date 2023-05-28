@@ -43,23 +43,23 @@ export function handleOrderCreate(event: OrderCreatedEvent): void {
       NftMetaInfo.nftContract = nftAddress;
       NftMetaInfo.tokenUri = tokenUri.value;
 
-      let data = ipfs.cat(tokenUri.value)
-      if (data) {
-        let jsonData = json.fromBytes(data)
-        if (!jsonData.isNull() && jsonData.kind == JSONValueKind.OBJECT) {
-          let value = jsonData.toObject()
-          if (value) {
-            const name = value.get("name")
-            if (name) {
-              NftMetaInfo.name = name.toString();
-            }
-            const image = value.get("image")
-            if (image) {
-              NftMetaInfo.image = image.toString();
-            }
-          }
-        }
-      }
+      // let data = ipfs.cat(tokenUri.value)
+      // if (data) {
+      //   let jsonData = json.fromBytes(data)
+      //   if (!jsonData.isNull() && jsonData.kind == JSONValueKind.OBJECT) {
+      //     let value = jsonData.toObject()
+      //     if (value) {
+      //       const name = value.get("name")
+      //       if (name) {
+      //         NftMetaInfo.name = name.toString();
+      //       }
+      //       const image = value.get("image")
+      //       if (image) {
+      //         NftMetaInfo.image = image.toString();
+      //       }
+      //     }
+      //   }
+      // }
       NftMetaInfo.save()
     }
   }
