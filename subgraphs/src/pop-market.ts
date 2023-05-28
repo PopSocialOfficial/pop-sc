@@ -1,4 +1,4 @@
-import { ipfs, json } from "@graphprotocol/graph-ts";
+import { ipfs, json, JSONValueKind } from "@graphprotocol/graph-ts";
 import {
   BidAccepted as BidAcceptedEvent,
   BidPlaced as BidPlacedEvent,
@@ -35,25 +35,28 @@ export function handleOrderCreate(event: OrderCreatedEvent): void {
   let NftMetaInfo = NftMeta.load(`${nftAddress}-${event.params.tokenId}`);
   if (!NftMetaInfo) {
     const nftContract = NFTContract.bind(event.params.nftContract);
-    const tokenUri = nftContract.tokenURI(event.params.tokenId);
-    if (tokenUri) {
+    const tokenUri = nftContract.try_tokenURI(event.params.tokenId);
+    if (!tokenUri.reverted && tokenUri.value) {
       NftMetaInfo = new NftMeta(`${nftAddress}-${event.params.tokenId}`);
 
       NftMetaInfo.tokenId = event.params.tokenId;
       NftMetaInfo.nftContract = nftAddress;
-      NftMetaInfo.tokenUri = tokenUri;
+      NftMetaInfo.tokenUri = tokenUri.value;
 
-      let data = ipfs.cat(tokenUri)
+      let data = ipfs.cat(tokenUri.value)
       if (data) {
-        let value = json.fromBytes(data).toObject()
-        if (value) {
-          const name = value.get("name")
-          if (name) {
-            NftMetaInfo.name = name.toString();
-          }
-          const image = value.get("image")
-          if (image) {
-            NftMetaInfo.image = image.toString();
+        let jsonData = json.fromBytes(data)
+        if (!jsonData.isNull() && jsonData.kind == JSONValueKind.OBJECT) {
+          let value = jsonData.toObject()
+          if (value) {
+            const name = value.get("name")
+            if (name) {
+              NftMetaInfo.name = name.toString();
+            }
+            const image = value.get("image")
+            if (image) {
+              NftMetaInfo.image = image.toString();
+            }
           }
         }
       }
