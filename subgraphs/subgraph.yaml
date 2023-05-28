@@ -1,0 +1,44 @@
+specVersion: 0.0.5
+schema:
+  file: ./schema.graphql
+features:
+  - ipfsOnEthereumContracts
+  - fullTextSearch
+dataSources:
+  - kind: ethereum/contract
+    name: PopMarketPlace
+    network: mumbai
+    source:
+      address: "0xB8A8B6aeB881cc050cad45d0391ec089f47d86F6"
+      abi: PopMarketPlace
+      startBlock: 36144650
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Order
+        - Bid
+        - NftMeta
+        - Purchase
+      abis:
+        - name: PopMarketPlace
+          file: ./abis/PopMarketPlace.json
+        - name: NFT
+          file: ./abis/NFT.json
+      eventHandlers:
+        - event: OrderCreated(indexed uint256,indexed uint256,uint256,address,uint16,uint256,uint256,address,address)
+          handler: handleOrderCreate
+        - event: OrderCancelled(indexed uint256)
+          handler: handleOrderCancel
+        - event: OrderPurchased(indexed uint256,address,uint16)
+          handler: handleOrderPurchase
+        - event: BidPlaced(indexed uint256,uint256,address,uint16,uint256,uint256,uint256)
+          handler: handleBidPlace
+        - event: BidAccepted(indexed uint256,uint256,uint16)
+          handler: handleBidAccepted
+        - event: BidWithdraw(indexed uint256,uint256)
+          handler: handleBidWithdraw
+        - event: BidRejected(indexed uint256,uint256)
+          handler: handleBidReject
+      file: ./src/pop-market.ts

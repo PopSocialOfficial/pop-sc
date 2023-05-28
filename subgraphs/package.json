@@ -3,9 +3,9 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "codegen": "graph codegen local.subgraph.yaml",
-    "build": "graph build local.subgraph.yaml",
-    "deploy": "graph deploy --studio pop-market",
+    "codegen": "graph codegen subgraph.yaml",
+    "build": "graph build subgraph.yaml",
+    "deploy": "graph deploy --product hosted-service smrnjeet222/pop-v2",
     "create-local": "graph create local --node http://localhost:8020/ ",
     "remove-local": "graph remove local --node http://localhost:8020/ ",
     "deploy-local": "graph deploy local --node http://localhost:8020/ --ipfs http://localhost:5001 local.subgraph.yaml ",
