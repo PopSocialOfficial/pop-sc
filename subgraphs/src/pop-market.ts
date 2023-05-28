@@ -27,39 +27,49 @@ class NftType {
 }
 
 
+const getIpfsHash = (contract: string): string => {
+  if (contract == "0x75362d43640cfe536520448ba2407ada56cd64dc")
+    return "bafybeifzcb6wx22lkgfyswao7qvuaoytbo2avl76lfsj43pjrjfbn7qhaa"
+  else
+    return ""
+}
+
 export function handleOrderCreate(event: OrderCreatedEvent): void {
   const orderId = event.params.orderId.toString();
   const nftAddress = event.params.nftContract.toHex();
+  const tokenId = event.params.tokenId;
 
   let OrderInfo = Order.load(orderId);
-  let NftMetaInfo = NftMeta.load(`${nftAddress}-${event.params.tokenId}`);
+  let NftMetaInfo = NftMeta.load(`${nftAddress}-${tokenId}`);
   if (!NftMetaInfo) {
     const nftContract = NFTContract.bind(event.params.nftContract);
-    const tokenUri = nftContract.try_tokenURI(event.params.tokenId);
+    const tokenUri = nftContract.try_tokenURI(tokenId);
     if (!tokenUri.reverted && tokenUri.value) {
-      NftMetaInfo = new NftMeta(`${nftAddress}-${event.params.tokenId}`);
+      NftMetaInfo = new NftMeta(`${nftAddress}-${tokenId}`);
 
-      NftMetaInfo.tokenId = event.params.tokenId;
+      NftMetaInfo.tokenId = tokenId;
       NftMetaInfo.nftContract = nftAddress;
       NftMetaInfo.tokenUri = tokenUri.value;
 
-      // let data = ipfs.cat(tokenUri.value)
-      // if (data) {
-      //   let jsonData = json.fromBytes(data)
-      //   if (!jsonData.isNull() && jsonData.kind == JSONValueKind.OBJECT) {
-      //     let value = jsonData.toObject()
-      //     if (value) {
-      //       const name = value.get("name")
-      //       if (name) {
-      //         NftMetaInfo.name = name.toString();
-      //       }
-      //       const image = value.get("image")
-      //       if (image) {
-      //         NftMetaInfo.image = image.toString();
-      //       }
-      //     }
-      //   }
-      // }
+      const baseHash = getIpfsHash(nftAddress)
+
+      let data = ipfs.cat(`${baseHash}/${tokenId.toU32() + 1}.json`)
+      if (data) {
+        let jsonData = json.fromBytes(data)
+        if (!jsonData.isNull() && jsonData.kind == JSONValueKind.OBJECT) {
+          let value = jsonData.toObject()
+          if (value) {
+            const name = value.get("name")
+            if (name) {
+              NftMetaInfo.name = name.toString();
+            }
+            const image = value.get("image")
+            if (image) {
+              NftMetaInfo.image = image.toString();
+            }
+          }
+        }
+      }
       NftMetaInfo.save()
     }
   }
@@ -70,7 +80,7 @@ export function handleOrderCreate(event: OrderCreatedEvent): void {
     OrderInfo.seller = event.params.seller.toHex();
     OrderInfo.startTime = event.params.startTime;
     OrderInfo.endTime = event.params.endTime;
-    OrderInfo.tokenId = event.params.tokenId;
+    OrderInfo.tokenId = tokenId;
     OrderInfo.copies = event.params.copies;
     OrderInfo.paymentToken = event.params.paymentToken.toHex();
     OrderInfo.nftContract = nftAddress
