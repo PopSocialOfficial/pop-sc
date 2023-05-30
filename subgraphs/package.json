@@ -3,12 +3,12 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "codegen": "graph codegen subgraph.yaml",
-    "build": "graph build subgraph.yaml",
+    "codegen": "graph codegen bsc.subgraph.yaml",
+    "build": "graph build bsc.subgraph.yaml",
     "deploy": "graph deploy --product hosted-service smrnjeet222/pop-v2",
-    "create-local": "graph create local --node http://localhost:8020/ ",
-    "remove-local": "graph remove local --node http://localhost:8020/ ",
-    "deploy-local": "graph deploy local --node http://localhost:8020/ --ipfs http://localhost:5001 local.subgraph.yaml ",
+    "create-local": "graph create pop-v2 --node http://localhost:8020/ ",
+    "remove-local": "graph remove pop-v2 --node http://localhost:8020/ ",
+    "deploy-local": "graph deploy pop-v2 bsc.subgraph.yaml --node http://localhost:8020/ --ipfs http://localhost:5001 ",
     "test": "graph test"
   },
   "dependencies": {

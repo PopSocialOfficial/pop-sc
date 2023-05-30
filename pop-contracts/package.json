@@ -11,7 +11,7 @@
     "mpUpgrade-mumbai": "hardhat run --network mumbai scripts/mpUpgrade.ts",
     "mpDeploy-tbsc": "hardhat run --network tbsc scripts/mpDeploy.ts",
     "mpUpgrade-tbsc": "hardhat run --network tbsc scripts/mpUpgrade.ts",
-    "verify": "hardhat verify --network mumbai 0x0F1663440E34FEDFa719ff9a2a2D2E68E4Abe8ee"
+    "verify": "hardhat verify --network tbsc 0x8D4130F21bEc854182BeF4AE70CcF0F906Ee58B9"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.4.7",

@@ -55,13 +55,13 @@ const config: HardhatUserConfig & {
       accounts: [process.env.OWNER_PRIVATE_KEY ?? ""]
     },
     tbsc: {
-      url: "https://data-seed-prebsc-1-s3.binance.org:8545/",
+      url: "https://bsc-testnet.publicnode.com",
       accounts: [process.env.OWNER_PRIVATE_KEY ?? ""]
     }
   },
   etherscan: {
-    apiKey: process.env.POLYGONSCAN_API_KEY,
-    // apiKey: process.env.BSC_API_KEY,
+    // apiKey: process.env.POLYGONSCAN_API_KEY,
+    apiKey: process.env.BSC_API_KEY,
   },
 };
 
