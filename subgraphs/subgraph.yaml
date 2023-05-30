@@ -10,7 +10,7 @@ dataSources:
     network: tbsc
     source:
       abi: PopMarketPlace
-      address: "0xB8A8B6aeB881cc050cad45d0391ec089f47d86F6"
+      address: "0xF48Fd17433648C7c9021B71E392aBfE46f539113"
       startBlock: 30247816
     mapping:
       kind: ethereum/events
