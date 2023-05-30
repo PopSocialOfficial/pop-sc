@@ -1,0 +1,20 @@
+{
+  "mumbai": {
+    "PopMarketPlace": {
+      "address": "0xB8A8B6aeB881cc050cad45d0391ec089f47d86F6",
+      "startBlock": 36144650
+    }
+  },
+  "tbsc": {
+    "PopMarketPlace": {
+      "address": "0xB8A8B6aeB881cc050cad45d0391ec089f47d86F6",
+      "startBlock": 30247816
+    }
+  },
+  "local": {
+    "PopMarketPlace": {
+      "address": "0x9fe46736679d2d9a65f0992f2272de9f3c7fa6e0",
+      "startBlock": 0
+    }
+  }
+}
