@@ -8,8 +8,6 @@ contract MaxComponents is ERC1155, Ownable {
     string public name;
     string public symbol;
 
-    uint256 public _currentTokenID = 0;
-
     mapping(uint => string) public tokenURI;
     mapping(uint => uint) public energyPoints;
     mapping(address => uint[]) public tokenIdsOwned;
@@ -19,21 +17,9 @@ contract MaxComponents is ERC1155, Ownable {
         symbol = "MAX";
     }
 
-    function mint(address _to, uint _amount) external onlyOwner {
-        _mint(_to, _currentTokenID, _amount, "");
-        tokenIdsOwned[_to].push(_currentTokenID);
-        _currentTokenID++;
-    }
-
     function mintById(address _to, uint _id, uint _amount) external onlyOwner {
         _mint(_to, _id, _amount, "");
         tokenIdsOwned[_to].push(_id);
-    }
-
-    function listOfTokenIdsOwned(
-        address owner
-    ) external view returns (uint[] memory) {
-        return tokenIdsOwned[owner];
     }
 
     function mintBatch(
@@ -47,11 +33,14 @@ contract MaxComponents is ERC1155, Ownable {
         }
     }
 
-    function burn(uint _id, uint _amount) external {
+    function burn(uint _id, uint _amount) external onlyOwner {
         _burn(msg.sender, _id, _amount);
     }
 
-    function burnBatch(uint[] memory _ids, uint[] memory _amounts) external {
+    function burnBatch(
+        uint[] memory _ids,
+        uint[] memory _amounts
+    ) external onlyOwner {
         _burnBatch(msg.sender, _ids, _amounts);
     }
 
@@ -66,7 +55,11 @@ contract MaxComponents is ERC1155, Ownable {
         _mintBatch(_from, _mintIds, _mintAmounts, "");
     }
 
-    function setURI(uint _id, string memory _uri, uint _points) external onlyOwner {
+    function setURI(
+        uint _id,
+        string memory _uri,
+        uint _points
+    ) external onlyOwner {
         energyPoints[_id] = _points;
         tokenURI[_id] = _uri;
         emit URI(_uri, _id);

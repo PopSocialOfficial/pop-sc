@@ -38,7 +38,8 @@ const config: HardhatUserConfig & {
     disambiguatePaths: false,
     runOnCompile: true,
     strict: true,
-    only: [':Pop'],
+    // only: [':Pop'],
+    only: [':Max'],
   },
   paths: {
     sources: "./contracts",
@@ -60,8 +61,8 @@ const config: HardhatUserConfig & {
     }
   },
   etherscan: {
-    // apiKey: process.env.POLYGONSCAN_API_KEY,
-    apiKey: process.env.BSC_API_KEY,
+    apiKey: process.env.POLYGONSCAN_API_KEY,
+    // apiKey: process.env.BSC_API_KEY,
   },
 };
 
