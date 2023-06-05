@@ -6,7 +6,7 @@ async function main() {
 
   const MaxComponents = await ethers.getContractFactory("MaxComponents");
   const contract = MaxComponents.attach(
-    "0xeED45c315489b47D2f63aF43E60cF1B5c5eaF383"
+    "0x7153B6Be2448fC4b76B9e2bF68Bf17D16Db522b9"
   );
   const ids = [
     // background
@@ -27,13 +27,29 @@ async function main() {
   //   Array(ids.length).fill(1000)
   // )
 
+  // for (let i = 0; i <= 12; ++i) {
+  //   await contract.setURI(
+  //     i,
+  //     `https://nftstorage.link/ipfs/bafybeib4nrtcbbzrv6kipfdz6elzlld5o7qxrpp6szfrzqka3cltohrbja/background/${i}.json`,
+  //     Math.floor((Math.random() * 50) + 30)
+  //   )
+  //   console.log("Done background", i);
+  // }
+  // for (let i = 0; i <= 12; ++i) {
+  //   await contract.setURI(
+  //     100 + i,
+  //     `https://nftstorage.link/ipfs/bafybeib4nrtcbbzrv6kipfdz6elzlld5o7qxrpp6szfrzqka3cltohrbja/clothes/${i}.json`,
+  //     Math.floor((Math.random() * 50) + 30)
+  //   )
+  //   console.log("Done clothes", i);
+  // }
   // for (let i = 0; i <= 18; ++i) {
   //   await contract.setURI(
   //     200 + i,
   //     `https://nftstorage.link/ipfs/bafybeib4nrtcbbzrv6kipfdz6elzlld5o7qxrpp6szfrzqka3cltohrbja/eyes/${i}.json`,
   //     Math.floor((Math.random() * 50) + 30)
   //   )
-  //   console.log("Done", i);
+  //   console.log("Done eyes", i);
   // }
   // for (let i = 0; i <= 15; ++i) {
   //   await contract.setURI(

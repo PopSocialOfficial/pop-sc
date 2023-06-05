@@ -10,7 +10,7 @@ async function main() {
   await MaxComponents.deployed();
 
   console.log("MaxComponents deployed to:", MaxComponents.address);
-  // MaxComponents deployed to: 0xeED45c315489b47D2f63aF43E60cF1B5c5eaF383
+  // MaxComponents deployed to: 0x7153B6Be2448fC4b76B9e2bF68Bf17D16Db522b9
 }
 
 // We recommend this pattern to be able to use async/await everywhere

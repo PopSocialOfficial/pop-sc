@@ -23,133 +23,12 @@ async function main() {
   try {
     const MaxComponents = await ethers.getContractFactory("MaxComponents");
     const contract = MaxComponents.attach(
-      "0xeED45c315489b47D2f63aF43E60cF1B5c5eaF383"
+      "0x7153B6Be2448fC4b76B9e2bF68Bf17D16Db522b9"
     );
 
-    const content: any = {
-      '0': {
-        energyPoints: '66',
-        name: 'Antique White',
-        image: 'https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/background/antique-white.png'
-      },
-      '1': {
-        energyPoints: '46',
-        name: 'Aquamarine',
-        image: 'https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/background/aquamarine.png'
-      },
-      '2': {
-        energyPoints: '60',
-        name: 'Bit of blue',
-        image: 'https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/background/bit-of-blue.png'
-      },
-      '3': {
-        energyPoints: '30',
-        name: 'Blue',
-        image: 'https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/background/blue.png'
-      },
-      '4': {
-        energyPoints: '72',
-        name: 'Gray',
-        image: 'https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/background/gray.png'
-      },
-      '5': {
-        energyPoints: '79',
-        name: 'Marshmallow',
-        image: 'https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/background/marshmallow.png'
-      },
-      '6': {
-        energyPoints: '37',
-        name: 'Merino',
-        image: 'https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/background/merino.png'
-      },
-      '7': {
-        energyPoints: '67',
-        name: 'Phantom Green',
-        image: 'https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/background/phantom-green.png'
-      },
-      '8': {
-        energyPoints: '57',
-        name: 'Pink',
-        image: 'https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/background/pink.png'
-      },
-      '9': {
-        energyPoints: '31',
-        name: 'Purple',
-        image: 'https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/background/purple.png'
-      },
-      '10': {
-        energyPoints: '51',
-        name: 'Snow White',
-        image: 'https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/background/snow-white.png'
-      },
-      '11': {
-        energyPoints: '53',
-        name: 'Yellow',
-        image: 'https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/background/yellow.png'
-      },
-      '100': {
-        energyPoints: '59',
-        name: 'Baseball Uniform',
-        image: 'https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/clothes/baseball-uniform.png'
-      },
-      '101': {
-        energyPoints: '60',
-        name: 'Basketball',
-        image: 'https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/clothes/basketball.png'
-      },
-      '102': {
-        energyPoints: '37',
-        name: "Black Hoodieh's",
-        image: "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/clothes/black-hoodieh's.png"
-      },
-      '103': {
-        energyPoints: '39',
-        name: 'Black Suit',
-        image: 'https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/clothes/black-suit.png'
-      },
-      '104': {
-        energyPoints: '40',
-        name: 'Cool',
-        image: 'https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/clothes/cool.png'
-      },
-      '105': {
-        energyPoints: '72',
-        name: 'Gold Chain',
-        image: 'https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/clothes/gold-chain.png'
-      },
-      '106': {
-        energyPoints: '58',
-        name: 'Match',
-        image: 'https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/clothes/match.png'
-      },
-      '107': {
-        energyPoints: '59',
-        name: 'Pink Cothes',
-        image: 'https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/clothes/pink-cothes.png'
-      },
-      '108': {
-        energyPoints: '57',
-        name: 'Red Sweater',
-        image: 'https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/clothes/red-sweater.png'
-      },
-      '109': {
-        energyPoints: '79',
-        name: 'Scarf',
-        image: 'https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/clothes/scarf.png'
-      },
-      '110': {
-        energyPoints: '72',
-        name: 'Tie',
-        image: 'https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/clothes/tie.png'
-      },
-      '111': {
-        energyPoints: '48',
-        name: 'White T shirt',
-        image: 'https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/clothes/white-t-shirt.png'
-      }
-    }
+    const content: any = {}
     // Loop them all with the new for...of
-    for (let i = 24; i < ids.length; ++i) {
+    for (let i = 0; i < ids.length; ++i) {
       const id = ids[i]
 
       const energyPoints = (await contract.energyPoints(id)).toString()
@@ -177,3 +56,11 @@ main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });
+
+
+// background -> 0 - 99
+// clothes    -> 100 - 199
+// eyes       -> 200 - 299
+// fur        -> 300 - 399
+// hat        -> 400 - 499
+// mouth      -> 500 - 599

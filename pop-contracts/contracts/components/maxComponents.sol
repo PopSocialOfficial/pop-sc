@@ -22,6 +22,18 @@ contract MaxComponents is ERC1155, Ownable {
         tokenIdsOwned[_to].push(_id);
     }
 
+    function listOfTokenIdsOwned(
+        address owner
+    ) external view returns (uint[] memory, uint256[] memory) {
+        uint[] memory tokenIds = tokenIdsOwned[owner];
+        uint256[] memory batchBalances = new uint256[](tokenIds.length);
+
+        for (uint256 i = 0; i < tokenIds.length; ++i) {
+            batchBalances[i] = balanceOf(owner, tokenIds[i]);
+        }
+        return (tokenIds, batchBalances);
+    }
+
     function mintBatch(
         address _to,
         uint[] memory _ids,
