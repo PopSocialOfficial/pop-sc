@@ -1,5 +1,6 @@
 import fs from 'fs';
 import { ethers } from "hardhat";
+import { MAX_ADDR } from "../deployed";
 
 // ipfs://bafybeib4nrtcbbzrv6kipfdz6elzlld5o7qxrpp6szfrzqka3cltohrbja
 // https://nftstorage.link/ipfs/bafybeib4nrtcbbzrv6kipfdz6elzlld5o7qxrpp6szfrzqka3cltohrbja
@@ -22,9 +23,7 @@ async function main() {
 
   try {
     const MaxComponents = await ethers.getContractFactory("MaxComponents");
-    const contract = MaxComponents.attach(
-      "0x7153B6Be2448fC4b76B9e2bF68Bf17D16Db522b9"
-    );
+    const contract = MaxComponents.attach(MAX_ADDR);
 
     const content: any = {}
     // Loop them all with the new for...of

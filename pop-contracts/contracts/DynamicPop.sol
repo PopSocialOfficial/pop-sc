@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract DynamicPop is ERC721, ERC721URIStorage, IERC1155Receiver {
+contract DynamicPop is ERC721URIStorage, IERC1155Receiver {
     using Counters for Counters.Counter;
 
     Counters.Counter private _tokenIdCounter;
@@ -101,54 +101,31 @@ contract DynamicPop is ERC721, ERC721URIStorage, IERC1155Receiver {
         for (uint8 i = 0; i < _maxComponents.length; ++i) {
             uint16 paramMaxId = _maxComponents[i];
             uint16 ogMaxId = maxTokenIds[tokenId][i];
-            if (paramMaxId < 600 && paramMaxId != ogMaxId) {
-                // receive the new component
-                IERC1155(maxContract).safeTransferFrom(
-                    msg.sender,
-                    address(this),
-                    uint(paramMaxId),
-                    1,
-                    ""
-                );
-                // return the og component
-                IERC1155(maxContract).safeTransferFrom(
-                    address(this),
-                    msg.sender,
-                    uint(ogMaxId),
-                    1,
-                    ""
-                );
+            if (paramMaxId != ogMaxId) {
+                if (paramMaxId < 600) {
+                    // receive the new component
+                    IERC1155(maxContract).safeTransferFrom(
+                        msg.sender,
+                        address(this),
+                        uint(paramMaxId),
+                        1,
+                        ""
+                    );
+                }
+                if (ogMaxId < 600) {
+                    // return the og component
+                    IERC1155(maxContract).safeTransferFrom(
+                        address(this),
+                        msg.sender,
+                        uint(ogMaxId),
+                        1,
+                        ""
+                    );
+                }
             }
         }
         maxTokenIds[tokenId] = _maxComponents;
         _setTokenURI(tokenId, _uri);
-    }
-
-    // The following functions are overrides required by Solidity.
-    function _burn(
-        uint256 tokenId
-    ) internal override(ERC721, ERC721URIStorage) isTokenOwner(tokenId) {
-        uint16[] memory maxIds = maxTokenIds[tokenId];
-        for (uint8 i = 0; i < maxIds.length; ++i) {
-            uint16 maxId = maxIds[i];
-            if (maxId < 600) {
-                IERC1155(maxContract).safeTransferFrom(
-                    address(this),
-                    msg.sender,
-                    uint(maxId),
-                    1,
-                    ""
-                );
-            }
-        }
-        uint[] storage list = tokenIdsOwned[msg.sender];
-        for (uint256 i = 0; i < list.length; ++i) {
-            if (list[i] == tokenId) {
-                list[i] = list[list.length - 1];
-                list.pop();
-            }
-        }
-        super._burn(tokenId);
     }
 
     function _transfer(
@@ -165,18 +142,6 @@ contract DynamicPop is ERC721, ERC721URIStorage, IERC1155Receiver {
         }
         tokenIdsOwned[to].push(tokenId);
         super._transfer(from, to, tokenId);
-    }
-
-    function tokenURI(
-        uint256 tokenId
-    ) public view override(ERC721, ERC721URIStorage) returns (string memory) {
-        return super.tokenURI(tokenId);
-    }
-
-    function supportsInterface(
-        bytes4 interfaceId
-    ) public view override(ERC721, ERC721URIStorage, IERC165) returns (bool) {
-        return super.supportsInterface(interfaceId);
     }
 
     function onERC1155Received(

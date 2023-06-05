@@ -1,4 +1,5 @@
 import { ethers } from "hardhat";
+import { DYNAMIC_ADDR } from "../deployed";
 
 // ipfs://bafybeib4nrtcbbzrv6kipfdz6elzlld5o7qxrpp6szfrzqka3cltohrbja
 // https://nftstorage.link/ipfs/bafybeib4nrtcbbzrv6kipfdz6elzlld5o7qxrpp6szfrzqka3cltohrbja
@@ -22,11 +23,9 @@ async function main() {
   try {
     const [_, pop] = await ethers.getSigners();
     const DynamicPop = await ethers.getContractFactory("DynamicPop");
-    const contract = DynamicPop.attach(
-      "0x348AA5a2031d0fB0e190c0014a0E47DB2d4678ed"
-    );
+    const contract = DynamicPop.attach(DYNAMIC_ADDR);
 
-    const resp = await contract.connect(pop).updateComponents(0, [1, 700, 700, 300, 600, 700], "nangaa");
+    const resp = await contract.connect(pop).safeMint([0, 100, 200, 300, 600, 500], "test uri check");
     console.log(resp);
   }
   catch (e) {

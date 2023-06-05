@@ -45,7 +45,6 @@ contract MaxComponents is ERC1155, Ownable {
         }
     }
 
-
     function _safeTransferFrom(
         address from,
         address to,
@@ -53,13 +52,6 @@ contract MaxComponents is ERC1155, Ownable {
         uint256 amount,
         bytes memory data
     ) internal override(ERC1155) {
-        uint[] storage list = tokenIdsOwned[from];
-        for (uint256 i = 0; i < list.length; ++i) {
-            if (list[i] == id) {
-                list[i] = list[list.length - 1];
-                list.pop();
-            }
-        }
         tokenIdsOwned[to].push(id);
         super._safeTransferFrom(from, to, id, amount, data);
     }
@@ -71,15 +63,8 @@ contract MaxComponents is ERC1155, Ownable {
         uint256[] memory amounts,
         bytes memory data
     ) internal override(ERC1155) {
-        uint[] storage list = tokenIdsOwned[from];
-        for (uint256 j = 0; j < ids.length; ++j) {
-            for (uint256 i = 0; i < list.length; ++i) {
-                if (list[i] == ids[j]) {
-                    list[i] = list[list.length - 1];
-                    list.pop();
-                }
-            }
-            tokenIdsOwned[to].push(ids[j]);
+        for (uint i = 0; i < ids.length; i++) {
+            tokenIdsOwned[to].push(ids[i]);
         }
         super._safeBatchTransferFrom(from, to, ids, amounts, data);
     }

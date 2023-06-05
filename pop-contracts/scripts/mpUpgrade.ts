@@ -1,10 +1,11 @@
 import { ethers, upgrades } from "hardhat";
+import { MARKET_PROXY_ADDR } from "../deployed";
 
 async function main() {
   const [owner] = await ethers.getSigners();
   console.log("Owner => ", owner.address);
   const factory = await ethers.getContractFactory("PopMarketPlace");
-  const PopMarketPlace = await upgrades.upgradeProxy("", factory);
+  const PopMarketPlace = await upgrades.upgradeProxy(MARKET_PROXY_ADDR, factory);
   await PopMarketPlace.deployed();
   console.log("PokeMarketPlace deployed to:", PopMarketPlace.address);
 }

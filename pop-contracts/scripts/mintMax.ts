@@ -1,11 +1,10 @@
 import { Contract } from "ethers";
 import { ethers, upgrades } from "hardhat";
+import { MAX_ADDR } from "../deployed";
 
 async function main() {
   const MaxComponents = await ethers.getContractFactory("MaxComponents");
-  const contract = MaxComponents.attach(
-    "0x7153B6Be2448fC4b76B9e2bF68Bf17D16Db522b9"
-  );
+  const contract = MaxComponents.attach(MAX_ADDR);
   const ids = [
     // background
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
