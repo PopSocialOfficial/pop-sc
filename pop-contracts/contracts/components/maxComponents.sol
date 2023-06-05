@@ -10,7 +10,7 @@ contract MaxComponents is ERC1155, Ownable {
 
     mapping(uint => string) public tokenURI;
     mapping(uint => uint) public energyPoints;
-    mapping(address => uint[]) public tokenIdsOwned;
+    mapping(address => uint[]) private tokenIdsOwned;
 
     constructor() ERC1155("") {
         name = "Max Components";
@@ -45,26 +45,43 @@ contract MaxComponents is ERC1155, Ownable {
         }
     }
 
-    function burn(uint _id, uint _amount) external onlyOwner {
-        _burn(msg.sender, _id, _amount);
+
+    function _safeTransferFrom(
+        address from,
+        address to,
+        uint256 id,
+        uint256 amount,
+        bytes memory data
+    ) internal override(ERC1155) {
+        uint[] storage list = tokenIdsOwned[from];
+        for (uint256 i = 0; i < list.length; ++i) {
+            if (list[i] == id) {
+                list[i] = list[list.length - 1];
+                list.pop();
+            }
+        }
+        tokenIdsOwned[to].push(id);
+        super._safeTransferFrom(from, to, id, amount, data);
     }
 
-    function burnBatch(
-        uint[] memory _ids,
-        uint[] memory _amounts
-    ) external onlyOwner {
-        _burnBatch(msg.sender, _ids, _amounts);
-    }
-
-    function burnForMint(
-        address _from,
-        uint[] memory _burnIds,
-        uint[] memory _burnAmounts,
-        uint[] memory _mintIds,
-        uint[] memory _mintAmounts
-    ) external onlyOwner {
-        _burnBatch(_from, _burnIds, _burnAmounts);
-        _mintBatch(_from, _mintIds, _mintAmounts, "");
+    function _safeBatchTransferFrom(
+        address from,
+        address to,
+        uint256[] memory ids,
+        uint256[] memory amounts,
+        bytes memory data
+    ) internal override(ERC1155) {
+        uint[] storage list = tokenIdsOwned[from];
+        for (uint256 j = 0; j < ids.length; ++j) {
+            for (uint256 i = 0; i < list.length; ++i) {
+                if (list[i] == ids[j]) {
+                    list[i] = list[list.length - 1];
+                    list.pop();
+                }
+            }
+            tokenIdsOwned[to].push(ids[j]);
+        }
+        super._safeBatchTransferFrom(from, to, ids, amounts, data);
     }
 
     function setURI(

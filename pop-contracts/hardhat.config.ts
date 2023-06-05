@@ -39,7 +39,8 @@ const config: HardhatUserConfig & {
     runOnCompile: true,
     strict: true,
     // only: [':Pop'],
-    only: [':Max'],
+    // only: [':Max'],
+    only: [':DynamicPop'],
   },
   paths: {
     sources: "./contracts",
@@ -53,11 +54,11 @@ const config: HardhatUserConfig & {
     },
     mumbai: {
       url: "https://matic-mumbai.chainstacklabs.com",
-      accounts: [process.env.OWNER_PRIVATE_KEY ?? ""]
+      accounts: [process.env.OWNER_PRIVATE_KEY ?? "", process.env.POP_PRIVATE_KEY ?? ""]
     },
     tbsc: {
       url: "https://bsc-testnet.publicnode.com",
-      accounts: [process.env.OWNER_PRIVATE_KEY ?? ""]
+      accounts: [process.env.OWNER_PRIVATE_KEY ?? "", process.env.POP_PRIVATE_KEY ?? ""]
     }
   },
   etherscan: {

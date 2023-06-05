@@ -2,8 +2,6 @@ import { Contract } from "ethers";
 import { ethers, upgrades } from "hardhat";
 
 async function main() {
-  const [owner, admin] = await ethers.getSigners();
-
   const MaxComponents = await ethers.getContractFactory("MaxComponents");
   const contract = MaxComponents.attach(
     "0x7153B6Be2448fC4b76B9e2bF68Bf17D16Db522b9"
@@ -22,10 +20,10 @@ async function main() {
     // mouth
     500, 501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519, 520,
   ]
-  // await contract.mintBatch("0x6E6Fd4ac140937786515e8CAfBe0d171E776BAB5",
-  //   ids,
-  //   Array(ids.length).fill(1000)
-  // )
+  await contract.mintBatch("0x6E6Fd4ac140937786515e8CAfBe0d171E776BAB5",
+    ids,
+    Array(ids.length).fill(1000)
+  )
 
   // for (let i = 0; i <= 12; ++i) {
   //   await contract.setURI(
