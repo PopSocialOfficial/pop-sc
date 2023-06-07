@@ -78,4 +78,8 @@ contract MaxComponents is ERC1155, Ownable {
         tokenURI[_id] = _uri;
         emit URI(_uri, _id);
     }
+
+    function uri(uint _id) public view override returns (string memory) {
+        return tokenURI[_id];
+    }
 }
