@@ -13,18 +13,19 @@ async function main() {
     ids.push(files[i].split(".")[0])
   }
 
-  console.log(ids);
-
   // await contract.mintBatch("0x6E6Fd4ac140937786515e8CAfBe0d171E776BAB5",
   //   ids,
   //   Array(ids.length).fill(1000), ""
   // )
 
   // for (let i = 0; i < ids.length; ++i) {
+  //   let content = require(`../maxcomp-metadata/${ids[i]}.json`);
+  //   const energyPoints = content.energyPoints;
+
   //   await contract.setURI(
   //     ids[i],
   //     `https://nftstorage.link/ipfs/bafybeib4nrtcbbzrv6kipfdz6elzlld5o7qxrpp6szfrzqka3cltohrbja/${ids[i]}.json`,
-  //     Math.floor((Math.random() * 50) + 30)
+  //     energyPoints
   //   )
   //   console.log("Done", i);
   // }
