@@ -3,23 +3,30 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-// for local test only
-contract CardERC721 is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
+// Standard OpenZeppelin ERC721 Wizard Code
+
+contract Cybergirl is ERC721, ERC721URIStorage, Ownable {
     using Counters for Counters.Counter;
 
     Counters.Counter private _tokenIdCounter;
 
-    constructor() ERC721("Pokemon Cards", "POKE") {}
+    constructor() ERC721("Cybergirl", "CG") {}
 
-    function safeMint(address to, uint _id) public onlyOwner {
-        _safeMint(to, _id);
-        _setTokenURI(_id, "");
+    function getTotalSupply() external view returns (uint256) {
+        return _tokenIdCounter.current();
     }
 
+    function safeMint(address to, string memory uri) public onlyOwner {
+        uint256 tokenId = _tokenIdCounter.current();
+        _tokenIdCounter.increment();
+        _safeMint(to, tokenId);
+        _setTokenURI(tokenId, uri);
+    }
+
+    // The following functions are overrides required by Solidity.
     function _burn(
         uint256 tokenId
     ) internal override(ERC721, ERC721URIStorage) {
@@ -33,8 +40,8 @@ contract CardERC721 is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
     }
 
     function supportsInterface(
-        bytes4
-    ) public view virtual override(ERC721, ERC721URIStorage) returns (bool) {
-        return true;
+        bytes4 interfaceId
+    ) public view override(ERC721, ERC721URIStorage) returns (bool) {
+        return super.supportsInterface(interfaceId);
     }
 }

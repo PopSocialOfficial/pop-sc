@@ -6,12 +6,10 @@
     "compile": "hardhat compile",
     "local-node": "hardhat node --hostname 0.0.0.0",
     "test": "hardhat test",
-    "mpDeploy-local": "hardhat run --network localhost scripts/mpDeploy.ts",
-    "mpDeploy-mumbai": "hardhat run --network mumbai scripts/mpDeploy.ts",
-    "mpUpgrade-mumbai": "hardhat run --network mumbai scripts/mpUpgrade.ts",
-    "mpDeploy-tbsc": "hardhat run --network tbsc scripts/mpDeploy.ts",
-    "mpUpgrade-tbsc": "hardhat run --network tbsc scripts/mpUpgrade.ts",
-    "verify": "hardhat verify --network tbsc 0x8D4130F21bEc854182BeF4AE70CcF0F906Ee58B9"
+    "deploy:market": "hardhat run scripts/mpDeploy.ts",
+    "deploy:maxComp": "hardhat run scripts/maxCompDeploy.ts",
+    "deploy:max": "hardhat run scripts/maxDeploy.ts",
+    "upgrade:market": "hardhat run scripts/mpUpgrade.ts"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.4.7",

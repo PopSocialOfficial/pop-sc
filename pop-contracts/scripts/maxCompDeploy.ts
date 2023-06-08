@@ -1,17 +1,16 @@
 import { ethers } from "hardhat";
-import { MAX_ADDR } from "../deployed";
 
 async function main() {
   const [owner] = await ethers.getSigners();
   console.log("Owner => ", owner.address);
 
-  const factory = await ethers.getContractFactory("DynamicPop");
-  const DynamicPop = await factory.deploy(MAX_ADDR);
+  const factory = await ethers.getContractFactory("MaxComponents");
+  const MaxComponents = await factory.deploy();
 
-  await DynamicPop.deployed();
+  await MaxComponents.deployed();
 
-  console.log("DynamicPop deployed to:", DynamicPop.address);
-  // DynamicPop deployed to: 0x4887165F0409FDeE4466fA6B396C44339a573937
+  console.log("MaxComponents deployed to:", MaxComponents.address);
+  // MaxComponents deployed to: 0xc67896be9479c75eA121c9Fe770250f42F172b9F
 }
 
 // We recommend this pattern to be able to use async/await everywhere

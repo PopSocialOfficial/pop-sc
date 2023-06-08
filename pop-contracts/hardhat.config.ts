@@ -38,9 +38,7 @@ const config: HardhatUserConfig & {
     disambiguatePaths: false,
     runOnCompile: true,
     strict: true,
-    only: [':Pop'],
-    // only: [':Max'],
-    // only: [':DynamicPop'],
+    only: [':Max', ":Pop", ":Cyber"],
   },
   paths: {
     sources: "./contracts",

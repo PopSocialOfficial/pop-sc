@@ -3,7 +3,8 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract PopToken is ERC20 {
+// for local test only
+contract PPTToken is ERC20 {
     uint8 decimals_;
 
     constructor(
