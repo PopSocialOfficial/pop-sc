@@ -2,486 +2,1068 @@
   "0": {
     "name": "Antique White",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/background/antique-white.png",
-    "energyPoints": "75"
+    "energyPoints": "72",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "72"
+      }
+    ]
   },
   "1": {
     "name": "Aquamarine",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/background/aquamarine.png",
-    "energyPoints": "37"
+    "energyPoints": "58",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "58"
+      }
+    ]
   },
   "2": {
     "name": "Bit of blue",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/background/bit-of-blue.png",
-    "energyPoints": "78"
+    "energyPoints": "34",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "34"
+      }
+    ]
   },
   "3": {
     "name": "Blue",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/background/blue.png",
-    "energyPoints": "62"
+    "energyPoints": "77",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "77"
+      }
+    ]
   },
   "4": {
     "name": "Gray",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/background/gray.png",
-    "energyPoints": "77"
+    "energyPoints": "35",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "35"
+      }
+    ]
   },
   "5": {
     "name": "Marshmallow",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/background/marshmallow.png",
-    "energyPoints": "43"
+    "energyPoints": "55",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "55"
+      }
+    ]
   },
   "6": {
     "name": "Merino",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/background/merino.png",
-    "energyPoints": "69"
+    "energyPoints": "48",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "48"
+      }
+    ]
   },
   "7": {
     "name": "Phantom Green",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/background/phantom-green.png",
-    "energyPoints": "66"
+    "energyPoints": "64",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "64"
+      }
+    ]
   },
   "8": {
     "name": "Pink",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/background/pink.png",
-    "energyPoints": "63"
+    "energyPoints": "64",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "64"
+      }
+    ]
   },
   "9": {
     "name": "Purple",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/background/purple.png",
-    "energyPoints": "41"
+    "energyPoints": "52",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "52"
+      }
+    ]
   },
   "10": {
     "name": "Snow White",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/background/snow-white.png",
-    "energyPoints": "74"
+    "energyPoints": "35",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "35"
+      }
+    ]
   },
   "11": {
     "name": "Yellow",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/background/yellow.png",
-    "energyPoints": "43"
+    "energyPoints": "57",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "57"
+      }
+    ]
   },
   "100": {
     "name": "Baseball Uniform",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/clothes/baseball-uniform.png",
-    "energyPoints": "66"
+    "energyPoints": "43",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "43"
+      }
+    ]
   },
   "101": {
     "name": "Basketball",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/clothes/basketball.png",
-    "energyPoints": "49"
+    "energyPoints": "35",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "35"
+      }
+    ]
   },
   "102": {
     "name": "Black Hoodieh's",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/clothes/black-hoodieh's.png",
-    "energyPoints": "30"
+    "energyPoints": "31",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "31"
+      }
+    ]
   },
   "103": {
     "name": "Black Suit",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/clothes/black-suit.png",
-    "energyPoints": "75"
+    "energyPoints": "78",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "78"
+      }
+    ]
   },
   "104": {
     "name": "Cool",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/clothes/cool.png",
-    "energyPoints": "46"
+    "energyPoints": "77",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "77"
+      }
+    ]
   },
   "105": {
     "name": "Gold Chain",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/clothes/gold-chain.png",
-    "energyPoints": "57"
+    "energyPoints": "32",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "32"
+      }
+    ]
   },
   "106": {
     "name": "Match",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/clothes/match.png",
-    "energyPoints": "65"
+    "energyPoints": "61",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "61"
+      }
+    ]
   },
   "107": {
     "name": "Pink Cothes",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/clothes/pink-cothes.png",
-    "energyPoints": "45"
+    "energyPoints": "57",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "57"
+      }
+    ]
   },
   "108": {
     "name": "Red Sweater",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/clothes/red-sweater.png",
-    "energyPoints": "45"
+    "energyPoints": "48",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "48"
+      }
+    ]
   },
   "109": {
     "name": "Scarf",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/clothes/scarf.png",
-    "energyPoints": "62"
+    "energyPoints": "54",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "54"
+      }
+    ]
   },
   "110": {
     "name": "Tie",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/clothes/tie.png",
-    "energyPoints": "75"
+    "energyPoints": "55",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "55"
+      }
+    ]
   },
   "111": {
     "name": "White T shirt",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/clothes/white-t-shirt.png",
-    "energyPoints": "73"
+    "energyPoints": "65",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "65"
+      }
+    ]
   },
   "200": {
     "name": "Angry",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/eyes/angry.png",
-    "energyPoints": "78"
+    "energyPoints": "69",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "69"
+      }
+    ]
   },
   "201": {
     "name": "Boring",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/eyes/boring.png",
-    "energyPoints": "31"
+    "energyPoints": "79",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "79"
+      }
+    ]
   },
   "202": {
     "name": "Combat Glasses",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/eyes/combat-glasses.png",
-    "energyPoints": "42"
+    "energyPoints": "78",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "78"
+      }
+    ]
   },
   "203": {
     "name": "Cool Glasses",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/eyes/cool-glasses.png",
-    "energyPoints": "47"
+    "energyPoints": "44",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "44"
+      }
+    ]
   },
   "204": {
     "name": "Heart shaped Glasses",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/eyes/heart-shaped-glasses.png",
-    "energyPoints": "67"
+    "energyPoints": "58",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "58"
+      }
+    ]
   },
   "205": {
     "name": "Laser Glasses",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/eyes/laser-glasses.png",
-    "energyPoints": "30"
+    "energyPoints": "54",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "54"
+      }
+    ]
   },
   "206": {
     "name": "Mechanical Glasses",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/eyes/mechanical-glasses.png",
-    "energyPoints": "79"
+    "energyPoints": "61",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "61"
+      }
+    ]
   },
   "207": {
     "name": "Mechanical",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/eyes/mechanical.png",
-    "energyPoints": "70"
+    "energyPoints": "53",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "53"
+      }
+    ]
   },
   "208": {
     "name": "Money",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/eyes/money.png",
-    "energyPoints": "72"
+    "energyPoints": "75",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "75"
+      }
+    ]
   },
   "209": {
     "name": "Retarded png",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/eyes/retarded-png.png",
-    "energyPoints": "47"
+    "energyPoints": "66",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "66"
+      }
+    ]
   },
   "210": {
     "name": "Round Sunglasses",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/eyes/round-sunglasses.png",
-    "energyPoints": "66"
+    "energyPoints": "69",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "69"
+      }
+    ]
   },
   "211": {
     "name": "Sad",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/eyes/sad.png",
-    "energyPoints": "78"
+    "energyPoints": "75",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "75"
+      }
+    ]
   },
   "212": {
     "name": "Scornful",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/eyes/scornful.png",
-    "energyPoints": "44"
+    "energyPoints": "49",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "49"
+      }
+    ]
   },
   "213": {
     "name": "Single Glasses",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/eyes/single-glasses.png",
-    "energyPoints": "74"
+    "energyPoints": "69",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "69"
+      }
+    ]
   },
   "214": {
     "name": "Square rimmed Glasses",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/eyes/square-rimmed-glasses.png",
-    "energyPoints": "64"
+    "energyPoints": "74",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "74"
+      }
+    ]
   },
   "215": {
     "name": "Sunflower Glasses",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/eyes/sunflower-glasses.png",
-    "energyPoints": "42"
+    "energyPoints": "71",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "71"
+      }
+    ]
   },
   "216": {
     "name": "Ttare",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/eyes/ttare.png",
-    "energyPoints": "58"
+    "energyPoints": "30",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "30"
+      }
+    ]
   },
   "217": {
     "name": "White",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/eyes/white.png",
-    "energyPoints": "42"
+    "energyPoints": "78",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "78"
+      }
+    ]
   },
   "218": {
     "name": "Wretched",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/eyes/wretched.png",
-    "energyPoints": "39"
+    "energyPoints": "79",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "79"
+      }
+    ]
   },
   "300": {
     "name": "Camo",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/fur/camo.png",
-    "energyPoints": "30"
+    "energyPoints": "58",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "58"
+      }
+    ]
   },
   "301": {
     "name": "Coppery",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/fur/coppery.png",
-    "energyPoints": "33"
+    "energyPoints": "40",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "40"
+      }
+    ]
   },
   "302": {
     "name": "Giraffe",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/fur/giraffe.png",
-    "energyPoints": "55"
+    "energyPoints": "60",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "60"
+      }
+    ]
   },
   "303": {
     "name": "Green",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/fur/green.png",
-    "energyPoints": "69"
+    "energyPoints": "37",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "37"
+      }
+    ]
   },
   "304": {
     "name": "Leopard",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/fur/leopard.png",
-    "energyPoints": "45"
+    "energyPoints": "57",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "57"
+      }
+    ]
   },
   "305": {
     "name": "Mechanical",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/fur/mechanical.png",
-    "energyPoints": "41"
+    "energyPoints": "72",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "72"
+      }
+    ]
   },
   "306": {
     "name": "Rainbow",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/fur/rainbow.png",
-    "energyPoints": "65"
+    "energyPoints": "30",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "30"
+      }
+    ]
   },
   "307": {
     "name": "Raw",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/fur/raw.png",
-    "energyPoints": "43"
+    "energyPoints": "62",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "62"
+      }
+    ]
   },
   "308": {
     "name": "Scale",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/fur/scale.png",
-    "energyPoints": "52"
+    "energyPoints": "50",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "50"
+      }
+    ]
   },
   "309": {
     "name": "Speckled",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/fur/speckled.png",
-    "energyPoints": "74"
+    "energyPoints": "51",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "51"
+      }
+    ]
   },
   "310": {
     "name": "Starry",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/fur/starry.png",
-    "energyPoints": "53"
+    "energyPoints": "76",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "76"
+      }
+    ]
   },
   "311": {
     "name": "Tattooed",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/fur/tattooed.png",
-    "energyPoints": "57"
+    "energyPoints": "35",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "35"
+      }
+    ]
   },
   "312": {
     "name": "Tiger",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/fur/tiger.png",
-    "energyPoints": "39"
+    "energyPoints": "59",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "59"
+      }
+    ]
   },
   "313": {
     "name": "Watery",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/fur/watery.png",
-    "energyPoints": "46"
+    "energyPoints": "56",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "56"
+      }
+    ]
   },
   "314": {
     "name": "Yellow",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/fur/yellow.png",
-    "energyPoints": "52"
+    "energyPoints": "36",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "36"
+      }
+    ]
   },
   "315": {
     "name": "Zebra",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/fur/zebra.png",
-    "energyPoints": "73"
+    "energyPoints": "55",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "55"
+      }
+    ]
   },
   "400": {
     "name": "Angel Ring",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/hat/angel-ring.png",
-    "energyPoints": "52"
+    "energyPoints": "77",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "77"
+      }
+    ]
   },
   "401": {
     "name": "Captain's ",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/hat/captain's-.png",
-    "energyPoints": "70"
+    "energyPoints": "62",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "62"
+      }
+    ]
   },
   "402": {
     "name": "Cowboy",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/hat/cowboy.png",
-    "energyPoints": "79"
+    "energyPoints": "57",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "57"
+      }
+    ]
   },
   "403": {
     "name": "Fisherman's Hat",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/hat/fisherman's-hat.png",
-    "energyPoints": "68"
+    "energyPoints": "79",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "79"
+      }
+    ]
   },
   "404": {
     "name": "Gold Earrings",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/hat/gold-earrings.png",
-    "energyPoints": "50"
+    "energyPoints": "64",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "64"
+      }
+    ]
   },
   "405": {
     "name": "Headband",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/hat/headband.png",
-    "energyPoints": "66"
+    "energyPoints": "67",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "67"
+      }
+    ]
   },
   "406": {
     "name": "Hip Hop Hat",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/hat/hip-hop-hat.png",
-    "energyPoints": "74"
+    "energyPoints": "36",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "36"
+      }
+    ]
   },
   "407": {
     "name": "Knitted cap with ears",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/hat/knitted-cap-with-ears.png",
-    "energyPoints": "67"
+    "energyPoints": "54",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "54"
+      }
+    ]
   },
   "408": {
     "name": "Locomotive Cap",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/hat/locomotive-cap.png",
-    "energyPoints": "38"
+    "energyPoints": "63",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "63"
+      }
+    ]
   },
   "409": {
     "name": "Long Ear Knit Cap",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/hat/long-ear-knit-cap.png",
-    "energyPoints": "39"
+    "energyPoints": "54",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "54"
+      }
+    ]
   },
   "410": {
     "name": "Lots of Earrings",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/hat/lots-of-earrings.png",
-    "energyPoints": "57"
+    "energyPoints": "54",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "54"
+      }
+    ]
   },
   "411": {
     "name": "Mask",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/hat/mask.png",
-    "energyPoints": "70"
+    "energyPoints": "73",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "73"
+      }
+    ]
   },
   "412": {
     "name": "Ox Horn",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/hat/ox-horn.png",
-    "energyPoints": "41"
+    "energyPoints": "64",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "64"
+      }
+    ]
   },
   "413": {
     "name": "Pink",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/hat/pink.png",
-    "energyPoints": "30"
+    "energyPoints": "63",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "63"
+      }
+    ]
   },
   "414": {
     "name": "Pirate ",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/hat/pirate-.png",
-    "energyPoints": "76"
+    "energyPoints": "62",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "62"
+      }
+    ]
   },
   "415": {
     "name": "Red",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/hat/red.png",
-    "energyPoints": "68"
+    "energyPoints": "31",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "31"
+      }
+    ]
   },
   "416": {
     "name": "Wizard",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/hat/wizard.png",
-    "energyPoints": "56"
+    "energyPoints": "74",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "74"
+      }
+    ]
   },
   "500": {
     "name": "Ballooning",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/ballooning.png",
-    "energyPoints": "53"
+    "energyPoints": "50",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "50"
+      }
+    ]
   },
   "501": {
     "name": "Bite The Bone",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/bite-the-bone.png",
-    "energyPoints": "74"
+    "energyPoints": "51",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "51"
+      }
+    ]
   },
   "502": {
     "name": "Butt",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/butt.png",
-    "energyPoints": "34"
+    "energyPoints": "73",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "73"
+      }
+    ]
   },
   "503": {
     "name": "Clown Red",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/clown-red.png",
-    "energyPoints": "37"
+    "energyPoints": "33",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "33"
+      }
+    ]
   },
   "504": {
     "name": "Contemptuous",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/contemptuous.png",
-    "energyPoints": "74"
+    "energyPoints": "71",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "71"
+      }
+    ]
   },
   "505": {
     "name": "Ferric",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/ferric.png",
-    "energyPoints": "32"
+    "energyPoints": "56",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "56"
+      }
+    ]
   },
   "506": {
     "name": "Fishy",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/fishy.png",
-    "energyPoints": "63"
+    "energyPoints": "51",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "51"
+      }
+    ]
   },
   "507": {
     "name": "Freakish",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/freakish.png",
-    "energyPoints": "53"
+    "energyPoints": "59",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "59"
+      }
+    ]
   },
   "508": {
     "name": "Gentleman's Beard",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/gentleman's-beard.png",
-    "energyPoints": "63"
+    "energyPoints": "61",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "61"
+      }
+    ]
   },
   "509": {
     "name": "Golden Fangs",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/golden-fangs.png",
-    "energyPoints": "44"
+    "energyPoints": "65",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "65"
+      }
+    ]
   },
   "510": {
     "name": "Hanging Flower",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/hanging-flower.png",
-    "energyPoints": "41"
+    "energyPoints": "45",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "45"
+      }
+    ]
   },
   "511": {
     "name": "Large Gold Tooth",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/large-gold-tooth.png",
-    "energyPoints": "54"
+    "energyPoints": "33",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "33"
+      }
+    ]
   },
   "512": {
     "name": "Large Incisor Teeth",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/large-incisor-teeth.png",
-    "energyPoints": "43"
+    "energyPoints": "72",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "72"
+      }
+    ]
   },
   "513": {
     "name": "Lick One's Lips",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/lick-one's-lips.png",
-    "energyPoints": "45"
+    "energyPoints": "35",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "35"
+      }
+    ]
   },
   "514": {
     "name": "Sealed",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/sealed.png",
-    "energyPoints": "43"
+    "energyPoints": "37",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "37"
+      }
+    ]
   },
   "515": {
     "name": "Shark",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/shark.png",
-    "energyPoints": "49"
+    "energyPoints": "68",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "68"
+      }
+    ]
   },
   "516": {
     "name": "Sharp",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/sharp.png",
-    "energyPoints": "71"
+    "energyPoints": "30",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "30"
+      }
+    ]
   },
   "517": {
     "name": "Stick Out One's Tongue",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/stick-out-one's-tongue.png",
-    "energyPoints": "79"
+    "energyPoints": "57",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "57"
+      }
+    ]
   },
   "518": {
     "name": "Vicissitudes",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/vicissitudes.png",
-    "energyPoints": "40"
+    "energyPoints": "46",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "46"
+      }
+    ]
   },
   "519": {
     "name": "Whistle",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/whistle.png",
-    "energyPoints": "33"
+    "energyPoints": "60",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "60"
+      }
+    ]
   },
   "520": {
     "name": "Zipper",
     "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/zipper.png",
-    "energyPoints": "42"
+    "energyPoints": "79",
+    "attributes": [
+      {
+        "trait_type": "Energy Points",
+        "value": "79"
+      }
+    ]
   }
 }

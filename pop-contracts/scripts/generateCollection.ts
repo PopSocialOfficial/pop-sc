@@ -18,12 +18,10 @@ async function main() {
         const name = (file.split(".")[0]).replaceAll("-", " ");
         const image = `https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/${categories[c]}/${file.toLowerCase()}`
 
+        const energyPoints = Math.floor((Math.random() * 50) + 30)
+
         await fs.promises.writeFile(`./maxcomp-metadata/${c * 100 + i}.json`,
-          `{
-  "name" : "${name}",
-  "image" : "${image}",
-  "energyPoints" : "${Math.floor((Math.random() * 50) + 30)}"
-}`)
+          `{"name" : "${name}","image" : "${image}","energyPoints" : "${energyPoints}","attributes": [{"trait_type": "Energy Points","value": "${energyPoints}"}]}`)
       }
     }
 

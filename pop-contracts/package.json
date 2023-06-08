@@ -9,6 +9,7 @@
     "deploy:market": "hardhat run scripts/deploy-market.ts",
     "deploy:maxComp": "hardhat run scripts/deploy-maxComp.ts",
     "deploy:max": "hardhat run scripts/deploy-max.ts",
+    "deploy:cybergirl": "hardhat run scripts/deploy-cybergirl.ts",
     "upgrade:market": "hardhat run scripts/upgrade-market.ts"
   },
   "devDependencies": {

@@ -14,6 +14,23 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeab
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155ReceiverUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol";
 
+/* 
+  notable design decisions:
+  - To know which order is for ERC721 nft or ERC1155 (i.e nftContract) 
+    is reflected by copies param/arg. 
+    copies == 0 , signifies ERC721 nft
+    and copies > 0 , is ERC1155   (therefore also can't place or buy 0 size order)
+    if no. of copies for ERC1155 goes down to zero, by that time order is alredy deleted.
+    and all bids are also rejected.
+    -> therefore this argument has to passed at correctly from caller side.
+    (Todo: planning to do it with interfaceId, if any issue/bug occurs )
+
+  - pricePerNFT can be 0 (maybe useful as nft drop and claim or something).
+  - bid can be even high or low than the stated price.
+  - (Todo improv.) withdrawMoney needs to be used carefully,
+    calls will fail if no enough balance in contract for escrow operations 
+*/
+
 contract PopMarketPlace is
     ReentrancyGuardUpgradeable,
     IERC1155ReceiverUpgradeable,
@@ -97,6 +114,7 @@ contract PopMarketPlace is
     }
 
     function setPlatformFees(uint256 fee) external onlyOwner {
+        // eg. fee = 100  --> 0.01%
         require(fee <= 50000, "High fee");
         platformFees = fee;
     }
@@ -446,6 +464,8 @@ contract PopMarketPlace is
             }
         }
     }
+
+    // The following functions are overrides required by Solidity.
 
     function onERC1155Received(
         address,
