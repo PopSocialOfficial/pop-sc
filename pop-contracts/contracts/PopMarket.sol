@@ -187,7 +187,7 @@ contract PopMarketPlace is
     function buyNow(
         uint256 orderId,
         uint16 copies // copies = 0 if 721 token
-    ) external payable nonReentrant {
+    ) public payable nonReentrant {
         Order storage _order = order[orderId];
         require(_order.seller != address(0), "Invalid order request"); // if order is deleted
         require(_order.endTime > block.timestamp, "Order expired");
@@ -244,6 +244,18 @@ contract PopMarketPlace is
         emit OrderPurchased(orderId, msg.sender, copies);
     }
 
+    function bulkBuy(
+        uint[] calldata orderIds,
+        uint16[] calldata amounts
+    ) external payable nonReentrant {
+        require(orderIds.length == amounts.length, "Not same length input");
+        for (uint i = 0; i < orderIds.length; ++i) {
+            uint orderId = orderIds[i];
+            uint16 copies = amounts[i];
+            buyNow(orderId, copies);
+        }
+    }
+
     function placeOfferForOrder(
         uint256 orderId,
         uint16 copies, // 0 for 721
@@ -292,7 +304,7 @@ contract PopMarketPlace is
             copies,
             pricePerNFT,
             block.timestamp,
-            endTime 
+            endTime
         );
     }
 
@@ -402,7 +414,7 @@ contract PopMarketPlace is
         } else {
             require(tokensSupport[tokenAddress], "unsupported token address");
             IERC20Upgradeable ERC20Interface = IERC20Upgradeable(tokenAddress);
-            uint256 balance = ERC20Interface.balanceOf(msg.sender);
+            uint256 balance = ERC20Interface.balanceOf(address(this));
             require(balance >= amount, "balance Insufficient");
             ERC20Interface.safeTransfer(owner(), amount);
         }
@@ -411,7 +423,7 @@ contract PopMarketPlace is
     function returnAmountToRemainingBidder(uint256 orderId) private {
         Order storage _order = order[orderId];
         bool isNative = _order.paymentToken == address(0);
-        for (uint8 i = 0; i < bids[orderId].length; ++i) {
+        for (uint i = 0; i < bids[orderId].length; ++i) {
             if (bids[orderId][i].status == BidStatus.Placed) {
                 uint256 amount = (
                     bids[orderId][i].copies == 0 ? 1 : bids[orderId][i].copies

@@ -187,6 +187,9 @@ describe("marketPlace", function () {
         // await CANCEL_ORDER()
         await ACCEPT_BID()
       });
+      it("Bulk Buy", async function () {
+
+      })
     });
   });
 });
