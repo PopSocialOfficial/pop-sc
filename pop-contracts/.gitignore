@@ -9,5 +9,6 @@ typechain-types
 cache
 artifacts
 max-*
+maxcomp-metadata
 
 *.log

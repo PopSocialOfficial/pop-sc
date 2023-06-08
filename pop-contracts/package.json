@@ -6,10 +6,10 @@
     "compile": "hardhat compile",
     "local-node": "hardhat node --hostname 0.0.0.0",
     "test": "hardhat test",
-    "deploy:market": "hardhat run scripts/mpDeploy.ts",
-    "deploy:maxComp": "hardhat run scripts/maxCompDeploy.ts",
-    "deploy:max": "hardhat run scripts/maxDeploy.ts",
-    "upgrade:market": "hardhat run scripts/mpUpgrade.ts"
+    "deploy:market": "hardhat run scripts/deploy-market.ts",
+    "deploy:maxComp": "hardhat run scripts/deploy-maxComp.ts",
+    "deploy:max": "hardhat run scripts/deploy-max.ts",
+    "upgrade:market": "hardhat run scripts/upgrade-market.ts"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.4.7",

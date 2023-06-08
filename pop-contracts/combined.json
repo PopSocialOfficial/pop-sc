@@ -1,0 +1,487 @@
+{
+  "0": {
+    "name": "Antique White",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/background/antique-white.png",
+    "energyPoints": "75"
+  },
+  "1": {
+    "name": "Aquamarine",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/background/aquamarine.png",
+    "energyPoints": "37"
+  },
+  "2": {
+    "name": "Bit of blue",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/background/bit-of-blue.png",
+    "energyPoints": "78"
+  },
+  "3": {
+    "name": "Blue",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/background/blue.png",
+    "energyPoints": "62"
+  },
+  "4": {
+    "name": "Gray",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/background/gray.png",
+    "energyPoints": "77"
+  },
+  "5": {
+    "name": "Marshmallow",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/background/marshmallow.png",
+    "energyPoints": "43"
+  },
+  "6": {
+    "name": "Merino",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/background/merino.png",
+    "energyPoints": "69"
+  },
+  "7": {
+    "name": "Phantom Green",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/background/phantom-green.png",
+    "energyPoints": "66"
+  },
+  "8": {
+    "name": "Pink",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/background/pink.png",
+    "energyPoints": "63"
+  },
+  "9": {
+    "name": "Purple",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/background/purple.png",
+    "energyPoints": "41"
+  },
+  "10": {
+    "name": "Snow White",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/background/snow-white.png",
+    "energyPoints": "74"
+  },
+  "11": {
+    "name": "Yellow",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/background/yellow.png",
+    "energyPoints": "43"
+  },
+  "100": {
+    "name": "Baseball Uniform",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/clothes/baseball-uniform.png",
+    "energyPoints": "66"
+  },
+  "101": {
+    "name": "Basketball",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/clothes/basketball.png",
+    "energyPoints": "49"
+  },
+  "102": {
+    "name": "Black Hoodieh's",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/clothes/black-hoodieh's.png",
+    "energyPoints": "30"
+  },
+  "103": {
+    "name": "Black Suit",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/clothes/black-suit.png",
+    "energyPoints": "75"
+  },
+  "104": {
+    "name": "Cool",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/clothes/cool.png",
+    "energyPoints": "46"
+  },
+  "105": {
+    "name": "Gold Chain",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/clothes/gold-chain.png",
+    "energyPoints": "57"
+  },
+  "106": {
+    "name": "Match",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/clothes/match.png",
+    "energyPoints": "65"
+  },
+  "107": {
+    "name": "Pink Cothes",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/clothes/pink-cothes.png",
+    "energyPoints": "45"
+  },
+  "108": {
+    "name": "Red Sweater",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/clothes/red-sweater.png",
+    "energyPoints": "45"
+  },
+  "109": {
+    "name": "Scarf",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/clothes/scarf.png",
+    "energyPoints": "62"
+  },
+  "110": {
+    "name": "Tie",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/clothes/tie.png",
+    "energyPoints": "75"
+  },
+  "111": {
+    "name": "White T shirt",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/clothes/white-t-shirt.png",
+    "energyPoints": "73"
+  },
+  "200": {
+    "name": "Angry",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/eyes/angry.png",
+    "energyPoints": "78"
+  },
+  "201": {
+    "name": "Boring",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/eyes/boring.png",
+    "energyPoints": "31"
+  },
+  "202": {
+    "name": "Combat Glasses",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/eyes/combat-glasses.png",
+    "energyPoints": "42"
+  },
+  "203": {
+    "name": "Cool Glasses",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/eyes/cool-glasses.png",
+    "energyPoints": "47"
+  },
+  "204": {
+    "name": "Heart shaped Glasses",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/eyes/heart-shaped-glasses.png",
+    "energyPoints": "67"
+  },
+  "205": {
+    "name": "Laser Glasses",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/eyes/laser-glasses.png",
+    "energyPoints": "30"
+  },
+  "206": {
+    "name": "Mechanical Glasses",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/eyes/mechanical-glasses.png",
+    "energyPoints": "79"
+  },
+  "207": {
+    "name": "Mechanical",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/eyes/mechanical.png",
+    "energyPoints": "70"
+  },
+  "208": {
+    "name": "Money",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/eyes/money.png",
+    "energyPoints": "72"
+  },
+  "209": {
+    "name": "Retarded png",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/eyes/retarded-png.png",
+    "energyPoints": "47"
+  },
+  "210": {
+    "name": "Round Sunglasses",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/eyes/round-sunglasses.png",
+    "energyPoints": "66"
+  },
+  "211": {
+    "name": "Sad",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/eyes/sad.png",
+    "energyPoints": "78"
+  },
+  "212": {
+    "name": "Scornful",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/eyes/scornful.png",
+    "energyPoints": "44"
+  },
+  "213": {
+    "name": "Single Glasses",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/eyes/single-glasses.png",
+    "energyPoints": "74"
+  },
+  "214": {
+    "name": "Square rimmed Glasses",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/eyes/square-rimmed-glasses.png",
+    "energyPoints": "64"
+  },
+  "215": {
+    "name": "Sunflower Glasses",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/eyes/sunflower-glasses.png",
+    "energyPoints": "42"
+  },
+  "216": {
+    "name": "Ttare",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/eyes/ttare.png",
+    "energyPoints": "58"
+  },
+  "217": {
+    "name": "White",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/eyes/white.png",
+    "energyPoints": "42"
+  },
+  "218": {
+    "name": "Wretched",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/eyes/wretched.png",
+    "energyPoints": "39"
+  },
+  "300": {
+    "name": "Camo",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/fur/camo.png",
+    "energyPoints": "30"
+  },
+  "301": {
+    "name": "Coppery",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/fur/coppery.png",
+    "energyPoints": "33"
+  },
+  "302": {
+    "name": "Giraffe",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/fur/giraffe.png",
+    "energyPoints": "55"
+  },
+  "303": {
+    "name": "Green",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/fur/green.png",
+    "energyPoints": "69"
+  },
+  "304": {
+    "name": "Leopard",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/fur/leopard.png",
+    "energyPoints": "45"
+  },
+  "305": {
+    "name": "Mechanical",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/fur/mechanical.png",
+    "energyPoints": "41"
+  },
+  "306": {
+    "name": "Rainbow",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/fur/rainbow.png",
+    "energyPoints": "65"
+  },
+  "307": {
+    "name": "Raw",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/fur/raw.png",
+    "energyPoints": "43"
+  },
+  "308": {
+    "name": "Scale",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/fur/scale.png",
+    "energyPoints": "52"
+  },
+  "309": {
+    "name": "Speckled",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/fur/speckled.png",
+    "energyPoints": "74"
+  },
+  "310": {
+    "name": "Starry",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/fur/starry.png",
+    "energyPoints": "53"
+  },
+  "311": {
+    "name": "Tattooed",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/fur/tattooed.png",
+    "energyPoints": "57"
+  },
+  "312": {
+    "name": "Tiger",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/fur/tiger.png",
+    "energyPoints": "39"
+  },
+  "313": {
+    "name": "Watery",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/fur/watery.png",
+    "energyPoints": "46"
+  },
+  "314": {
+    "name": "Yellow",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/fur/yellow.png",
+    "energyPoints": "52"
+  },
+  "315": {
+    "name": "Zebra",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/fur/zebra.png",
+    "energyPoints": "73"
+  },
+  "400": {
+    "name": "Angel Ring",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/hat/angel-ring.png",
+    "energyPoints": "52"
+  },
+  "401": {
+    "name": "Captain's ",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/hat/captain's-.png",
+    "energyPoints": "70"
+  },
+  "402": {
+    "name": "Cowboy",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/hat/cowboy.png",
+    "energyPoints": "79"
+  },
+  "403": {
+    "name": "Fisherman's Hat",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/hat/fisherman's-hat.png",
+    "energyPoints": "68"
+  },
+  "404": {
+    "name": "Gold Earrings",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/hat/gold-earrings.png",
+    "energyPoints": "50"
+  },
+  "405": {
+    "name": "Headband",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/hat/headband.png",
+    "energyPoints": "66"
+  },
+  "406": {
+    "name": "Hip Hop Hat",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/hat/hip-hop-hat.png",
+    "energyPoints": "74"
+  },
+  "407": {
+    "name": "Knitted cap with ears",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/hat/knitted-cap-with-ears.png",
+    "energyPoints": "67"
+  },
+  "408": {
+    "name": "Locomotive Cap",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/hat/locomotive-cap.png",
+    "energyPoints": "38"
+  },
+  "409": {
+    "name": "Long Ear Knit Cap",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/hat/long-ear-knit-cap.png",
+    "energyPoints": "39"
+  },
+  "410": {
+    "name": "Lots of Earrings",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/hat/lots-of-earrings.png",
+    "energyPoints": "57"
+  },
+  "411": {
+    "name": "Mask",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/hat/mask.png",
+    "energyPoints": "70"
+  },
+  "412": {
+    "name": "Ox Horn",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/hat/ox-horn.png",
+    "energyPoints": "41"
+  },
+  "413": {
+    "name": "Pink",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/hat/pink.png",
+    "energyPoints": "30"
+  },
+  "414": {
+    "name": "Pirate ",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/hat/pirate-.png",
+    "energyPoints": "76"
+  },
+  "415": {
+    "name": "Red",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/hat/red.png",
+    "energyPoints": "68"
+  },
+  "416": {
+    "name": "Wizard",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/hat/wizard.png",
+    "energyPoints": "56"
+  },
+  "500": {
+    "name": "Ballooning",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/ballooning.png",
+    "energyPoints": "53"
+  },
+  "501": {
+    "name": "Bite The Bone",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/bite-the-bone.png",
+    "energyPoints": "74"
+  },
+  "502": {
+    "name": "Butt",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/butt.png",
+    "energyPoints": "34"
+  },
+  "503": {
+    "name": "Clown Red",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/clown-red.png",
+    "energyPoints": "37"
+  },
+  "504": {
+    "name": "Contemptuous",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/contemptuous.png",
+    "energyPoints": "74"
+  },
+  "505": {
+    "name": "Ferric",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/ferric.png",
+    "energyPoints": "32"
+  },
+  "506": {
+    "name": "Fishy",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/fishy.png",
+    "energyPoints": "63"
+  },
+  "507": {
+    "name": "Freakish",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/freakish.png",
+    "energyPoints": "53"
+  },
+  "508": {
+    "name": "Gentleman's Beard",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/gentleman's-beard.png",
+    "energyPoints": "63"
+  },
+  "509": {
+    "name": "Golden Fangs",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/golden-fangs.png",
+    "energyPoints": "44"
+  },
+  "510": {
+    "name": "Hanging Flower",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/hanging-flower.png",
+    "energyPoints": "41"
+  },
+  "511": {
+    "name": "Large Gold Tooth",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/large-gold-tooth.png",
+    "energyPoints": "54"
+  },
+  "512": {
+    "name": "Large Incisor Teeth",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/large-incisor-teeth.png",
+    "energyPoints": "43"
+  },
+  "513": {
+    "name": "Lick One's Lips",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/lick-one's-lips.png",
+    "energyPoints": "45"
+  },
+  "514": {
+    "name": "Sealed",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/sealed.png",
+    "energyPoints": "43"
+  },
+  "515": {
+    "name": "Shark",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/shark.png",
+    "energyPoints": "49"
+  },
+  "516": {
+    "name": "Sharp",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/sharp.png",
+    "energyPoints": "71"
+  },
+  "517": {
+    "name": "Stick Out One's Tongue",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/stick-out-one's-tongue.png",
+    "energyPoints": "79"
+  },
+  "518": {
+    "name": "Vicissitudes",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/vicissitudes.png",
+    "energyPoints": "40"
+  },
+  "519": {
+    "name": "Whistle",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/whistle.png",
+    "energyPoints": "33"
+  },
+  "520": {
+    "name": "Zipper",
+    "image": "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/nft/max/mouth/zipper.png",
+    "energyPoints": "42"
+  }
+}
