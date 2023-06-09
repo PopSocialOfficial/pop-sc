@@ -1,5 +1,5 @@
 import { ethers } from "hardhat";
-import { DYNAMIC_ADDR } from "../deployed";
+import { MAX_ADDR, MAX_COMP_ADDR } from "../deployed";
 
 // ipfs://bafybeib4nrtcbbzrv6kipfdz6elzlld5o7qxrpp6szfrzqka3cltohrbja
 // https://nftstorage.link/ipfs/bafybeib4nrtcbbzrv6kipfdz6elzlld5o7qxrpp6szfrzqka3cltohrbja
@@ -22,10 +22,22 @@ async function main() {
 
   try {
     const [_, pop] = await ethers.getSigners();
-    const DynamicPop = await ethers.getContractFactory("DynamicPop");
-    const contract = DynamicPop.attach(DYNAMIC_ADDR);
+    // const Max = await ethers.getContractFactory("Max");
+    // const contract = Max.attach(MAX_ADDR);
 
-    const resp = await contract.connect(pop).safeMint([0, 100, 200, 300, 600, 500], "test uri check");
+    // const resp = await contract.connect(pop).safeMint([0, 100, 200, 300, 600, 500], "test uri check");
+    // console.log(resp);
+    
+    const MaxComp = await ethers.getContractFactory("MaxComponents");
+    const contract = MaxComp.attach(MAX_COMP_ADDR);
+
+    const resp = await contract.connect(pop).safeBatchTransferFrom(
+      pop.address,
+      "0x",
+      [0, 100, 200, 300, 600, 500],
+      [5, 5, 5, 5, 5, 5],
+      ""
+    );
     console.log(resp);
   }
   catch (e) {

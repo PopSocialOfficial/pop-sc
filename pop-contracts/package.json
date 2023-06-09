@@ -10,6 +10,7 @@
     "deploy:maxComp": "hardhat run scripts/deploy-maxComp.ts",
     "deploy:max": "hardhat run scripts/deploy-max.ts",
     "deploy:cybergirl": "hardhat run scripts/deploy-cybergirl.ts",
+    "deploy:coolpo": "hardhat run scripts/deploy-coolpo.ts",
     "upgrade:market": "hardhat run scripts/upgrade-market.ts"
   },
   "devDependencies": {
