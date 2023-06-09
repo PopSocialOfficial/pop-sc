@@ -1,14 +1,14 @@
 import { ethers } from "hardhat";
 import { Contract, utils } from "ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { PopCardERC721, PopMarketPlace } from "../typechain-types";
+import { CardERC721, PopMarketPlace } from "../typechain-types";
 import { expect } from "chai";
 import { time } from "@nomicfoundation/hardhat-network-helpers";
 
 const NativeAddress = "0x0000000000000000000000000000000000000000";
 
 describe("marketPlace", function () {
-  let PopCardERC721: PopCardERC721, PopMarketPlace: PopMarketPlace, erc20TestToken: Contract;
+  let PopCardERC721: CardERC721, PopMarketPlace: PopMarketPlace, erc20TestToken: Contract;
   let [owner, seller1, seller2, buyer1, buyer2, bidder1, bidder2]: SignerWithAddress[] = []
   let tokenId = 0;
   const ONE_DAY_IN_SECS = 24 * 60 * 60;
@@ -17,11 +17,11 @@ describe("marketPlace", function () {
   before(async function () {
     [owner, seller1, seller2, buyer1, buyer2, bidder1, bidder2] = await ethers.getSigners();
     // ERC20
-    const factory_ERC20 = await ethers.getContractFactory("PopToken");
+    const factory_ERC20 = await ethers.getContractFactory("PPTToken");
     erc20TestToken = await factory_ERC20.deploy("Test Token for test", "TTT", 18);
     await erc20TestToken.deployed();
     // ERC721
-    const factory_ERC721 = await ethers.getContractFactory("PopCardERC721");
+    const factory_ERC721 = await ethers.getContractFactory("CardERC721");
     PopCardERC721 = await factory_ERC721.deploy();
     await PopCardERC721.deployed();
     // MP
@@ -55,6 +55,84 @@ describe("marketPlace", function () {
 
   describe('ERC721', function () {
     describe('ERC20 Token', function () {
+      it("Bulk Buy", async function () {
+        await PopCardERC721.safeMint(seller1.address, tokenId);
+        await PopCardERC721.safeMint(seller2.address, tokenId + 1);
+        await PopCardERC721.safeMint(seller1.address, tokenId + 2);
+        await PopCardERC721.safeMint(seller2.address, tokenId + 3);
+        await PopCardERC721.safeMint(seller1.address, tokenId + 4);
+
+        (await PopCardERC721.connect(seller1).setApprovalForAll(PopMarketPlace.address, true)).wait();
+        (await PopCardERC721.connect(seller2).setApprovalForAll(PopMarketPlace.address, true)).wait();
+
+        const unlockTime = (await time.latest()) + ONE_DAY_IN_SECS
+        const bid1Time = (await time.latest()) + ONE_HOUR_IN_SECS
+        const bid2Time = (await time.latest()) + (2 * ONE_DAY_IN_SECS)
+        await PopMarketPlace.connect(seller1).placeOrderForSell(
+          tokenId,
+          PopCardERC721.address,
+          0,
+          ethers.utils.parseEther("5"),
+          erc20TestToken.address,
+          unlockTime,
+        );
+        await PopMarketPlace.connect(seller2).placeOrderForSell(
+          tokenId + 1,
+          PopCardERC721.address,
+          0,
+          ethers.utils.parseEther("15"),
+          erc20TestToken.address,
+          unlockTime + ONE_DAY_IN_SECS,
+        );
+        await PopMarketPlace.connect(seller1).placeOrderForSell(
+          tokenId + 2,
+          PopCardERC721.address,
+          0,
+          ethers.utils.parseEther("2"),
+          erc20TestToken.address,
+          unlockTime,
+        );
+        await PopMarketPlace.connect(seller2).placeOrderForSell(
+          tokenId + 3,
+          PopCardERC721.address,
+          0,
+          ethers.utils.parseEther("7"),
+          erc20TestToken.address,
+          unlockTime + ONE_HOUR_IN_SECS,
+        );
+        await PopMarketPlace.connect(seller1).placeOrderForSell(
+          tokenId + 4,
+          PopCardERC721.address,
+          0,
+          ethers.utils.parseEther("1"),
+          erc20TestToken.address,
+          unlockTime,
+        );
+        // OrderCreated ^
+        await PopMarketPlace.connect(bidder1).placeOfferForOrder(0, 0,
+          ethers.utils.parseEther("6"),
+          bid1Time
+        );
+        await PopMarketPlace.connect(bidder1).placeOfferForOrder(4, 0,
+          ethers.utils.parseEther("6"),
+          bid1Time
+        );
+        await PopMarketPlace.connect(bidder2).placeOfferForOrder(2, 0,
+          ethers.utils.parseEther("3"),
+          bid2Time
+        );
+        await PopMarketPlace.connect(bidder2).placeOfferForOrder(3, 0,
+          ethers.utils.parseEther("3"),
+          bid2Time
+        );
+
+        const tx = await PopMarketPlace.connect(buyer1).bulkBuy([0, 1, 2, 3, 4], [0, 0, 0, 0, 0]);
+        const receipt = await tx.wait();
+
+        console.log(receipt);
+        tokenId = tokenId + 5
+
+      })
       it("Create order and place bids", async function () {
         await PopCardERC721.safeMint(seller1.address, tokenId);
         (await PopCardERC721.connect(seller1).setApprovalForAll(PopMarketPlace.address, true)).wait()
@@ -179,17 +257,11 @@ describe("marketPlace", function () {
           expect(await erc20TestToken.balanceOf(bidder2.address)).to.equal(ethers.utils.parseEther("97"))
           expect(await erc20TestToken.balanceOf(bidder1.address)).to.equal(ethers.utils.parseEther("100"))
         }
-
-
-
         // Call only one of below
         // await DIRECT_BUY()
         // await CANCEL_ORDER()
         await ACCEPT_BID()
       });
-      it("Bulk Buy", async function () {
-
-      })
     });
   });
 });

@@ -265,7 +265,7 @@ contract PopMarketPlace is
     function bulkBuy(
         uint[] calldata orderIds,
         uint16[] calldata amounts
-    ) external payable nonReentrant {
+    ) external payable {
         require(orderIds.length == amounts.length, "Not same length input");
         for (uint i = 0; i < orderIds.length; ++i) {
             uint orderId = orderIds[i];

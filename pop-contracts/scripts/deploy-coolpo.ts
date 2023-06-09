@@ -11,7 +11,9 @@ async function main() {
   await Coolpo.deployed();
 
   console.log("Coolpo deployed to:", Coolpo.address);
-  // Coolpo deployed to: 0x2E344024B6Fa28646BdAce18C259525FB179b29A
+  
+  // tbsc
+  // Coolpo deployed to: https://testnet.bscscan.com/address/0x2E344024B6Fa28646BdAce18C259525FB179b29A#writeContract
 }
 
 // We recommend this pattern to be able to use async/await everywhere
