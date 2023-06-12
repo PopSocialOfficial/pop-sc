@@ -14,23 +14,12 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeab
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155ReceiverUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol";
 
-/* 
-  notable design decisions:
-  - To know which order is for ERC721 nft or ERC1155 (i.e nftContract) 
-    is reflected by copies param/arg. 
-    copies == 0 , signifies ERC721 nft
-    and copies > 0 , is ERC1155   (therefore also can't place or buy 0 size order)
-    if no. of copies for ERC1155 goes down to zero, by that time order is alredy deleted.
-    and all bids are also rejected.
-    -> therefore this argument has to passed at correctly from caller side.
-    (Todo: planning to do it with interfaceId, if any issue/bug occurs )
-
-  - pricePerNFT can be 0 (maybe useful as nft drop and claim or something).
-  - bid can be even high or low than the stated price.
-  - (Todo improv.) withdrawMoney needs to be used carefully,
-    calls will fail if no enough balance in contract for escrow operations 
-*/
-
+/// @title NFT Marketplace for POP Collections
+/// @author Simranjeet Singh
+/// @notice Buy and Sell ERC721 or ERC1155 NFTs with any ERC20 or native token.
+/// Two ways to buy - either instant buy at specified price or make an offer to seller.
+/// @dev Buy and Sell fundamentally simillar to Escrow operations
+/// i.e NFT locked in the contract on sell, until bought for a specific amount
 contract PopMarketPlace is
     ReentrancyGuardUpgradeable,
     IERC1155ReceiverUpgradeable,
@@ -63,7 +52,7 @@ contract PopMarketPlace is
     }
 
     mapping(uint256 => Order) public order;
-    mapping(uint256 => Bid[]) public bids;
+    mapping(uint256 => Bid[]) public bids; // many-to-one relationship with Order , orderId => Bid[]
     mapping(address => bool) public nftContracts;
     mapping(address => bool) public tokensSupport;
 
@@ -105,20 +94,31 @@ contract PopMarketPlace is
         __Ownable_init();
     }
 
+    /// @dev add NFT contract to whitelist by owner
     function addNftContractSupport(address contractAddress) public onlyOwner {
         nftContracts[contractAddress] = true;
     }
 
+    /// @dev add Token contract whitelis by owner
     function addTokenSupport(address tokenAddress) public onlyOwner {
         tokensSupport[tokenAddress] = true;
     }
 
+    /// @dev owner can set/change Platform Fees
+    /// @param fee is in multiple of 100  i.e. for 0.01% -> fee = 100 (max 5%)
     function setPlatformFees(uint256 fee) external onlyOwner {
-        // eg. fee = 100  --> 0.01%
         require(fee <= 50000, "High fee");
         platformFees = fee;
     }
 
+    /// @notice Place a Sell NFT Order
+    /// @dev when Order is placed, seller transfer NFT to this contract (escrow lock)
+    /// @param tokenId - tokenId from the specified collection
+    /// @param nftContract whitelisted NFT collection
+    /// @param copies == 0 means it's ERC721 NFT order
+    /// @param pricePerNFT specify prefered price for a single NFT in wei
+    /// @param paymentToken == 0x address means sale with Native Token i.e eth
+    /// @param endTime  datetime in seconds after which order is expired.
     function placeOrderForSell(
         uint256 tokenId,
         address nftContract,
@@ -176,6 +176,9 @@ contract PopMarketPlace is
         );
     }
 
+    /// @notice Cancels the order and receive NFT back
+    /// @dev Transfer NFT back to seller, reject all existing bids for the order, delete order storage
+    /// @param orderId Id of an existing Order (caller should be the seller)
     function cancelOrder(uint256 orderId) external {
         Order storage _order = order[orderId];
         require(_order.seller == msg.sender, "Invalid request");
@@ -202,6 +205,11 @@ contract PopMarketPlace is
         emit OrderCancelled(orderId);
     }
 
+    /// @notice buy NFT instantly at seller specified price
+    /// @dev buy amount sent to seller after deducting fees, and locked NFT transfered to buyer
+    /// If No NFT left after this sale, remaining bids are refunded and Order storage deleted
+    /// @param orderId Id of an existing Sell Order
+    /// @param copies no. of copies to buy (== 0 -> required if order is of 721 NFT)
     function buyNow(
         uint256 orderId,
         uint16 copies // copies = 0 if 721 token
@@ -262,6 +270,9 @@ contract PopMarketPlace is
         emit OrderPurchased(orderId, msg.sender, copies);
     }
 
+    /// @notice buy multiple NFT/Order at seller specified price
+    /// @param orderIds array of Sell OrderIds
+    /// @param amounts array of no. of copies to buy  ( 0 -> required if order is of 721 NFT )
     function bulkBuy(
         uint[] calldata orderIds,
         uint16[] calldata amounts
@@ -274,6 +285,12 @@ contract PopMarketPlace is
         }
     }
 
+    /// @notice Make on offer to the seller for an order (can be less than or even grater than seller specified price)
+    /// @dev Offer amount (Token) is locked in the contract until any action is taken on the offer i.e (Accept/Reject/Withdraw)
+    /// @param orderId Id of an existing Sell Order
+    /// @param copies no. of copies to buy (== 0 -> required if order is of 721 NFT)
+    /// @param pricePerNFT your offer price (per 1 NFT)
+    /// @param endTime datetime in seconds after which offer is expired i.e can't be accepted
     function placeOfferForOrder(
         uint256 orderId,
         uint16 copies, // 0 for 721
@@ -326,6 +343,11 @@ contract PopMarketPlace is
         );
     }
 
+    /// @notice Seller can accept the bid on his order
+    /// @dev offer amount sent to seller after deducting fees, and locked NFT transfered to buyer
+    /// If No NFT left after this sale, remaining bids are refunded and Order storage deleted
+    /// @param orderId Id of an existing Sell Order
+    /// @param bidId   Id of the bid placed on specified order
     function acceptBid(uint256 orderId, uint256 bidId) external nonReentrant {
         Order storage _order = order[orderId];
         Bid storage _bid = bids[orderId][bidId];
@@ -376,6 +398,11 @@ contract PopMarketPlace is
         emit BidAccepted(orderId, bidId, _bid.copies);
     }
 
+    /// @notice Seller Or Bidder can Reject or Withdraw the bid on the order respectivcecly
+    /// @dev locked tokens/bid amount is sent back to the bidder
+    /// @param orderId Id of an existing Sell Order
+    /// @param bidId   Id of the bid placed on specified order
+    /// @param isReject  if caller is seller = true (i.e Reject Bid) else if bidder = false (i.e. Withdraw)
     function withdrawRejectBid(
         uint256 orderId,
         uint256 bidId,
@@ -414,15 +441,8 @@ contract PopMarketPlace is
         }
     }
 
-    function safeTransferAmount(
-        address token,
-        address to,
-        uint256 amount
-    ) private {
-        IERC20Upgradeable ERC20Interface = IERC20Upgradeable(token);
-        ERC20Interface.safeTransfer(to, amount);
-    }
-
+    /// @notice Owner Can withdraw a particular token and amount collected as a platform fees
+    /// needs to be used carefully, calls will fail if no enough balance in contract for escrow operations
     function withdrawMoney(
         uint256 amount,
         address tokenAddress
@@ -438,6 +458,17 @@ contract PopMarketPlace is
         }
     }
 
+    /// @dev Utils fn for ERC20 transfer
+    function safeTransferAmount(
+        address token,
+        address to,
+        uint256 amount
+    ) private {
+        IERC20Upgradeable ERC20Interface = IERC20Upgradeable(token);
+        ERC20Interface.safeTransfer(to, amount);
+    }
+
+    /// @dev Utils fn for tranfering bid amounts back after order is fulfilled 
     function returnAmountToRemainingBidder(uint256 orderId) private {
         Order storage _order = order[orderId];
         bool isNative = _order.paymentToken == address(0);
@@ -465,8 +496,7 @@ contract PopMarketPlace is
         }
     }
 
-    // The following functions are overrides required by Solidity.
-
+    /// @dev The following function is overrides required by Solidity.
     function onERC1155Received(
         address,
         address,
@@ -483,6 +513,7 @@ contract PopMarketPlace is
         );
     }
 
+    /// @dev The following function is overrides required by Solidity.
     function onERC1155BatchReceived(
         address,
         address,
@@ -499,6 +530,7 @@ contract PopMarketPlace is
         );
     }
 
+    /// @dev The following function is overrides required by Solidity.
     function onERC721Received(
         address,
         address,
@@ -510,6 +542,7 @@ contract PopMarketPlace is
         );
     }
 
+    /// @dev The following function is overrides required by Solidity.
     function supportsInterface(
         bytes4 interfaceId
     ) external pure override returns (bool) {

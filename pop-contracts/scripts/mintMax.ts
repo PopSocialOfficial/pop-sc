@@ -1,10 +1,10 @@
 import fs from 'fs';
 import { ethers } from "hardhat";
-import { MAX_COMP_ADDR } from "../deployed";
+import { MAX_COMP_ADDR, B_MAX_COMP_ADDR } from "../deployed";
 
 async function main() {
   const MaxComponents = await ethers.getContractFactory("MaxComponents");
-  const contract = MaxComponents.attach(MAX_COMP_ADDR);
+  const contract = MaxComponents.attach(B_MAX_COMP_ADDR);
   const files = await fs.promises.readdir(`./maxcomp-metadata`);
 
   const ids: string[] = [];
@@ -15,7 +15,7 @@ async function main() {
 
   // await contract.mintBatch("0x6E6Fd4ac140937786515e8CAfBe0d171E776BAB5",
   //   ids,
-  //   Array(ids.length).fill(1000), ""
+  //   Array(ids.length).fill(1000), "0x"
   // )
 
   // for (let i = 0; i < ids.length; ++i) {
