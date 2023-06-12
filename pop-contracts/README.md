@@ -20,5 +20,22 @@ Notable design decisions:
 ## Max
 
 Max is a special/modified ERC721 contract. <br/>
-- Anyone can mint a MAX NFT by providing/lockind 1-6 max components.
-- Each token will contain 6 max components tokenId, which can also be updated
+- Anyone can mint a MAX NFT by providing/locking 1-6 max components.
+- Max contract keep and lock MaxComponents to mint a single MAX NFT.
+- Fur max component is necessary others are optional.  
+- Each token will contain 6 max components tokenId, which can also be updated.
+- Max component TokenId >= 600 is considered as empty / null 
+- Input sequence is `[background   clothes   eyes  fur   hat    mouth ]`
+
+```
+this is how ids are structured:
+background   -> 0 - 99
+clothes      -> 100 - 199
+eyes         -> 200 - 299
+fur          -> 300 - 399
+hat          -> 400 - 499
+mouth        -> 500 - 599
+```
+
+<img width="200" alt="image" src="https://github.com/Popoodev/market-place/assets/135818937/9383a051-4f28-478d-b029-876db39499de">
+
