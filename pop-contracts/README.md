@@ -17,6 +17,21 @@ Notable design decisions:
 - (Todo improv.) withdrawMoney needs to be used carefully,<br />
   calls will fail if no enough balance in contract for escrow operations
 
+#### FAQ
+What if Order is expired :
+- No-one can a make new offer or buy the NFT/Order.
+- Offer Expiry time can be greater than order expiry time. hence seller can accept offer even after order expired.
+- Seller have to either accept any active order or cancel order to get NFT back in wallet.
+- Seller can Cancel Order Anytime Irrespective of the endtime.
+- Seller can accept or reject any already place valid offer (not expired).
+- Bidder can also withdraw their bid any time irrespective of endtime on order or offer.
+
+What if Offer is expired : 
+- Seller cannot accept the offer after expiry.
+- Bidder have to withdraw funds/offer manually by canceling the offer.
+- If order is canceled or purchased completely, all bids will be rejected hence funds transferd back automatically.
+
+
 ## Max
 
 Max is a special/modified ERC721 contract. <br/>
