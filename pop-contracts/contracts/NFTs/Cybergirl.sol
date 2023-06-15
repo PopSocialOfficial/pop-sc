@@ -13,7 +13,7 @@ contract Cybergirl is ERC721, ERC721URIStorage, Ownable {
 
     Counters.Counter private _tokenIdCounter;
 
-    constructor() ERC721("Cybergirl", "CG") {}
+    constructor() ERC721("Cyphers Cybergirl", "CYCG") {}
 
     function getTotalSupply() external view returns (uint256) {
         return _tokenIdCounter.current();

@@ -1,8 +1,16 @@
 import fs from 'fs';
 import { ethers } from "hardhat";
-import { MAX_COMP_ADDR, B_MAX_COMP_ADDR } from "../deployed";
+import { MAX_COMP_ADDR, B_MAX_COMP_ADDR, B_CYBERGIRL_ADDR } from "../deployed";
 
 async function main() {
+  // const Cybergirl = await ethers.getContractFactory("Cybergirl");
+  // const contract = Cybergirl.attach(B_CYBERGIRL_ADDR);
+
+  // await contract.safeMint("0x6E6Fd4ac140937786515e8CAfBe0d171E776BAB5", `https://bafybeifzcb6wx22lkgfyswao7qvuaoytbo2avl76lfsj43pjrjfbn7qhaa.ipfs.nftstorage.link/100.json`)
+  // for (let i = 1; i < 100; i++) {
+  //   await contract.safeMint("0x6E6Fd4ac140937786515e8CAfBe0d171E776BAB5", `https://bafybeifzcb6wx22lkgfyswao7qvuaoytbo2avl76lfsj43pjrjfbn7qhaa.ipfs.nftstorage.link/${i}.json`)
+  // }
+
   const MaxComponents = await ethers.getContractFactory("MaxComponents");
   const contract = MaxComponents.attach(B_MAX_COMP_ADDR);
   const files = await fs.promises.readdir(`./maxcomp-metadata`);

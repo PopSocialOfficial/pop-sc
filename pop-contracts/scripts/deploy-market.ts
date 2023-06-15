@@ -17,8 +17,8 @@ async function main() {
   // implementation: 0x6423649e8db5cae8ab612b2530a8ecfef98c7059
 
   // tBSC 
-  // proxy : 0xF48Fd17433648C7c9021B71E392aBfE46f539113
-  // implementation: 0x8D4130F21bEc854182BeF4AE70CcF0F906Ee58B9
+  // proxy : https://testnet.bscscan.com/address/0xF48Fd17433648C7c9021B71E392aBfE46f539113#readProxyContract
+  // implementation: https://testnet.bscscan.com/address/0x4ce8eed805a8a5781fa9c8f81dbcc6296e0e5c3c#code
 
 }
 

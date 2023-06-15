@@ -1,5 +1,4 @@
 import { ethers } from "hardhat";
-import { CYBERGIRL_ADDR } from "../deployed";
 
 async function main() {
   const [owner] = await ethers.getSigners();
