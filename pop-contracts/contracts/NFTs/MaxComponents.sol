@@ -53,7 +53,6 @@ contract MaxComponents is ERC1155, Ownable {
         bytes memory _data
     ) external onlyOwner {
         _mint(_to, _id, _amount, _data);
-        _tokenIdsOwned[_to].push(_id);
     }
 
     function mintBatch(
@@ -63,40 +62,32 @@ contract MaxComponents is ERC1155, Ownable {
         bytes memory _data
     ) external onlyOwner {
         _mintBatch(_to, _ids, _amounts, _data);
-        for (uint i = 0; i < _ids.length; i++) {
-            _tokenIdsOwned[_to].push(_ids[i]);
-        }
     }
 
-    function uri(
-        uint256 _id
-    ) public override view returns (string memory) {
+    function uri(uint256 _id) public view override returns (string memory) {
         return tokenURI[_id];
     }
 
-    // override just to manage _tokenIdsOwned
-    function _safeTransferFrom(
-        address from,
-        address to,
-        uint256 id,
-        uint256 amount,
-        bytes memory data
-    ) internal override(ERC1155) {
-        _tokenIdsOwned[to].push(id);
-        super._safeTransferFrom(from, to, id, amount, data);
-    }
-
-    // override just to manage _tokenIdsOwned
-    function _safeBatchTransferFrom(
-        address from,
+    function _afterTokenTransfer(
+        address,
+        address,
         address to,
         uint256[] memory ids,
-        uint256[] memory amounts,
-        bytes memory data
-    ) internal override(ERC1155) {
-        for (uint i = 0; i < ids.length; i++) {
-            _tokenIdsOwned[to].push(ids[i]);
+        uint256[] memory,
+        bytes memory
+    ) internal override {
+        for (uint j = 0; j < ids.length; ++j) {
+            uint arrayLength = _tokenIdsOwned[to].length;
+            bool found = false;
+            for (uint i = 0; i < arrayLength; ++i) {
+                if (_tokenIdsOwned[to][i] == ids[j]) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                _tokenIdsOwned[to].push(ids[j]);
+            }
         }
-        super._safeBatchTransferFrom(from, to, ids, amounts, data);
     }
 }
