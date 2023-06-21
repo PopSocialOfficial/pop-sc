@@ -1,5 +1,5 @@
 import { ethers, upgrades } from "hardhat";
-import { B_MARKET_PROXY_ADDR } from "../deployed";
+import { B_MARKET_PROXY_ADDR } from "../../deployed";
 
 async function main() {
   const [owner] = await ethers.getSigners();

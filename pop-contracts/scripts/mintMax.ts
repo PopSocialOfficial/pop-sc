@@ -12,7 +12,7 @@ async function main() {
   // }
 
   const MaxComponents = await ethers.getContractFactory("MaxComponents");
-  const contract = MaxComponents.attach(B_MAX_COMP_ADDR);
+  const contract = MaxComponents.attach(MAX_COMP_ADDR);
   const files = await fs.promises.readdir(`./maxcomp-metadata`);
 
   const ids: string[] = [];
@@ -21,21 +21,25 @@ async function main() {
     ids.push(files[i].split(".")[0])
   }
 
-  // await contract.mintBatch("0x6E6Fd4ac140937786515e8CAfBe0d171E776BAB5",
-  //   ids,
-  //   Array(ids.length).fill(1000), "0x"
-  // )
+  await contract.mintBatch("0x6E6Fd4ac140937786515e8CAfBe0d171E776BAB5",
+    ids,
+    Array(ids.length).fill(1000), "0x"
+  )
 
   // for (let i = 0; i < ids.length; ++i) {
   //   let content = require(`../maxcomp-metadata/${ids[i]}.json`);
   //   const energyPoints = content.energyPoints;
+  //   const uri = await contract.tokenURI(ids[i]);
+  //   console.log(uri);
 
-  //   await contract.setURI(
-  //     ids[i],
-  //     `https://nftstorage.link/ipfs/bafybeib4nrtcbbzrv6kipfdz6elzlld5o7qxrpp6szfrzqka3cltohrbja/${ids[i]}.json`,
-  //     energyPoints
-  //   )
-  //   console.log("Done", i);
+  //   if (!uri) {
+  //     (await contract.setURI(
+  //       ids[i],
+  //       `https://nftstorage.link/ipfs/bafybeieopypn3xpqkxh4dbwrqapxlezj5trvfwph3y2oyamm36camxz44e/${ids[i]}.json`,
+  //       energyPoints
+  //     )).wait(2)
+  //     console.log("Done", i, ids[i]);
+  //   }
   // }
 }
 

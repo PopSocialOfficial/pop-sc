@@ -33,10 +33,10 @@ async function main() {
 
     const resp = await contract.connect(pop).safeBatchTransferFrom(
       pop.address,
-      "0x",
-      [0, 100, 200, 300, 600, 500],
-      [5, 5, 5, 5, 5, 5],
-      ""
+      "0x025cf709764cA9142D5DF08032905c9642B63553",
+      [0, 100, 200, 300, 400, 500, 3, 104, 204, 303, 404, 507],
+      [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
+      "0x"
     );
     console.log(resp);
   }

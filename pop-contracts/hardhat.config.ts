@@ -51,11 +51,11 @@ const config: HardhatUserConfig & {
       url: "http://127.0.0.1:8545/",
     },
     mumbai: {
-      url: "https://matic-mumbai.chainstacklabs.com",
+      url: "https://mumbai.rpc.thirdweb.com/",
       accounts: [process.env.OWNER_PRIVATE_KEY ?? "", process.env.POP_PRIVATE_KEY ?? ""]
     },
     tbsc: {
-      url: "https://bsc-testnet.publicnode.com",
+      url: "https://binance-testnet.rpc.thirdweb.com",
       accounts: [process.env.OWNER_PRIVATE_KEY ?? "", process.env.POP_PRIVATE_KEY ?? ""]
     }
   },
