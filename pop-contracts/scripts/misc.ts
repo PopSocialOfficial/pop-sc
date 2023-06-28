@@ -25,20 +25,19 @@ async function main() {
     // const Max = await ethers.getContractFactory("Max");
     // const contract = Max.attach(MAX_ADDR);
 
-    // const resp = await contract.connect(pop).safeMint([0, 100, 200, 300, 600, 500], "test uri check");
+    // const resp = await contract.connect(pop).safeMint([0, 600, 600, 300, 600, 600], "test uri check");
     // console.log(resp);
-    
+
     const MaxComp = await ethers.getContractFactory("MaxComponents");
     const contract = MaxComp.attach(MAX_COMP_ADDR);
 
     const resp = await contract.connect(pop).safeBatchTransferFrom(
       pop.address,
-      "0x025cf709764cA9142D5DF08032905c9642B63553",
-      [0, 100, 200, 300, 400, 500, 3, 104, 204, 303, 404, 507],
+      "0xa1bb4560e36DDFd9dd791f47ceF4D2D345e59e63",
+      [0, 102, 202, 312, 406, 505, 3, 104, 204, 303, 404, 507],
       [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
       "0x"
     );
-    console.log(resp);
   }
   catch (e) {
     // Catch anything bad that happens

@@ -51,7 +51,7 @@ const config: HardhatUserConfig & {
       url: "http://127.0.0.1:8545/",
     },
     mumbai: {
-      url: "https://mumbai.rpc.thirdweb.com/",
+      url: "https://endpoints.omniatech.io/v1/matic/mumbai/public",
       accounts: [process.env.OWNER_PRIVATE_KEY ?? "", process.env.POP_PRIVATE_KEY ?? ""]
     },
     tbsc: {

@@ -21,26 +21,38 @@ async function main() {
     ids.push(files[i].split(".")[0])
   }
 
-  await contract.mintBatch("0x6E6Fd4ac140937786515e8CAfBe0d171E776BAB5",
-    ids,
-    Array(ids.length).fill(1000), "0x"
-  )
+  // await contract.mintBatch("0x6E6Fd4ac140937786515e8CAfBe0d171E776BAB5",
+  //   ids,
+  //   Array(ids.length).fill(1), "0x"
+  // )
 
-  // for (let i = 0; i < ids.length; ++i) {
-  //   let content = require(`../maxcomp-metadata/${ids[i]}.json`);
-  //   const energyPoints = content.energyPoints;
-  //   const uri = await contract.tokenURI(ids[i]);
-  //   console.log(uri);
+  for (let i = 0; i < ids.length; ++i) {
+    // let content = require(`../maxcomp-metadata/${ids[i]}.json`);
+    // const energyPoints = content.energyPoints;
+    // const uri = await contract.tokenURI(ids[i]);
+    // console.log(uri);
 
-  //   if (!uri) {
-  //     (await contract.setURI(
-  //       ids[i],
-  //       `https://nftstorage.link/ipfs/bafybeieopypn3xpqkxh4dbwrqapxlezj5trvfwph3y2oyamm36camxz44e/${ids[i]}.json`,
-  //       energyPoints
-  //     )).wait(2)
-  //     console.log("Done", i, ids[i]);
-  //   }
-  // }
+    // if (!uri) {
+    //   (await contract.setURI(
+    //     ids[i],
+    //     `https://nftstorage.link/ipfs/bafybeieopypn3xpqkxh4dbwrqapxlezj5trvfwph3y2oyamm36camxz44e/${ids[i]}.json`,
+    //     energyPoints
+    //   )).wait(2)
+    //   console.log("Done", i, ids[i]);
+    // }
+
+    // const config = {
+    //   method: 'get',
+    //   url: `https://deep-index.moralis.io/api/v2/nft/0xc67896be9479c75eA121c9Fe770250f42F172b9F/${ids[i]}/metadata/resync?chain=mumbai&flag=uri&mode=sync`,
+    //   headers: {
+    //     accept: 'application/json',
+    //     'X-API-Key': "",
+    //   },
+    // };
+    // await fetch(config.url, {
+    //   headers: config.headers
+    // })
+  }
 }
 
 // We recommend this pattern to be able to use async/await everywhere
