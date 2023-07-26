@@ -55,7 +55,12 @@ contract PopMarketPlace is
     mapping(uint256 => Bid[]) public bids; // many-to-one relationship with Order , orderId => Bid[]
     mapping(address => bool) public nftContracts;
     mapping(address => bool) public tokensSupport;
-    mapping(address => uint256) public feeCollected;
+
+    struct Fee {
+        uint256 feeGenerated;
+        uint256 feeClaimed;
+    }
+    mapping(address => Fee) public feeCollected;
 
     enum BidStatus {
         Placed,
@@ -91,7 +96,11 @@ contract PopMarketPlace is
     event BidAccepted(uint256 indexed orderId, uint256 bidId, uint16 copies);
     event AddNFTSupport(address indexed nftAddress);
     event AddTokenSupport(address indexed tokenAddress);
-    event FeeWithdrwan(address indexed tokenAddress, uint256 amount);
+    event FeeClaimed(
+        address indexed tokenAddress,
+        address to,
+        uint256 amount
+    );
 
     function initialize(uint256 _platformFees) external initializer {
         platformFees = _platformFees;
@@ -229,7 +238,7 @@ contract PopMarketPlace is
 
         uint256 totalAmount = _order.pricePerNFT * (copies == 0 ? 1 : copies);
         uint256 feeValue = (platformFees * totalAmount) / 10000;
-        feeCollected[_order.paymentToken] += feeValue;
+        feeCollected[_order.paymentToken].feeGenerated += feeValue;
 
         if (isNative) {
             require(msg.value >= totalAmount, "Not sufficient funds");
@@ -368,7 +377,7 @@ contract PopMarketPlace is
         uint256 totalAmount = _bid.pricePerNFT *
             (_bid.copies == 0 ? 1 : _bid.copies);
         uint256 feeValue = (platformFees * totalAmount) / 10000;
-        feeCollected[_order.paymentToken] += feeValue;
+        feeCollected[_order.paymentToken].feeGenerated += feeValue;
 
         if (_order.copies == 0) {
             IERC721Upgradeable(_order.nftContract).safeTransferFrom(
@@ -451,21 +460,23 @@ contract PopMarketPlace is
 
     /// @notice Owner Can withdraw a particular token and amount collected as a platform fees
     /// needs to be used carefully, calls will fail if no enough balance in contract for escrow operations
-    function withdrawMoney(
-        uint256 amount,
-        address tokenAddress
+    function collectAdminFees(
+        address tokenAddress,
+        address to
     ) external onlyOwner {
-        uint256 availableTokens = feeCollected[tokenAddress];
-        require(amount <= availableTokens, "amount > feecollected");
+        Fee memory availableTokens = feeCollected[tokenAddress];
+        uint256 feeToBeCollected = availableTokens.feeGenerated -
+            availableTokens.feeClaimed;
+
         if (tokenAddress == address(0)) {
-            payable(owner()).transfer(amount);
+            payable(to).transfer(feeToBeCollected);
         } else {
             require(tokensSupport[tokenAddress], "unsupported token address");
             IERC20Upgradeable ERC20Interface = IERC20Upgradeable(tokenAddress);
-            ERC20Interface.safeTransfer(owner(), amount);
+            ERC20Interface.safeTransfer(to, feeToBeCollected);
         }
-        feeCollected[tokenAddress] -= amount;
-        emit FeeWithdrwan(tokenAddress, amount);
+        feeCollected[tokenAddress].feeClaimed += feeToBeCollected;
+        emit FeeClaimed(tokenAddress, to, feeToBeCollected);
     }
 
     /// @dev Utils fn for ERC20 transfer
