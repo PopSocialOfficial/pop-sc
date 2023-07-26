@@ -55,6 +55,7 @@ contract PopMarketPlace is
     mapping(uint256 => Bid[]) public bids; // many-to-one relationship with Order , orderId => Bid[]
     mapping(address => bool) public nftContracts;
     mapping(address => bool) public tokensSupport;
+    mapping(address => uint256) public feeCollected;
 
     enum BidStatus {
         Placed,
@@ -88,6 +89,9 @@ contract PopMarketPlace is
     event BidWithdraw(uint256 indexed orderId, uint256 bidId);
     event BidRejected(uint256 indexed orderId, uint256 bidId);
     event BidAccepted(uint256 indexed orderId, uint256 bidId, uint16 copies);
+    event AddNFTSupport(address indexed nftAddress);
+    event AddTokenSupport(address indexed tokenAddress);
+    event FeeWithdrwan(address indexed tokenAddress, uint256 amount);
 
     function initialize(uint256 _platformFees) external initializer {
         platformFees = _platformFees;
@@ -95,13 +99,15 @@ contract PopMarketPlace is
     }
 
     /// @dev add NFT contract to whitelist by owner
-    function addNftContractSupport(address contractAddress) public onlyOwner {
-        nftContracts[contractAddress] = true;
+    function addNftContractSupport(address nftAddress) public onlyOwner {
+        nftContracts[nftAddress] = true;
+        emit AddNFTSupport(nftAddress);
     }
 
     /// @dev add Token contract whitelis by owner
     function addTokenSupport(address tokenAddress) public onlyOwner {
         tokensSupport[tokenAddress] = true;
+        emit AddTokenSupport(tokenAddress);
     }
 
     /// @dev owner can set/change Platform Fees
@@ -223,6 +229,7 @@ contract PopMarketPlace is
 
         uint256 totalAmount = _order.pricePerNFT * (copies == 0 ? 1 : copies);
         uint256 feeValue = (platformFees * totalAmount) / 10000;
+        feeCollected[_order.paymentToken] += feeValue;
 
         if (isNative) {
             require(msg.value >= totalAmount, "Not sufficient funds");
@@ -274,12 +281,12 @@ contract PopMarketPlace is
     /// @param orderIds array of Sell OrderIds
     /// @param amounts array of no. of copies to buy  ( 0 -> required if order is of 721 NFT )
     function bulkBuy(
-        uint[] calldata orderIds,
+        uint256[] calldata orderIds,
         uint16[] calldata amounts
     ) external payable {
         require(orderIds.length == amounts.length, "Not same length input");
-        for (uint i = 0; i < orderIds.length; ++i) {
-            uint orderId = orderIds[i];
+        for (uint256 i = 0; i < orderIds.length; ++i) {
+            uint256 orderId = orderIds[i];
             uint16 copies = amounts[i];
             buyNow(orderId, copies);
         }
@@ -361,6 +368,7 @@ contract PopMarketPlace is
         uint256 totalAmount = _bid.pricePerNFT *
             (_bid.copies == 0 ? 1 : _bid.copies);
         uint256 feeValue = (platformFees * totalAmount) / 10000;
+        feeCollected[_order.paymentToken] += feeValue;
 
         if (_order.copies == 0) {
             IERC721Upgradeable(_order.nftContract).safeTransferFrom(
@@ -447,15 +455,17 @@ contract PopMarketPlace is
         uint256 amount,
         address tokenAddress
     ) external onlyOwner {
+        uint256 availableTokens = feeCollected[tokenAddress];
+        require(amount <= availableTokens, "amount > feecollected");
         if (tokenAddress == address(0)) {
             payable(owner()).transfer(amount);
         } else {
             require(tokensSupport[tokenAddress], "unsupported token address");
             IERC20Upgradeable ERC20Interface = IERC20Upgradeable(tokenAddress);
-            uint256 balance = ERC20Interface.balanceOf(address(this));
-            require(balance >= amount, "balance Insufficient");
             ERC20Interface.safeTransfer(owner(), amount);
         }
+        feeCollected[tokenAddress] -= amount;
+        emit FeeWithdrwan(tokenAddress, amount);
     }
 
     /// @dev Utils fn for ERC20 transfer
@@ -468,11 +478,11 @@ contract PopMarketPlace is
         ERC20Interface.safeTransfer(to, amount);
     }
 
-    /// @dev Utils fn for tranfering bid amounts back after order is fulfilled 
+    /// @dev Utils fn for tranfering bid amounts back after order is fulfilled
     function returnAmountToRemainingBidder(uint256 orderId) private {
         Order storage _order = order[orderId];
         bool isNative = _order.paymentToken == address(0);
-        for (uint i = 0; i < bids[orderId].length; ++i) {
+        for (uint256 i = 0; i < bids[orderId].length; ++i) {
             if (bids[orderId][i].status == BidStatus.Placed) {
                 uint256 amount = (
                     bids[orderId][i].copies == 0 ? 1 : bids[orderId][i].copies
