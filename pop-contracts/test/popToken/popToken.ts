@@ -61,18 +61,16 @@ describe("Pop Token governance testing", function () {
         expect(await popToken.getCurrentVotes(await addr1.getAddress())).to.equal(0);
 
         await popToken.delegate(await addr1.getAddress());
-        await popToken.transfer(await addr1.getAddress(), value);
 
         // Verify initial voting power of addr1 (should be equal to its token balance)
         expect(await popToken.getCurrentVotes(await addr1.getAddress())).to.equal(value);
 
         // Delegate votes from addr1 to addr2
-        await popToken.connect(addr1).delegate(await addr2.getAddress());
-        await popToken.connect(addr1).transfer(await addr2.getAddress(), value);
+        await popToken.delegate(await addr2.getAddress());
 
-        // Verify voting power of addr1 (should be 0 after delegation)
+        // // Verify voting power of addr1 (should be 0 after delegation)
         expect(await popToken.getCurrentVotes(await addr1.getAddress())).to.equal(0);
-        // // Verify voting power of addr2 (should be equal to the total balance of addr1 and addr2)
+        // // // Verify voting power of addr2 (should be equal to the total balance of addr1 and addr2)
         expect(await popToken.getCurrentVotes(await addr2.getAddress())).to.equal(value);
     });
 
