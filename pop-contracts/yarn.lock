@@ -5349,7 +5349,7 @@
   "resolved" "https://registry.npmjs.org/solidity-ast/-/solidity-ast-0.4.49.tgz"
   "version" "0.4.49"
 
-"solidity-coverage@^0.8.0", "solidity-coverage@^0.8.1":
+"solidity-coverage@^0.8.1":
   "integrity" "sha512-cv2bWb7lOXPE9/SSleDO6czkFiMHgP4NXPj+iW9W7iEKLBk7Cj0AGBiNmGX3V1totl9wjPrT0gHmABZKZt65rQ=="
   "resolved" "https://registry.npmjs.org/solidity-coverage/-/solidity-coverage-0.8.2.tgz"
   "version" "0.8.2"
