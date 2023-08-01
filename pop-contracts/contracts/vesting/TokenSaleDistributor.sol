@@ -620,7 +620,7 @@ contract TokenSaleDistributor is ReentrancyGuard, TokenSaleDistributorStorage {
     bool public votingEnabled;
 
     /// @notice EIP-20 token name for this token
-    string public constant name = "vWELL";
+    string public constant name = "vPPT";
 
     function getChainId() internal view returns (uint) {
         uint256 chainId;
