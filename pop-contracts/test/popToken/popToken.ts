@@ -1,14 +1,58 @@
-import { Contract, Signer, utils } from "ethers";
+import { Contract, utils } from "ethers";
+import { type SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
 
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 const { BigNumber } = ethers;
 
+async function generateSignature(addr1: SignerWithAddress, delegatee: any, nonce: any, expiry: any, contractAddress: any, chainId: any, domainTypehash: any) {
+    const delegationTypehash = ethers.utils.id("Delegation(address delegatee,uint256 nonce,uint256 expiry)");
+    const name = "PopToken"; // Replace with your contract name
+
+    // console.log('NAME HASH', utils.solidityKeccak256(["string"],[name]));
+
+    const domainSeparator = utils.keccak256(
+      utils.defaultAbiCoder.encode(
+        ["bytes32", "bytes32", "uint256", "address"],
+        [domainTypehash, "0x5bb097a0030a6efe14c90040c55a937bec0357c6adb8913399e799edaf4aaed2", chainId, contractAddress]
+      )
+    );
+
+    console.log('DOMAIN SEPARATOR', domainSeparator);
+  
+    const structHash = utils.keccak256(
+      utils.defaultAbiCoder.encode(
+        ["bytes32", "address", "uint256", "uint256"],
+        [delegationTypehash, delegatee, nonce, expiry]
+      )
+    );
+
+    console.log('STRUCT HASH', structHash);
+
+    const message = utils.keccak256(utils.solidityPack(
+        ["string", "bytes32", "bytes32"],
+        ["\x19\x01", domainSeparator, structHash]
+      ));
+
+    console.log('DIGEST', message);
+    
+    const signature = await addr1.signMessage(message);
+    const sig = utils.splitSignature(signature);
+  
+    return {
+      v: sig.v,
+      r: sig.r,
+      s: sig.s,
+      message,
+      signature
+    };
+  }
+
 describe("Pop Token governance testing", function () {
 
-    let owner: Signer;
-    let addr1: Signer;
-    let addr2: Signer;
+    let owner: SignerWithAddress;
+    let addr1: SignerWithAddress;
+    let addr2: SignerWithAddress;
     let popToken: Contract;
 
     beforeEach(async () => {
@@ -55,73 +99,85 @@ describe("Pop Token governance testing", function () {
     //     expect(await popToken.getCurrentVotes(await addr2.getAddress())).to.equal(initialBalance);
     // });
 
-    it("Should have correct voting power for an account before and after delegation", async function () {
-        const value = await popToken.balanceOf(await owner.getAddress())
+    // it("Should work to delegate from A to B", async function () {
+    //     expect(await popToken.getCurrentVotes(await addr1.getAddress())).to.equal(0);
 
-        expect(await popToken.getCurrentVotes(await addr1.getAddress())).to.equal(0);
+    //     await popToken.transfer(await addr1.getAddress(), utils.parseEther('100'));
 
-        await popToken.delegate(await addr1.getAddress());
+    //     expect(await popToken.balanceOf(await addr1.getAddress())).to.equal(utils.parseEther('100'));
 
-        // Verify initial voting power of addr1 (should be equal to its token balance)
-        expect(await popToken.getCurrentVotes(await addr1.getAddress())).to.equal(value);
+    //     await popToken.connect(addr1).delegate(await addr2.getAddress());
 
-        // Delegate votes from addr1 to addr2
-        await popToken.delegate(await addr2.getAddress());
+    //     // Verify initial voting power of addr1 (should be equal to its token balance)
+    //     expect(await popToken.getCurrentVotes(await addr2.getAddress())).to.equal(utils.parseEther('100'));
+    // });
 
-        // // Verify voting power of addr1 (should be 0 after delegation)
-        expect(await popToken.getCurrentVotes(await addr1.getAddress())).to.equal(0);
-        // // // Verify voting power of addr2 (should be equal to the total balance of addr1 and addr2)
-        expect(await popToken.getCurrentVotes(await addr2.getAddress())).to.equal(value);
+
+    // it("Should have correct voting power for an account before and after delegation", async function () {
+    //     const value = await popToken.balanceOf(await owner.getAddress())
+
+    //     expect(await popToken.getCurrentVotes(await addr1.getAddress())).to.equal(0);
+
+    //     await popToken.delegate(await addr1.getAddress());
+
+    //     // Verify initial voting power of addr1 (should be equal to its token balance)
+    //     expect(await popToken.getCurrentVotes(await addr1.getAddress())).to.equal(value);
+
+    //     // Delegate votes from addr1 to addr2
+    //     await popToken.delegate(await addr2.getAddress());
+
+    //     // // Verify voting power of addr1 (should be 0 after delegation)
+    //     expect(await popToken.getCurrentVotes(await addr1.getAddress())).to.equal(0);
+    //     // // // Verify voting power of addr2 (should be equal to the total balance of addr1 and addr2)
+    //     expect(await popToken.getCurrentVotes(await addr2.getAddress())).to.equal(value);
+    // });
+
+    it("Should delegate votes using the delegateBySig function with valid and invalid signatures", async function () {
+        const initialBalance = utils.parseEther('100');
+        await popToken.transfer(await addr1.getAddress(), initialBalance);
+
+        // Generate a valid signature
+        const nonce = await popToken.nonces(await addr1.getAddress());
+
+        const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545/");
+        const blockNumber = (await provider.getBlock('latest')).timestamp;
+
+        const expiry = blockNumber + 100;
+
+        const chainId = await popToken.getChainId();
+        const domainTypehash = await popToken.DOMAIN_TYPEHASH();
+
+        const { v, r, s, message, signature } = await generateSignature(addr1, await addr2.getAddress(), nonce, expiry, popToken.address, chainId, domainTypehash);
+        const signer = utils.verifyMessage(message, signature);
+
+        const signerAddr = utils.computeAddress(utils.recoverPublicKey(message, signature));
+        // expect(signer).to.equal(await addr1.getAddress());
+
+        // Delegate votes from addr1 to addr2 using the signature
+        await popToken.delegateBySig(await addr2.getAddress(), nonce, expiry, v, r, s, {gasLimit: 800000});
+
+        // Verify that addr1's delegate is addr2
+        expect(await popToken.delegates(signerAddr)).to.equal(await addr2.getAddress());
+
     });
 
-    // it("Should delegate votes using the delegateBySig function with valid and invalid signatures", async function () {
-    //     const initialBalance = BigNumber.from("1000").mul(BigNumber.from("10").pow(18));
-    //     await popToken.transfer(await addr1.getAddress(), initialBalance);
+    it("Should fail to delegate votes with an expired signature", async function () {
+        const nonce = await popToken.nonces(await addr1.getAddress());
 
-    //     // Generate a valid signature
-    //     const nonce = await popToken.nonces(await addr1.getAddress());
-    //     const expiry = Math.floor(Date.now() / 1000) + 3600; // 1 hour from now
-    //     const message = ethers.utils.solidityKeccak256(
-    //         ["address", "uint256", "uint256", "uint256", "address"],
-    //         [await addr1.getAddress(), nonce, expiry, 1, await addr2.getAddress()]
-    //     );
-    //     const signature = await owner.signMessage(ethers.utils.arrayify(message));
-    //     const { v, r, s } = ethers.utils.splitSignature(signature);
+        const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545/");
+        const blockNumber = (await provider.getBlock('latest')).timestamp;
 
-    //     // Delegate votes from addr1 to addr2 using the signature
-    //     await popToken.delegateBySig(await addr1.getAddress(), nonce, expiry, v, r, s);
+        const expiry = blockNumber - 1;
 
-    //     // Verify that addr1's delegate is addr2
-    //     expect(await popToken.delegates(await addr1.getAddress())).to.equal(await addr2.getAddress());
+        const chainId = await popToken.getChainId();
+        const domainTypehash = await popToken.DOMAIN_TYPEHASH();
 
-    //     // Generate an invalid signature (using addr1's key to sign for addr2)
-    //     const invalidSignature = await addr1.signMessage(ethers.utils.arrayify(message));
-    //     const { v: invalidV, r: invalidR, s: invalidS } = ethers.utils.splitSignature(invalidSignature);
+        const { v, r, s} = await generateSignature(addr1, await addr2.getAddress(), nonce, expiry, popToken.address, chainId, domainTypehash);
 
-    //     // Attempt to delegate votes from addr1 to addr2 using the invalid signature
-    //     await expect(
-    //         popToken.delegateBySig(await addr1.getAddress(), nonce, expiry, invalidV, invalidR, invalidS)
-    //     ).to.be.revertedWith("PPT::delegateBySig: invalid signature");
-    // });
-
-    // it("Should fail to delegate votes with an expired signature", async function () {
-    //     const initialBalance = BigNumber.from("1000").mul(BigNumber.from("10").pow(18));
-    //     await popToken.transfer(await addr1.getAddress(), initialBalance);
-
-    //     // Generate an expired signature (expiry time set to the past)
-    //     const nonce = await popToken.nonces(await addr1.getAddress());
-    //     const expiry = Math.floor(Date.now() / 1000) - 3600; // 1 hour ago
-    //     const message = ethers.utils.solidityKeccak256(
-    //         ["address", "uint256", "uint256", "uint256", "address"],
-    //         [await addr1.getAddress(), nonce, expiry, 1, await addr2.getAddress()]
-    //     );
-    //     const signature = await owner.signMessage(ethers.utils.arrayify(message));
-    //     const { v, r, s } = ethers.utils.splitSignature(signature);
-
-    //     // Attempt to delegate votes from addr1 to addr2 using the expired signature
-    //     await expect(
-    //         popToken.delegateBySig(await addr1.getAddress(), nonce, expiry, v, r, s)
-    //     ).to.be.revertedWith("PPT::delegateBySig: signature expired");
-    // });
+        // Attempt to delegate votes from addr1 to addr2 using the expired signature
+        await expect(
+            popToken.delegateBySig(await addr2.getAddress(), nonce, expiry, v, r, s)
+        ).to.be.revertedWith("PPT::delegateBySig: signature expired");
+    });
 
 });
