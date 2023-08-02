@@ -14,10 +14,8 @@ contract PopToken is ERC20("Pop Token", "PPT"), Ownable, AccessControl {
     // @notice Total number of tokens
     uint256 public maxSupply;
 
-    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     constructor(uint256 _maxSupply){
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
-        _setupRole(MINTER_ROLE, _msgSender());
         _mint(_msgSender(), _maxSupply);
         maxSupply = _maxSupply;
     }
