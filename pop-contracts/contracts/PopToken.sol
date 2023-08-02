@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
@@ -10,23 +12,14 @@ contract PopToken is ERC20("Pop Token", "PPT"), Ownable, AccessControl {
     using SafeERC20 for IERC20;
 
     // @notice Total number of tokens
-    uint256 public maxSupply = 500_000_000e18; // 500 million PPT
+    uint256 public maxSupply;
 
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
-    constructor(){
+    constructor(uint256 _maxSupply){
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
         _setupRole(MINTER_ROLE, _msgSender());
-        _mint(_msgSender(), maxSupply);
-    }
-
-    // @notice Creates `_amount` token to `_to`. Must only be called by the minter (RewardsDistributor).
-    function mint(address _to, uint256 _amount) public onlyRole(MINTER_ROLE) {
-        require(
-            ( totalSupply() + _amount) <= maxSupply,
-            "PPT::mint: cannot exceed max supply"
-        );
-        _mint(_to, _amount);
-        _moveDelegates(address(0), _delegates[_to], _amount);
+        _mint(_msgSender(), _maxSupply);
+        maxSupply = _maxSupply;
     }
 
     // @notice A record of each accounts delegate

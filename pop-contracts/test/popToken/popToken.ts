@@ -58,7 +58,7 @@ describe("Pop Token governance testing", function () {
     beforeEach(async () => {
         [owner, addr1, addr2] = await ethers.getSigners();
         const PopToken = await ethers.getContractFactory("PopToken");
-        popToken = await PopToken.deploy();
+        popToken = await PopToken.deploy(utils.parseEther("200000000"));
         await popToken.deployed();
     });
 
@@ -69,12 +69,6 @@ describe("Pop Token governance testing", function () {
     it("Should assign the total supply of tokens to the owner", async function() {
         const ownerBalance = await popToken.balanceOf(await owner.getAddress());
         expect(await popToken.totalSupply()).to.equal(ownerBalance);
-    });
-
-    it("Should fail if try to mint more than the max supply", async function() {
-        await expect(
-            popToken.mint(await owner.getAddress(), BigNumber.from("500000001").mul(BigNumber.from("10").pow(18)))
-        ).to.be.revertedWith("PPT::mint: cannot exceed max supply");
     });
 
     it("Should update the delegate's voting power according to the number of tokens delegated", async function () {
@@ -96,6 +90,8 @@ describe("Pop Token governance testing", function () {
         expect(await popToken.balanceOf(await addr1.getAddress())).to.equal(utils.parseEther('100'));
 
         await popToken.connect(addr1).delegate(await addr2.getAddress());
+        
+        expect(await popToken.getCurrentVotes(await addr1.getAddress())).to.equal(0);
 
         // Verify initial voting power of addr1 (should be equal to its token balance)
         expect(await popToken.getCurrentVotes(await addr2.getAddress())).to.equal(utils.parseEther('100'));
@@ -115,9 +111,9 @@ describe("Pop Token governance testing", function () {
         // Delegate votes from addr1 to addr2
         await popToken.delegate(await addr2.getAddress());
 
-        // // Verify voting power of addr1 (should be 0 after delegation)
+        // Verify voting power of addr1 (should be 0 after delegation)
         expect(await popToken.getCurrentVotes(await addr1.getAddress())).to.equal(0);
-        // // // Verify voting power of addr2 (should be equal to the total balance of addr1 and addr2)
+        // Verify voting power of addr2 (should be equal to the total balance of addr1 and addr2)
         expect(await popToken.getCurrentVotes(await addr2.getAddress())).to.equal(value);
     });
 
@@ -128,12 +124,11 @@ describe("Pop Token governance testing", function () {
         // Generate a valid signature
         const nonce = await popToken.nonces(await addr1.getAddress());
 
-        const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545/");
-        const blockNumber = (await provider.getBlock('latest')).timestamp;
+        const blockNumber = (await ethers.provider.getBlock('latest')).timestamp;
 
         const expiry = blockNumber + 100;
 
-        const network = await provider.getNetwork();
+        const network = await ethers.provider.getNetwork();
         const chainId = network.chainId;
         console.log('CHAIN ID', chainId);
         
@@ -153,24 +148,24 @@ describe("Pop Token governance testing", function () {
 
     });
 
-    // it("Should fail to delegate votes with an expired signature", async function () {
-    //     const nonce = await popToken.nonces(await addr1.getAddress());
+    it("Should fail to delegate votes with an expired signature", async function () {
+        const nonce = await popToken.nonces(await addr1.getAddress());
 
-    //     const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545/");
-    //     const blockNumber = (await provider.getBlock('latest')).timestamp;
+        const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545/");
+        const blockNumber = (await provider.getBlock('latest')).timestamp;
 
-    //     const expiry = blockNumber - 1;
+        const expiry = blockNumber - 1;
 
-    //     const domainTypehash = await popToken.DOMAIN_TYPEHASH();
-    //     const network = await provider.getNetwork();
-    //     const chainId = network.chainId;
+        const domainTypehash = await popToken.DOMAIN_TYPEHASH();
+        const network = await provider.getNetwork();
+        const chainId = network.chainId;
 
-    //     const { v, r, s} = await generateSignature(addr1, await addr2.getAddress(), nonce, expiry, popToken.address, chainId, domainTypehash);
+        const { v, r, s} = await generateSignature(addr1, await addr2.getAddress(), nonce, expiry, popToken.address, chainId, domainTypehash);
 
-    //     // Attempt to delegate votes from addr1 to addr2 using the expired signature
-    //     await expect(
-    //         popToken.delegateBySig(await addr2.getAddress(), nonce, expiry, v, r, s)
-    //     ).to.be.revertedWith("PPT::delegateBySig: signature expired");
-    // });
+        // Attempt to delegate votes from addr1 to addr2 using the expired signature
+        await expect(
+            popToken.delegateBySig(await addr2.getAddress(), nonce, expiry, v, r, s)
+        ).to.be.revertedWith("PPT::delegateBySig: signature expired");
+    });
 
 });

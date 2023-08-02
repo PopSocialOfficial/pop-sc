@@ -42,7 +42,7 @@ describe("TokenSaleDistributor", function () {
     tokenSaleDistributor = TokenSaleDistributorFactory.attach(proxy.address);
 
     const PopTokenFactory = await hre.ethers.getContractFactory("PopToken");
-    token = await PopTokenFactory.deploy();
+    token = await PopTokenFactory.deploy(utils.parseEther("200000000"));
 
     await tokenSaleDistributor.setTokenAddress(token.address);
     await token.transfer(tokenSaleDistributor.address, parseEther("1000000"));
