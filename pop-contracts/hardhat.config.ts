@@ -25,13 +25,27 @@ const config: HardhatUserConfig & {
 } = {
   defaultNetwork: "localhost",
   solidity: {
-    version: "0.8.9",
-    settings: {
-      optimizer: {
-        enabled: true,
-        runs: 200
+    compilers: [
+      {
+        version: "0.8.10",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200
+          }
+        }
+      },
+      {
+        version: "0.8.9",
+          settings: {
+            optimizer: {
+              enabled: true,
+              runs: 200
+            }
+          }
       }
-    }
+    ]
+    
   },
   contractSizer: {
     alphaSort: true,
@@ -50,14 +64,14 @@ const config: HardhatUserConfig & {
     localhost: {
       url: "http://127.0.0.1:8545/",
     },
-    mumbai: {
-      url: "https://endpoints.omniatech.io/v1/matic/mumbai/public",
-      accounts: [process.env.OWNER_PRIVATE_KEY ?? "", process.env.POP_PRIVATE_KEY ?? ""]
-    },
-    tbsc: {
-      url: "https://binance-testnet.rpc.thirdweb.com",
-      accounts: [process.env.OWNER_PRIVATE_KEY ?? "", process.env.POP_PRIVATE_KEY ?? ""]
-    }
+    // mumbai: {
+    //   url: "https://endpoints.omniatech.io/v1/matic/mumbai/public",
+    //   accounts: [process.env.OWNER_PRIVATE_KEY ?? "", process.env.POP_PRIVATE_KEY ?? ""]
+    // },
+    // tbsc: {
+    //   url: "https://binance-testnet.rpc.thirdweb.com",
+    //   accounts: [process.env.OWNER_PRIVATE_KEY ?? "", process.env.POP_PRIVATE_KEY ?? ""]
+    // }
   },
   etherscan: {
     // apiKey: process.env.POLYGONSCAN_API_KEY,
