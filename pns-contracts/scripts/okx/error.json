@@ -1,0 +1,29 @@
+{
+  "contracts/registry/PNSRegistry.sol": {
+    "contentHash": "",
+    "address": "0x682f59762A3C8842c100fE1E41737e4C3F57cb96",
+    "args": []
+  },
+  "contracts/resolvers/DefaultReverseResolver.sol": {
+    "contentHash": "",
+    "address": "0x672a6998df275020bC863Ee3e98a1E44aF1a25AA",
+    "args": [
+      "0x682f59762A3C8842c100fE1E41737e4C3F57cb96"
+    ]
+  },
+  "contracts/registry/ReverseRegistrar.sol": {
+    "contentHash": "",
+    "address": "0xc99f3B3aE5C899218339d43b3616185Ae2961f15",
+    "args": [
+      "0x682f59762A3C8842c100fE1E41737e4C3F57cb96",
+      "0x672a6998df275020bC863Ee3e98a1E44aF1a25AA"
+    ]
+  },
+  "contracts/resolvers/PublicResolver.sol": {
+    "contentHash": "",
+    "address": "0x68Fe5dB8Dc2e9866F027AE46875C9d99Ab094A84",
+    "args": [
+      "0x682f59762A3C8842c100fE1E41737e4C3F57cb96"
+    ]
+  }
+}

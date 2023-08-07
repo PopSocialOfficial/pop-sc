@@ -1,0 +1,55 @@
+{
+  "contracts/registry/PNSRegistry.sol": {
+    "contentHash": "",
+    "address": "0x565bFaC857b0a3F94E137Cafc1F422D8361F6498",
+    "args": []
+  },
+  "contracts/resolvers/DefaultReverseResolver.sol": {
+    "contentHash": "",
+    "address": "0x1A13Bd0dD675AC6FcB7084d95e3E329c250f10aa",
+    "args": [
+      "0x565bFaC857b0a3F94E137Cafc1F422D8361F6498"
+    ]
+  },
+  "contracts/registry/ReverseRegistrar.sol": {
+    "contentHash": "",
+    "address": "0x0a33170A0ad3e89C79D57CFF31432656F617D2dB",
+    "args": [
+      "0x565bFaC857b0a3F94E137Cafc1F422D8361F6498",
+      "0x1A13Bd0dD675AC6FcB7084d95e3E329c250f10aa"
+    ]
+  },
+  "contracts/resolvers/PublicResolver.sol": {
+    "contentHash": "",
+    "address": "0xc915a21414c9eE3d42E89bD7AFaC752A42fD8f62",
+    "args": [
+      "0x565bFaC857b0a3F94E137Cafc1F422D8361F6498"
+    ]
+  },
+  "contracts/registrar/BaseRegistrarImplementation.sol": {
+    "contentHash": "",
+    "address": "0xe60512D5C0BfbfBe77fdB115B98b7179CDA27d0a",
+    "args": [
+      "Pop Name Service",
+      "PNS",
+      "0x565bFaC857b0a3F94E137Cafc1F422D8361F6498",
+      "0x31712e8704e38b18f0689bccb4453e6f517d72e263f5dbf3511c6d361dc70468",
+      "pop"
+    ]
+  },
+  "contracts/root/Root.sol": {
+    "contentHash": "",
+    "address": "0x8d08A056a01B05d2485674f8bAA45101207f9b68",
+    "args": [
+      "0x565bFaC857b0a3F94E137Cafc1F422D8361F6498"
+    ]
+  },
+  "contracts/registrar/RegistrarControllerV1.sol": {
+    "contentHash": "",
+    "address": "0x54bc35b0B34bb766654f58946293f85a0Dd6FF53",
+    "args": [
+      "0xe60512D5C0BfbfBe77fdB115B98b7179CDA27d0a",
+      0
+    ]
+  }
+}
