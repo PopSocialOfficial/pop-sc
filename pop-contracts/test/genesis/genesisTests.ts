@@ -38,7 +38,7 @@ describe("Genesis NFT testing", function () {
         let deployed: Contract[] = [];
         
         const deploymentPromises = contractsToDeploy.map(async (contract: ContractDeployStruct) => {
-            const contractDeploy = await upgrades.deployProxy(contract.factory, [contract.name, contract.symbol], {initializer: "initialize"});
+            const contractDeploy = await contract.factory.deploy(contract.name, contract.symbol);
             const deployedContract = await contractDeploy.deployed();
             return deployedContract;
         });
@@ -76,27 +76,6 @@ describe("Genesis NFT testing", function () {
             expect(await genesisNFT.whitelistedContracts(contractsToWhitelist[i])).to.equal(true);
         }
     });
-
-    it("Should remove whitelisted contract", async function() {
-        for (let i = 0; i < contractsToWhitelist.length; i++) {
-            expect(await genesisNFT.whitelistedContracts(contractsToWhitelist[i])).to.equal(true);
-        }
-        await genesisNFT.removeWhitelistedContracts([hatNFT.address]);
-        expect(await genesisNFT.whitelistedContracts(hatNFT.address)).to.equal(false);
-    });
-
-    it("Should remove and add back whitelisted contract", async function() {
-        for (let i = 0; i < contractsToWhitelist.length; i++) {
-            expect(await genesisNFT.whitelistedContracts(contractsToWhitelist[i])).to.equal(true);
-        }
-        await genesisNFT.removeWhitelistedContracts([hatNFT.address]);
-        expect(await genesisNFT.whitelistedContracts(hatNFT.address)).to.equal(false);
-
-        await genesisNFT.addWhitelistedContract(hatNFT.address);
-
-        expect(await genesisNFT.whitelistedContracts(hatNFT.address)).to.equal(true);
-    });
-
 
     it("Should set the order of accessory types", async function() {
         await genesisNFT.setAccessoryOrder(accessories.map((contract) => contract.contractAddr));

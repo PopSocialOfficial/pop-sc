@@ -1,14 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.10;
 
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155ReceiverUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
 
 contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, ERC721URIStorageUpgradeable, IERC1155ReceiverUpgradeable {
     using Counters for Counters.Counter;
@@ -102,11 +104,11 @@ contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, 
         for(uint i; i < _accessories.length; i++) {
             Accessory memory previous = equippedAccessories[_tokenId][i];
             if(previous.contractAddr != address(0) && previous.accessoryId != 0){
-                IERC1155Upgradeable(previous.contractAddr).safeTransferFrom(address(this), msg.sender, previous.accessoryId, 1, "");
+                IERC1155(previous.contractAddr).safeTransferFrom(address(this), msg.sender, previous.accessoryId, 1, "");
             }
             Accessory memory current = _accessories[i];
             if(current.accessoryId != 0){
-                IERC1155Upgradeable(current.contractAddr).safeTransferFrom(msg.sender, address(this), current.accessoryId, 1, "");
+                IERC1155(current.contractAddr).safeTransferFrom(msg.sender, address(this), current.accessoryId, 1, "");
             }
             equippedAccessories[_tokenId][i] = current;
         }
@@ -120,28 +122,11 @@ contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, 
     }
 
     function setWhitelisted(address[] memory _whitelistedContracts, uint8 _accessorySlots) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(_whitelistedContracts.length == _accessorySlots, "wrong length");
+        require(_whitelistedContracts.length == _accessorySlots, "wrong length 1");
         for(uint i; i < _whitelistedContracts.length; i++){
             whitelistedContracts[_whitelistedContracts[i]] = true;
         }
         accessorySlots = _accessorySlots;
-    }
-
-    function setAccessorySlots(uint8 _accessorySlots) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        accessorySlots = _accessorySlots;
-    }
-
-    function addWhitelistedContract(address _contractAddr) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(_contractAddr != address(0), 'no address 0');
-        whitelistedContracts[_contractAddr] = true;
-    }
-
-    function removeWhitelistedContracts(address[] memory _whitelistedContracts) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        for(uint i; i < _whitelistedContracts.length; i++){
-            if(whitelistedContracts[_whitelistedContracts[i]] == true){
-                whitelistedContracts[_whitelistedContracts[i]] = false;
-            }
-        }
     }
 
     function claim(uint256 tokenId) external onlyWhitelisted {
@@ -150,7 +135,7 @@ contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, 
         _safeMint(msg.sender, tokenId);
     }
 
-    function safeMint(address to, uint256 tokenId) external onlyRole(MINTER_ROLE) onlyRole(DEFAULT_ADMIN_ROLE) {
+    function safeMint(address to, uint256 tokenId) external onlyRole(DEFAULT_ADMIN_ROLE) {
         _tokenIdCounter.increment();
         _safeMint(to, tokenId);
     }
