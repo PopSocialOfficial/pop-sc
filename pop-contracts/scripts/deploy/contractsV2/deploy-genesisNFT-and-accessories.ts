@@ -17,27 +17,26 @@ async function main() {
 
     let accessories: Accessory[] = []
 
-    const HatNFT: ContractFactory = await ethers.getContractFactory("Hat");
-    const ClothesNFT: ContractFactory = await ethers.getContractFactory("Clothes");
-    const GlassesNFT: ContractFactory = await ethers.getContractFactory("Glasses");
-    const FurNFT: ContractFactory = await ethers.getContractFactory("Fur");
+    const HatNFT: ContractFactory = await ethers.getContractFactory("Accessory");
+    const ClothesNFT: ContractFactory = await ethers.getContractFactory("Accessory");
+    const GlassesNFT: ContractFactory = await ethers.getContractFactory("Accessory");
+    const FurNFT: ContractFactory = await ethers.getContractFactory("Accessory");
 
-    const contractsToDeploy = [HatNFT, ClothesNFT, GlassesNFT, FurNFT];
     let deployed: Contract[] = [];
 
-    const hatDeploy = await HatNFT.deploy();
+    const hatDeploy = await HatNFT.deploy('Hat', 'HAT');
     const hatDeployed = await hatDeploy.deployed();
     console.log(`HAT deployed at ${hatDeployed.address}`);
 
-    const clothesDeploy = await ClothesNFT.deploy();
+    const clothesDeploy = await ClothesNFT.deploy('Clothes', 'CLOTHES');
     const clothesDeployed = await clothesDeploy.deployed();
     console.log(`CLOTHES deployed at ${clothesDeployed.address}`);
 
-    const glassesDeploy = await GlassesNFT.deploy();
+    const glassesDeploy = await GlassesNFT.deploy('Glasses', 'GLASSES');
     const glassesDeployed = await glassesDeploy.deployed();
     console.log(`GLASSES deployed at ${glassesDeployed.address}`);
 
-    const furDeploy = await FurNFT.deploy();
+    const furDeploy = await FurNFT.deploy('Fur', 'FUR');
     const furDeployed = await furDeploy.deployed();
     console.log(`FUR deployed at ${furDeployed.address}`);
     

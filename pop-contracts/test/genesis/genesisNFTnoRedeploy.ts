@@ -4,12 +4,8 @@ import { Interface } from "@ethersproject/abi";
 
 import {expect} from "chai";
 import { upgrades } from "hardhat";
+import { Accessory, ContractDeployStruct } from "../interfaces";
 const { ethers } = require("hardhat");
-
-interface Accessory {
-    contractAddr: string;
-    accessoryId: number;
-}
 
 describe("Genesis NFT testing", async function () {
     
@@ -28,16 +24,21 @@ describe("Genesis NFT testing", async function () {
 
         [owner, bob, alice] = await ethers.getSigners();
 
-        const HatNFT: ContractFactory = await ethers.getContractFactory("Hat");
-        const ClothesNFT: ContractFactory = await ethers.getContractFactory("Clothes");
-        const GlassesNFT: ContractFactory = await ethers.getContractFactory("Glasses");
-        const FurNFT: ContractFactory = await ethers.getContractFactory("Fur");
+        const HatNFT: ContractFactory = await ethers.getContractFactory("Accessory");
+        const ClothesNFT: ContractFactory = await ethers.getContractFactory("Accessory");
+        const GlassesNFT: ContractFactory = await ethers.getContractFactory("Accessory");
+        const FurNFT: ContractFactory = await ethers.getContractFactory("Accessory");
     
-        const contractsToDeploy = [HatNFT, ClothesNFT, GlassesNFT, FurNFT];
+        const contractsToDeploy: ContractDeployStruct[] = [
+            {factory: HatNFT, name: 'Hat', symbol: 'HAT'}, 
+            {factory: ClothesNFT, name: 'Clothes', symbol: 'CLOTHES'}, 
+            {factory: GlassesNFT, name: 'Glasses', symbol: 'GLASSES'}, 
+            {factory: FurNFT, name: 'Fur', symbol: 'FUR'}
+        ];
         let deployed: Contract[] = [];
         
-        const deploymentPromises = contractsToDeploy.map(async (contract: ContractFactory) => {
-            const contractDeploy = await contract.deploy();
+        const deploymentPromises = contractsToDeploy.map(async (contract: ContractDeployStruct) => {
+            const contractDeploy = await contract.factory.deploy(contract.name, contract.symbol);
             const deployedContract = await contractDeploy.deployed();
             return deployedContract;
         });

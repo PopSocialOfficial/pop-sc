@@ -4,16 +4,16 @@ pragma solidity 0.8.10;
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract Clothes is ERC1155, Ownable {
+contract Accessory is ERC1155, Ownable {
     string public name;
     string public symbol;
 
     mapping(uint => string) public tokenURI;
     mapping(uint => uint) public energyPoints;
 
-    constructor() ERC1155("") {
-        name = "Clothes Accessories";
-        symbol = "CLOTHES";
+    constructor(string memory _name, string memory _symbol) ERC1155("") {
+        name = _name;
+        symbol = _symbol;
     }
 
     function setURI(
