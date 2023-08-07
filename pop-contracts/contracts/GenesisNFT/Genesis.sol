@@ -24,6 +24,11 @@ contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, 
     Counters.Counter private _tokenIdCounter;
     mapping(address => bool) public whitelistedContracts;
     mapping(address => bool) public whitelistedEOA;
+    // hat --> 0
+    // fur --> 1
+    // clothes --> 2
+    // glasses --> 3
+    // mapping(tokenId => mapping(accessoryTypeId => Accessory))
     mapping(uint256 => mapping(uint256 => Accessory)) public equippedAccessories;
     mapping(uint256 => address) public accessoryOrder;
     uint8 public accessorySlots;
@@ -56,12 +61,11 @@ contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, 
     }
 
     modifier validAccessories(Accessory[] memory _accessories) {
-        require(_accessories.length == accessorySlots, "wrong length");
+        require(_accessories.length <= accessorySlots, "wrong length");
         for(uint256 i; i < _accessories.length; i++){
             require(whitelistedContracts[_accessories[i].contractAddr] == true, "not whitelisted");
-            // _accessories need to be provided in right order to check for duplicates
-            // if caller provides duplicate contractAddr values in _accessories then this require will not pass
             require(accessoryOrder[i] == _accessories[i].contractAddr, "wrong order");
+            // require(_accessories[i].accessoryId != 0, "wrong order");
         }
         _;
     }
@@ -85,14 +89,27 @@ contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, 
         }
     }
 
+    function deEquipAllAccessories(uint256 _tokenId) external isTokenOwner(_tokenId) {
+        for(uint i; i < accessorySlots; i++){
+            equippedAccessories[_tokenId][i] = Accessory(address(0), 0);
+        }
+    }
+
+    function deEquipAccessory(uint256 _tokenId, uint256 accessoryType) external isTokenOwner(_tokenId) {
+        require(accessoryType <= accessorySlots, 'invalid accessoryType');
+        equippedAccessories[_tokenId][accessoryType] = Accessory(address(0), 0);
+    }
+
     function equipAccessories(uint256 _tokenId, Accessory[] calldata _accessories, string memory _uri) external isTokenOwner(_tokenId) validAccessories(_accessories) {
         for(uint i; i < _accessories.length; i++) {
             Accessory memory previous = equippedAccessories[_tokenId][i];
-            if(previous.contractAddr != address(0)){
+            if(previous.contractAddr != address(0) && previous.accessoryId != 0){
                 IERC1155(previous.contractAddr).safeTransferFrom(address(this), msg.sender, previous.accessoryId, 1, "");
             }
             Accessory memory current = _accessories[i];
-            IERC1155(current.contractAddr).safeTransferFrom(msg.sender, address(this), current.accessoryId, 1, "");
+            if(current.accessoryId != 0){
+                IERC1155(current.contractAddr).safeTransferFrom(msg.sender, address(this), current.accessoryId, 1, "");
+            }
             equippedAccessories[_tokenId][i] = current;
         }
         _setTokenURI(_tokenId, _uri);

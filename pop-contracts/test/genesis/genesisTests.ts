@@ -237,4 +237,105 @@ describe("Genesis NFT testing", function () {
         await expect(genesisNFT.connect(bob).equipAccessories(1, accessoriesToEquip, "")).to.be.revertedWith("wrong length");
     });
 
+    it("Should not revert if equip just 2 items", async function() {
+        // prepare bob's wallet
+        await hatNFT.mint(bob.address, 1, 1, []);
+        await furNFT.mint(bob.address, 1, 1, []);
+
+        await hatNFT.connect(bob).setApprovalForAll(genesisNFT.address, true);
+        await furNFT.connect(bob).setApprovalForAll(genesisNFT.address, true);
+
+        await genesisNFT.safeMint(bob.address, 1);
+
+        //equip items
+
+        const accessoriesToEquip = [
+            {contractAddr: hatNFT.address, accessoryId: 1}, 
+            {contractAddr: clothesNFT.address, accessoryId: 0}, 
+            {contractAddr: glassesNFT.address, accessoryId: 0},
+            {contractAddr: furNFT.address, accessoryId: 1}
+        ]
+
+        await expect(genesisNFT.connect(bob).equipAccessories(1, accessoriesToEquip, "", {gasLimit: 800000})).to.not.be.reverted;
+    
+        for (let i = 0; i < 4; i++) {
+            const item = await genesisNFT.equippedAccessories(1, i);
+            console.log(`EQUIPPED ACCESSORY ${i}: `, item);
+        }
+        
+        
+    });
+
+    it("Should de-equip 1 item", async function() {
+        // prepare bob's wallet
+        await hatNFT.mint(bob.address, 1, 1, []);
+        await furNFT.mint(bob.address, 1, 1, []);
+
+        await hatNFT.connect(bob).setApprovalForAll(genesisNFT.address, true);
+        await furNFT.connect(bob).setApprovalForAll(genesisNFT.address, true);
+
+        await genesisNFT.safeMint(bob.address, 1);
+
+        //equip items
+
+        const accessoriesToEquip = [
+            {contractAddr: hatNFT.address, accessoryId: 1}, 
+            {contractAddr: clothesNFT.address, accessoryId: 0}, 
+            {contractAddr: glassesNFT.address, accessoryId: 0},
+            {contractAddr: furNFT.address, accessoryId: 1}
+        ]
+
+        await expect(genesisNFT.connect(bob).equipAccessories(1, accessoriesToEquip, "", {gasLimit: 800000})).to.not.be.reverted;
+    
+        for (let i = 0; i < 4; i++) {
+            const item = await genesisNFT.equippedAccessories(1, i);
+            console.log(`BEFORE DE EQUIPPED HAT ${i}: `, item);
+        }
+
+        // 0 for hat
+        await genesisNFT.connect(bob).deEquipAccessory(1, 0);
+        
+        for (let i = 0; i < 4; i++) {
+            const item = await genesisNFT.equippedAccessories(1, i);
+            console.log(`AFTER DE EQUIPPED HAT ${i}: `, item);
+        }
+        
+    });
+
+    it("Should de-equip all items", async function() {
+        // prepare bob's wallet
+        await hatNFT.mint(bob.address, 1, 1, []);
+        await furNFT.mint(bob.address, 1, 1, []);
+
+        await hatNFT.connect(bob).setApprovalForAll(genesisNFT.address, true);
+        await furNFT.connect(bob).setApprovalForAll(genesisNFT.address, true);
+
+        await genesisNFT.safeMint(bob.address, 1);
+
+        //equip items
+
+        const accessoriesToEquip = [
+            {contractAddr: hatNFT.address, accessoryId: 1}, 
+            {contractAddr: clothesNFT.address, accessoryId: 0}, 
+            {contractAddr: glassesNFT.address, accessoryId: 0},
+            {contractAddr: furNFT.address, accessoryId: 1}
+        ]
+
+        await expect(genesisNFT.connect(bob).equipAccessories(1, accessoriesToEquip, "", {gasLimit: 800000})).to.not.be.reverted;
+    
+        for (let i = 0; i < 4; i++) {
+            const item = await genesisNFT.equippedAccessories(1, i);
+            console.log(`BEFORE DE EQUIPPED ${i}: `, item);
+        }
+
+        // 0 for hat
+        await genesisNFT.connect(bob).deEquipAllAccessories(1);
+        
+        for (let i = 0; i < 4; i++) {
+            const item = await genesisNFT.equippedAccessories(1, i);
+            console.log(`AFTER DE EQUIPPED ${i}: `, item);
+        }
+        
+    });
+
 });
