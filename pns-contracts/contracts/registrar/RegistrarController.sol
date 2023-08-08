@@ -9,30 +9,34 @@ import {ReverseRegistrar} from "../reverseRegistrar/ReverseRegistrar.sol";
 import {ReverseClaimer} from "../reverseRegistrar/ReverseClaimer.sol";
 import {IRegistrarController} from "./IRegistrarController.sol";
 
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {INameWrapper} from "../wrapper/INameWrapper.sol";
 import {ERC20Recoverable} from "../utils/ERC20Recoverable.sol";
-
+import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 error NameNotAvailable(string name);
 error DurationTooShort(uint256 duration);
 error ResolverRequiredWhenDataSupplied();
 error InsufficientValue();
 error Unauthorised(bytes32 node);
+error TokenNotSupported();
+error DefaultResolverNotConfigured();
 
 /**
  * @dev A registrar controller for registering and renewing names at fixed cost.
  */
 contract RegistrarController is
-    Ownable,
     IRegistrarController,
     IERC165,
     ERC20Recoverable,
-    ReverseClaimer
+    ReverseClaimer,
+    AccessControl
 {
     using StringUtils for *;
     using Address for address;
+    using SafeERC20 for IERC20;
 
     uint256 public constant MIN_REGISTRATION_DURATION = 28 days;
     bytes32 private constant ETH_NODE =
@@ -41,8 +45,11 @@ contract RegistrarController is
     BaseRegistrarImplementation immutable base;
     ReverseRegistrar public immutable reverseRegistrar;
     INameWrapper public immutable nameWrapper;
+    address public defaultResolver;
 
-    uint256 public basePrice;
+    bytes32 public constant RELAYER_ROLE = keccak256("RELAYER_ROLE");
+
+    mapping(address => uint256) public basePrice;
 
     event NameRegistered(
         string name,
@@ -68,16 +75,20 @@ contract RegistrarController is
         base = _base;
         reverseRegistrar = _reverseRegistrar;
         nameWrapper = _nameWrapper;
-        basePrice = _basePrice;
+        basePrice[address(0)] = _basePrice;
+
+        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _setRoleAdmin(RELAYER_ROLE, DEFAULT_ADMIN_ROLE);
     }
 
     function rentPrice(
         string memory name,
-        uint256 duration
+        uint256 duration,
+        address token
     ) public view override returns (uint256 price) {
         // no need to check basePrice
         // require(basePrice > 0, "configuration incorrect");
-        price = basePrice * duration;
+        price = basePrice[token] * duration;
     }
 
     function valid(string memory name) public pure returns (bool) {
@@ -89,6 +100,16 @@ contract RegistrarController is
         return valid(name) && base.available(uint256(label));
     }
 
+    function registerWithRelayer(
+        string calldata name,
+        address owner,
+        bytes[] calldata data
+    ) public override onlyRole(RELAYER_ROLE) {
+        if (defaultResolver == address(0))
+            revert DefaultResolverNotConfigured();
+        _register(name, owner, MAX_EXPIRY, defaultResolver, data, true, 0, 0);
+    }
+
     function register(
         string calldata name,
         address owner,
@@ -98,11 +119,61 @@ contract RegistrarController is
         bool reverseRecord,
         uint16 ownerControlledFuses
     ) public payable override {
-        uint256 price = rentPrice(name, duration);
+        uint256 price = rentPrice(name, duration, address(0));
         if (msg.value < price) {
             revert InsufficientValue();
         }
+        _register(
+            name,
+            owner,
+            duration,
+            resolver,
+            data,
+            reverseRecord,
+            ownerControlledFuses,
+            price
+        );
 
+        if (msg.value > (price)) {
+            payable(msg.sender).transfer(msg.value - (price));
+        }
+    }
+
+    function registerWithERC20(
+        string calldata name,
+        address owner,
+        uint256 duration,
+        address resolver,
+        bytes[] calldata data,
+        uint16 ownerControlledFuses,
+        address token
+    ) public override {
+        if (basePrice[token] == 0) revert TokenNotSupported();
+        uint256 price = rentPrice(name, duration, token);
+        _register(
+            name,
+            owner,
+            duration,
+            resolver,
+            data,
+            true,
+            ownerControlledFuses,
+            price
+        );
+
+        IERC20(token).safeTransferFrom(msg.sender, address(this), price);
+    }
+
+    function _register(
+        string calldata name,
+        address owner,
+        uint256 duration,
+        address resolver,
+        bytes[] calldata data,
+        bool reverseRecord,
+        uint16 ownerControlledFuses,
+        uint256 price
+    ) internal {
         if (!available(name)) {
             revert NameNotAvailable(name);
         }
@@ -138,10 +209,6 @@ contract RegistrarController is
             price,
             expires
         );
-
-        if (msg.value > (price)) {
-            payable(msg.sender).transfer(msg.value - (price));
-        }
     }
 
     function renew(
@@ -150,7 +217,7 @@ contract RegistrarController is
     ) external payable override {
         bytes32 labelhash = keccak256(bytes(name));
         uint256 tokenId = uint256(labelhash);
-        uint256 price = rentPrice(name, duration);
+        uint256 price = rentPrice(name, duration, address(0));
         if (msg.value < price) {
             revert InsufficientValue();
         }
@@ -167,16 +234,25 @@ contract RegistrarController is
         payable(owner()).transfer(address(this).balance);
     }
 
-    function setBasePrice(uint _price) public onlyOwner {
-        basePrice = _price;
+    function setBasePrice(
+        address token,
+        uint price
+    ) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        basePrice[token] = price;
+    }
+
+    function setDefaultResolver(
+        address resolver
+    ) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        defaultResolver = resolver;
     }
 
     function supportsInterface(
         bytes4 interfaceID
-    ) external pure returns (bool) {
+    ) public view override(IERC165, AccessControl) returns (bool) {
         return
-            interfaceID == type(IERC165).interfaceId ||
-            interfaceID == type(IRegistrarController).interfaceId;
+            interfaceID == type(IRegistrarController).interfaceId ||
+            super.supportsInterface(interfaceID);
     }
 
     /* Internal functions */
