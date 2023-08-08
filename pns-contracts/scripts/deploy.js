@@ -87,6 +87,7 @@ async function main() {
     baseRegistrar.address,
     nameWrapper.address,
     reverseRegistrar.address,
+    resolver.address,
   )
 
   console.log(`PartnerNFTMinter deployed at ${partnerNftMinter.address}`)
@@ -94,6 +95,8 @@ async function main() {
   await reverseRegistrar.setController(partnerNftMinter.address, true)
 
   await nameWrapper.setMinter(partnerNftMinter.address)
+
+  await controller.setDefaultResolver(resolver.address)
 }
 
 main()
