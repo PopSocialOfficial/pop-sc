@@ -63,7 +63,6 @@ contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, 
         for(uint256 i; i < _accessories.length; i++){
             require(whitelistedContracts[_accessories[i].contractAddr] == true, "not whitelisted");
             require(accessoryOrder[i] == _accessories[i].contractAddr, "wrong order");
-            // require(_accessories[i].accessoryId != 0, "wrong order");
         }
         _;
     }
@@ -83,7 +82,7 @@ contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, 
      */
     function removeFromWhitelist(address[] calldata _whitelistAddrs) external onlyRole(DEFAULT_ADMIN_ROLE) {
         for (uint i = 0; i < _whitelistAddrs.length; i++) {
-            delete whitelistedEOA[_whitelistAddrs[i]];
+            whitelistedEOA[_whitelistAddrs[i]] = false;
         }
     }
 
