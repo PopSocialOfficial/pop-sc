@@ -60,7 +60,7 @@ contract PartnerNFTMinter is Ownable, IERC165, IERC1155Receiver {
     ) external returns (bytes32 node) {
         Domain memory domain = domains[parentNode];
 
-        if (domain.nft == address(0) || domain.owner == address(0))
+        if (domain.nft == address(0) && domain.owner == address(0))
             revert DomainNotRegistered();
 
         if (IERC721(domain.nft).ownerOf(nftTokenId) != msg.sender)
@@ -117,12 +117,9 @@ contract PartnerNFTMinter is Ownable, IERC165, IERC1155Receiver {
         address nft,
         bool allowDuplication
     ) external onlyOwner {
-        if (
-            nameWrapper.ownerOf(uint256(node)) != owner ||
-            owner == address(0) ||
-            nft == address(0) ||
-            node == bytes32(0)
-        ) revert InvalidParams();
+        if (owner == address(0) || nft == address(0) || node == bytes32(0))
+            revert InvalidParams();
+        if (nameWrapper.ownerOf(uint256(node)) != owner) revert UnAuthorized();
         domains[node] = Domain({
             owner: owner,
             nft: nft,
