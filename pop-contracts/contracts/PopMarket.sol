@@ -194,7 +194,7 @@ contract PopMarketPlace is
     /// @notice Cancels the order and receive NFT back
     /// @dev Transfer NFT back to seller, reject all existing bids for the order, delete order storage
     /// @param orderId Id of an existing Order (caller should be the seller)
-    function cancelOrder(uint256 orderId) external {
+    function cancelOrder(uint256 orderId) external nonReentrant {
         Order storage _order = order[orderId];
         require(_order.seller == msg.sender, "Invalid request");
 
@@ -402,7 +402,7 @@ contract PopMarketPlace is
         } else {
             safeTransferAmount(
                 _order.paymentToken,
-                msg.sender,
+                _order.seller,
                 (totalAmount - feeValue)
             );
         }
@@ -449,7 +449,7 @@ contract PopMarketPlace is
             (_bid.copies == 0 ? 1 : _bid.copies);
 
         if (isNative) {
-            (bool success, ) = payable(_bid.bidder).call{value: totalAmount}(
+            (bool success, ) = payable(msg.sender).call{value: totalAmount}(
                 ""
             );
             require(success, "Transfer Failed");
