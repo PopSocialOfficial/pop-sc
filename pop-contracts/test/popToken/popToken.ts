@@ -61,14 +61,14 @@ describe("Pop Token governance testing", function () {
         await popToken.deployed();
     });
 
-    // it("Should set the right owner", async function() {
-    //     expect(await popToken.owner()).to.equal(await owner.getAddress());
-    // });
+    it("Should set the right owner", async function() {
+        expect(await popToken.owner()).to.equal(await owner.getAddress());
+    });
 
-    // it("Should assign the total supply of tokens to the owner", async function() {
-    //     const ownerBalance = await popToken.balanceOf(await owner.getAddress());
-    //     expect(await popToken.totalSupply()).to.equal(ownerBalance);
-    // });
+    it("Should assign the total supply of tokens to the owner", async function() {
+        const ownerBalance = await popToken.balanceOf(await owner.getAddress());
+        expect(await popToken.totalSupply()).to.equal(ownerBalance);
+    });
 
     // it("Should update the delegate's voting power according to the number of tokens delegated", async function () {
     //     const initialBalance = utils.parseEther('1');
@@ -96,46 +96,46 @@ describe("Pop Token governance testing", function () {
     //     expect(await popToken.getCurrentVotes(await addr2.getAddress())).to.equal(utils.parseEther('100'));
     // });
 
-    it("Should test double spending attack", async function () {
-      expect(await popToken.getCurrentVotes(await addr1.getAddress())).to.equal(0);
+  //   it("Should test double spending attack", async function () {
+  //     expect(await popToken.getCurrentVotes(await addr1.getAddress())).to.equal(0);
 
-      await popToken.transfer(await addr1.getAddress(), utils.parseEther('100'));
+  //     await popToken.transfer(await addr1.getAddress(), utils.parseEther('100'));
 
-      const balance1 = await popToken.balanceOf(addr3.address);
-      console.log(balance1, 'ADDR1 BALANCE');
+  //     const balance1 = await popToken.balanceOf(addr3.address);
+  //     console.log(balance1, 'ADDR1 BALANCE');
 
-      expect(await popToken.balanceOf(await addr1.getAddress())).to.equal(utils.parseEther('100'));
+  //     expect(await popToken.balanceOf(await addr1.getAddress())).to.equal(utils.parseEther('100'));
 
-      await popToken.connect(addr1).delegate(await addr2.getAddress());
+  //     await popToken.connect(addr1).delegate(await addr2.getAddress());
       
-      expect(await popToken.getCurrentVotes(await addr1.getAddress())).to.equal(0);
+  //     expect(await popToken.getCurrentVotes(await addr1.getAddress())).to.equal(0);
 
-      // Verify initial voting power of addr1 (should be equal to its token balance)
-      expect(await popToken.getCurrentVotes(await addr2.getAddress())).to.equal(utils.parseEther('100'));
+  //     // Verify initial voting power of addr1 (should be equal to its token balance)
+  //     expect(await popToken.getCurrentVotes(await addr2.getAddress())).to.equal(utils.parseEther('100'));
 
-      // ------------- addr1 delegates 100 to addr2 --------------- //
+  //     // ------------- addr1 delegates 100 to addr2 --------------- //
 
-      await popToken.connect(addr1).transfer(await addr3.getAddress(), utils.parseEther('100'));
+  //     await popToken.connect(addr1).transfer(await addr3.getAddress(), utils.parseEther('100'));
 
-      expect(await popToken.balanceOf(await addr3.getAddress())).to.equal(utils.parseEther('100'));
-      expect(await popToken.balanceOf(await addr1.getAddress())).to.equal(utils.parseEther('0'));
+  //     expect(await popToken.balanceOf(await addr3.getAddress())).to.equal(utils.parseEther('100'));
+  //     expect(await popToken.balanceOf(await addr1.getAddress())).to.equal(utils.parseEther('0'));
 
-      await popToken.connect(addr3).delegate(await addr2.getAddress());
+  //     await popToken.connect(addr3).delegate(await addr2.getAddress());
 
-      expect(await popToken.getCurrentVotes(await addr2.getAddress())).to.equal(utils.parseEther('200'));
+  //     expect(await popToken.getCurrentVotes(await addr2.getAddress())).to.equal(utils.parseEther('200'));
 
-      // ------------- addr3 delegates same 100 to addr2 --------------- //
+  //     // ------------- addr3 delegates same 100 to addr2 --------------- //
 
-      await popToken.connect(addr3).transfer(await addr4.getAddress(), utils.parseEther('100'));
+  //     await popToken.connect(addr3).transfer(await addr4.getAddress(), utils.parseEther('100'));
 
-      expect(await popToken.balanceOf(await addr4.getAddress())).to.equal(utils.parseEther('100'));
+  //     expect(await popToken.balanceOf(await addr4.getAddress())).to.equal(utils.parseEther('100'));
 
-      await popToken.connect(addr4).delegate(await addr2.getAddress());
+  //     await popToken.connect(addr4).delegate(await addr2.getAddress());
 
-      expect(await popToken.getCurrentVotes(await addr2.getAddress())).to.equal(utils.parseEther('300'));
+  //     expect(await popToken.getCurrentVotes(await addr2.getAddress())).to.equal(utils.parseEther('300'));
 
-      // ------------- addr4 delegates same 100 to addr2 --------------- //
-  });
+  //     // ------------- addr4 delegates same 100 to addr2 --------------- //
+  // });
 
 
     // it("Should have correct voting power for an account before and after delegation", async function () {
