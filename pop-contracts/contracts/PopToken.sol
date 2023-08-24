@@ -4,11 +4,12 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol";
 
 pragma solidity ^0.8.0;
 
 
-contract PopToken is ERC20("Pop Token", "PPT"), Ownable, AccessControl {
+contract PopToken is ERC20("Pop Token", "PPT"), Ownable, AccessControl, ERC20Permit("PPT") {
     using SafeERC20 for IERC20;
 
     // @notice Total number of tokens
@@ -46,7 +47,7 @@ contract PopToken is ERC20("Pop Token", "PPT"), Ownable, AccessControl {
         keccak256("Delegation(address delegatee,uint256 nonce,uint256 expiry)");
 
     // @notice A record of states for signing / validating signatures
-    mapping(address => uint256) public nonces;
+    mapping(address => uint256) public _nonces;
 
     // @notice An event thats emitted when an account changes its delegate
     event DelegateChanged(
@@ -118,7 +119,7 @@ contract PopToken is ERC20("Pop Token", "PPT"), Ownable, AccessControl {
             "PPT::delegateBySig: invalid signature"
         );
         require(
-            nonce == nonces[signatory]++,
+            nonce == _nonces[signatory]++,
             "PPT::delegateBySig: invalid nonce"
         );
         require(block.timestamp <= expiry, "PPT::delegateBySig: signature expired");

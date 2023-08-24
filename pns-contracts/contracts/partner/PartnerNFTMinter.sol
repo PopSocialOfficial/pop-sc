@@ -22,6 +22,7 @@ contract PartnerNFTMinter is Ownable, IERC165, IERC1155Receiver {
     INameWrapper nameWrapper;
     IBaseRegistrar public immutable registrar;
     ReverseRegistrar public immutable reverseRegistrar;
+    Resolver public immutable resolver;
 
     bytes32 private constant ETH_NODE =
         0x31712e8704e38b18f0689bccb4453e6f517d72e263f5dbf3511c6d361dc70468;
@@ -41,26 +42,25 @@ contract PartnerNFTMinter is Ownable, IERC165, IERC1155Receiver {
         PNS _pns,
         IBaseRegistrar _baseRegistrar,
         INameWrapper _nameWrapper,
-        ReverseRegistrar _reverseRegistrar
+        ReverseRegistrar _reverseRegistrar,
+        Resolver _resolver
     ) Ownable() {
         pns = _pns;
         registrar = _baseRegistrar;
         nameWrapper = _nameWrapper;
         reverseRegistrar = _reverseRegistrar;
+        resolver = _resolver;
     }
 
     function register(
         uint256 nftTokenId,
         bytes32 parentNode,
         string memory label,
-        address resolver,
-        bytes[] calldata data,
-        bool reverseRecord,
-        uint32 fuses
+        bytes[] calldata data
     ) external returns (bytes32 node) {
         Domain memory domain = domains[parentNode];
 
-        if (domain.nft == address(0) || domain.owner == address(0))
+        if (domain.nft == address(0) && domain.owner == address(0))
             revert DomainNotRegistered();
 
         if (IERC721(domain.nft).ownerOf(nftTokenId) != msg.sender)
@@ -83,14 +83,14 @@ contract PartnerNFTMinter is Ownable, IERC165, IERC1155Receiver {
             parentNode,
             label,
             address(this),
-            resolver,
+            address(resolver),
             MAX_EXPIRY,
-            fuses,
+            0, // CAN_DO_EVERYTHING
             MAX_EXPIRY
         );
 
         if (data.length > 0) {
-            _setRecords(resolver, node, data);
+            _setRecords(node, data);
         }
 
         nameWrapper.safeTransferFrom(
@@ -101,9 +101,7 @@ contract PartnerNFTMinter is Ownable, IERC165, IERC1155Receiver {
             ""
         );
 
-        if (reverseRecord) {
-            _setReverseRecord(parentNode, label, resolver, msg.sender);
-        }
+        _setReverseRecord(parentNode, label, msg.sender);
     }
 
     function setAllowDuplication(bytes32 node, bool allow) external {
@@ -117,12 +115,9 @@ contract PartnerNFTMinter is Ownable, IERC165, IERC1155Receiver {
         address nft,
         bool allowDuplication
     ) external onlyOwner {
-        if (
-            nameWrapper.ownerOf(uint256(node)) != owner ||
-            owner == address(0) ||
-            nft == address(0) ||
-            node == bytes32(0)
-        ) revert InvalidParams();
+        if (owner == address(0) || nft == address(0) || node == bytes32(0))
+            revert InvalidParams();
+        if (nameWrapper.ownerOf(uint256(node)) != owner) revert UnAuthorized();
         domains[node] = Domain({
             owner: owner,
             nft: nft,
@@ -138,27 +133,21 @@ contract PartnerNFTMinter is Ownable, IERC165, IERC1155Receiver {
         });
     }
 
-    function _setRecords(
-        address resolverAddress,
-        bytes32 nodehash,
-        bytes[] calldata data
-    ) internal {
+    function _setRecords(bytes32 nodehash, bytes[] calldata data) internal {
         // use hardcoded .eth namehash
-        Resolver resolver = Resolver(resolverAddress);
         resolver.multicallWithNodeCheck(nodehash, data);
     }
 
     function _setReverseRecord(
         bytes32 parentNode,
         string memory name,
-        address resolver,
         address owner
     ) internal {
-        string memory parentName = Resolver(resolver).name(parentNode);
+        string memory parentName = resolver.name(parentNode);
         reverseRegistrar.setNameForAddr(
             msg.sender,
             owner,
-            resolver,
+            address(resolver),
             string.concat(name, ".", parentName, ".pop")
         );
     }

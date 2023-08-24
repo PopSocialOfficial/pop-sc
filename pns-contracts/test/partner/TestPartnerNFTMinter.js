@@ -4,7 +4,9 @@ const {
   contracts: { deploy },
   ens: { FUSES },
 } = require('../test-utils')
-
+const {
+  shouldSupportInterfaces,
+} = require('../wrapper/SupportsInterface.behaviour')
 const { CANNOT_UNWRAP, PARENT_CANNOT_CONTROL, IS_DOT_ETH } = FUSES
 
 const { expect } = require('chai')
@@ -119,6 +121,7 @@ describe('PartnerNFTMinter', () => {
       baseRegistrar.address,
       nameWrapper.address,
       reverseRegistrar.address,
+      resolver.address,
     )
 
     await reverseRegistrar.setController(partnerNftMinter.address, true)
@@ -134,6 +137,8 @@ describe('PartnerNFTMinter', () => {
   afterEach(async () => {
     await ethers.provider.send('evm_revert', [result])
   })
+
+  shouldSupportInterfaces(() => partnerNftMinter, ['ERC1155Receiver'])
 
   describe('Register', () => {
     beforeEach(
@@ -173,7 +178,7 @@ describe('PartnerNFTMinter', () => {
 
       await partnerNftMinter
         .connect(user)
-        .register(0, nodehash, subLabel, resolver.address, callData, true, 0)
+        .register(0, nodehash, subLabel, callData)
 
       expect(await nameWrapper.balanceOf(user.address, subnodehash)).to.eq(1)
 
@@ -191,41 +196,49 @@ describe('PartnerNFTMinter', () => {
     it("Cannot register if user don't have nft", async () => {
       const subLabel = 'sub1'
       await expect(
-        partnerNftMinter
-          .connect(users[0])
-          .register(0, nodehash, subLabel, resolver.address, [], true, 0),
+        partnerNftMinter.connect(users[0]).register(0, nodehash, subLabel, []),
       ).to.be.revertedWith('UnAuthorized')
+    })
+
+    it('Cannot register if nft is already used', async () => {
+      const subLabel = 'sub1'
+      await partnerNftMinter.connect(user).register(0, nodehash, subLabel, [])
+      await expect(
+        partnerNftMinter.connect(user).register(0, nodehash, subLabel, []),
+      ).to.be.revertedWith('AlreadyUsedNFT')
     })
 
     it('Cannot register if domain is not registered', async () => {
       await expect(
-        partnerNftMinter
-          .connect(user)
-          .register(
-            0,
-            namehash('otherdomain' + '.pop'),
-            'sub',
-            resolver.address,
-            [],
-            true,
-            0,
-          ),
+        partnerNftMinter.connect(user).register(
+          0,
+          namehash('otherdomain' + '.pop'),
+          'sub',
+
+          [],
+        ),
       ).to.be.revertedWith('DomainNotRegistered')
     })
 
     it('Cannot register if name is already used', async () => {
       const subLabel = 'sub'
-      await partnerNftMinter
-        .connect(user)
-        .register(0, nodehash, subLabel, resolver.address, [], true, 0)
+      await partnerNftMinter.connect(user).register(0, nodehash, subLabel, [])
 
       await mockNFT.connect(users[0]).mint()
 
       await expect(
-        partnerNftMinter
-          .connect(users[0])
-          .register(1, nodehash, subLabel, resolver.address, [], true, 0),
+        partnerNftMinter.connect(users[0]).register(1, nodehash, subLabel, []),
       ).to.be.revertedWith('SubnameAlreadyUsed')
+    })
+
+    it('can register with already used nft', async () => {
+      const subLabel = 'sub1'
+      const subnodehash = namehash(`${subLabel}.${partnerName}.pop`)
+      await partnerNftMinter
+        .connect(partner)
+        .setAllowDuplication(nodehash, true)
+      await partnerNftMinter.connect(user).register(0, nodehash, subLabel, [])
+      expect(await nameWrapper.balanceOf(user.address, subnodehash)).to.eq(1)
     })
   })
 
@@ -266,8 +279,10 @@ describe('PartnerNFTMinter', () => {
           mockNFT.address,
           false,
         ),
-      ).to.be.revertedWith('InvalidParams')
+      ).to.be.revertedWith('UnAuthorized')
+    })
 
+    it('revert if params are invalid', async () => {
       await expect(
         partnerNftMinter.addDomain(
           nodehash,
@@ -288,9 +303,18 @@ describe('PartnerNFTMinter', () => {
 
       await expect(
         partnerNftMinter.addDomain(
-          EMPTY_BYTES32,
+          nodehash,
           partner.address,
           ZERO_ADDRESS,
+          false,
+        ),
+      ).to.be.revertedWith('InvalidParams')
+
+      await expect(
+        partnerNftMinter.addDomain(
+          EMPTY_BYTES32,
+          partner.address,
+          mockNFT.address,
           false,
         ),
       ).to.be.revertedWith('InvalidParams')

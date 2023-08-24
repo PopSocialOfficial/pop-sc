@@ -38,7 +38,7 @@ describe("Genesis NFT testing", async function () {
         let deployed: Contract[] = [];
         
         const deploymentPromises = contractsToDeploy.map(async (contract: ContractDeployStruct) => {
-            const contractDeploy = await contract.factory.deploy(contract.name, contract.symbol);
+            const contractDeploy = await upgrades.deployProxy(contract.factory, [contract.name, contract.symbol], {initializer: "initialize"});
             const deployedContract = await contractDeploy.deployed();
             return deployedContract;
         });
