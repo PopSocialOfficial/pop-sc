@@ -30,7 +30,7 @@ contract TokenSaleDistributorProxy is ReentrancyGuard, TokenSaleDistributorProxy
      * Accept admin transfer from the current admin to the new.
      */
     function acceptPendingAdmin() public {
-        require(msg.sender == pendingAdmin && pendingAdmin != address(0), "Caller must be the pending admin");
+        require(msg.sender == pendingAdmin, "Caller must be the pending admin");
 
         admin = pendingAdmin;
         pendingAdmin = address(0);
@@ -52,7 +52,7 @@ contract TokenSaleDistributorProxy is ReentrancyGuard, TokenSaleDistributorProxy
      * Accept pending implementation change
      */
     function acceptPendingImplementation() public {
-        require(msg.sender == pendingImplementation && pendingImplementation != address(0), "Only the pending implementation contract can call this");
+        require(msg.sender == pendingImplementation, "Only the pending implementation contract can call this");
 
         implementation = pendingImplementation;
         pendingImplementation = address(0);

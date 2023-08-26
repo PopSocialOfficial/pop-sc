@@ -1,3 +1,4 @@
+import { address } from './../utils';
 import { utils } from 'ethers';
 const hre = require('hardhat')
 import { expect } from "chai";
@@ -90,6 +91,26 @@ describe("TokenSaleDistributor", function () {
         expect(allocations[0].cliff).to.equal(cliff);
         expect(allocations[0].amount).to.equal(amount);
         expect(allocations[0].claimed).to.equal(0);
+      });
+    });
+
+    describe("Token transactions", function () {
+      before(prepare);
+
+      it("should withdraw tokens", async function () {
+        const MockERC20 = await hre.ethers.getContractFactory("MockERC20");
+        const mockERC20 = await MockERC20.deploy();
+        await mockERC20.deployed();
+
+        await mockERC20.mint(deployer.address, utils.parseEther("500000000"))
+
+        await mockERC20.transfer(tokenSaleDistributor.address, utils.parseEther("100"));
+
+        await expect(tokenSaleDistributor.withdraw(mockERC20.address, utils.parseEther("10"))).to.not.be.reverted;
+      });
+
+      it("should not allow to withdraw tokens", async function () {
+        await expect(tokenSaleDistributor.withdraw(token.address, utils.parseEther("10"))).to.be.revertedWith("use resetAllocationsByUser");
       });
     });
 
@@ -263,7 +284,7 @@ describe("TokenSaleDistributor", function () {
             expect(await tokenSaleDistributor.totalClaimable(user.address))
               .to.equal(claimable);
           }
-
+          
           await increaseTime(month.div(2).toNumber());
           expect(await tokenSaleDistributor.totalClaimable(user.address))
             .to.equal(claimable);
