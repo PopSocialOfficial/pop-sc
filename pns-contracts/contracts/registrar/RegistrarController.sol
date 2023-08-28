@@ -72,6 +72,7 @@ contract RegistrarController is
         PNS _ens,
         uint256 _basePrice
     ) ReverseClaimer(_ens, msg.sender) {
+        require(address(_nameWrapper.registrar()) == address(_base));
         base = _base;
         reverseRegistrar = _reverseRegistrar;
         nameWrapper = _nameWrapper;
