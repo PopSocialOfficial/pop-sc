@@ -32,6 +32,7 @@ describe('PartnerNFTMinter', () => {
   let resolver
   let baseRegistrar
   let controller
+  let controller3
   let priceOracle
   let reverseRegistrar
   let nameWrapper
@@ -45,21 +46,8 @@ describe('PartnerNFTMinter', () => {
   let users
   /* Utility funcs */
 
-  async function registerName(
-    name,
-    txOptions = { value: BUFFERED_REGISTRATION_COST },
-  ) {
-    var tx = await controller.register(
-      name,
-      partner.address,
-      REGISTRATION_TIME,
-      NULL_ADDRESS,
-      [],
-      false,
-      0,
-      txOptions,
-    )
-
+  async function registerName(name, owner = partner.address, data = []) {
+    const tx = await controller3.registerWithRelayer(name, owner, data)
     return tx
   }
 
@@ -67,7 +55,7 @@ describe('PartnerNFTMinter', () => {
   const nodehash = namehash(partnerName + '.pop')
 
   before(async () => {
-    ;[owner, partner, user, ...users] = await ethers.getSigners()
+    ;[owner, partner, user, relayer, ...users] = await ethers.getSigners()
 
     ens = await deploy('PNSRegistry')
 
@@ -103,6 +91,8 @@ describe('PartnerNFTMinter', () => {
       ens.address,
       ONE_WAI,
     )
+
+    controller3 = controller.connect(relayer)
     await nameWrapper.setController(controller.address, true)
     await baseRegistrar.addController(nameWrapper.address)
     await reverseRegistrar.setController(controller.address, true)
@@ -129,6 +119,13 @@ describe('PartnerNFTMinter', () => {
     mockNFT = await deploy('MockNFT')
 
     await nameWrapper.setMinter(partnerNftMinter.address)
+
+    await controller.setDefaultResolver(resolver.address)
+
+    const RELAYER_ROLE = ethers.utils.keccak256(
+      ethers.utils.toUtf8Bytes('RELAYER_ROLE'),
+    )
+    await controller.grantRole(RELAYER_ROLE, relayer.address)
   })
 
   beforeEach(async () => {
