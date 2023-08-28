@@ -371,33 +371,6 @@ function shouldRespectConstraints(contracts, getSigners) {
     })
   }
 
-  function parentCanUnwrapChild({
-    childNode,
-    childLabelHash,
-    childLabel,
-    parentNode,
-  }) {
-    it('Parent can unwrap owner with setSubnodeRecord() and then unwrap', async () => {
-      //check previous owners
-      expect(await NameWrapper.ownerOf(childNode)).to.equal(account2)
-      expect(await EnsRegistry.owner(childNode)).to.equal(NameWrapper.address)
-
-      await NameWrapper.setSubnodeRecord(
-        parentNode,
-        childLabel,
-        account,
-        EMPTY_ADDRESS,
-        0,
-        CAN_DO_EVERYTHING,
-        0,
-      )
-
-      await NameWrapper.unwrap(parentNode, childLabelHash, account)
-      expect(await NameWrapper.ownerOf(childNode)).to.equal(EMPTY_ADDRESS)
-      expect(await EnsRegistry.owner(childNode)).to.equal(account)
-    })
-  }
-
   function ownerCannotBurnFuses({ childNode }) {
     it('Owner cannot burn CU because PCC is unburnt', async () => {
       await expect(
@@ -409,13 +382,6 @@ function shouldRespectConstraints(contracts, getSigners) {
       await expect(
         NameWrapper2.setFuses(childNode, CANNOT_SET_RESOLVER),
       ).to.be.revertedWith(`OperationProhibited("${childNode}")`)
-    })
-  }
-
-  function ownerCanUnwrap({ childNode, childLabelHash }) {
-    it('Owner can unwrap', async () => {
-      await NameWrapper2.unwrap(parentNode, childLabelHash, account)
-      expect(await NameWrapper.ownerOf(childNode)).to.equal(EMPTY_ADDRESS)
     })
   }
 
@@ -736,12 +702,6 @@ function shouldRespectConstraints(contracts, getSigners) {
       ).to.be.revertedWith(`OperationProhibited("${parentNode}")`)
     })
 
-    it('Parent cannot unwrap child', async () => {
-      await expect(
-        NameWrapper.unwrap(parentNode, childLabelHash, account),
-      ).to.be.revertedWith(`Unauthorised("${childNode}", "${account}")`)
-    })
-
     it('Parent cannot call ens.subnodeOwner to forcefully unwrap', async () => {
       await expect(EnsRegistry.setSubnodeOwner(parentNode, childNode, account))
         .to.be.reverted
@@ -876,8 +836,6 @@ function shouldRespectConstraints(contracts, getSigners) {
 
     parentCanReplaceOwner({ parentNode, childLabel, childNode })
 
-    parentCanUnwrapChild({ childNode, childLabelHash, childLabel, parentNode })
-
     parentCannotBurnParentControlledFuses({
       parentNode,
       childNode,
@@ -887,8 +845,6 @@ function shouldRespectConstraints(contracts, getSigners) {
     ownerIsOwnerWhenExpired({ childNode })
 
     ownerCannotBurnFuses({ childNode })
-
-    ownerCanUnwrap({ childNode, childLabelHash })
   })
 
   describe("0001 - PCU - Wrapped expired without CU/PCC burned, Parent's CU is burned", () => {
@@ -950,7 +906,6 @@ function shouldRespectConstraints(contracts, getSigners) {
     })
 
     parentCanReplaceOwner({ parentNode, childLabel, childNode })
-    parentCanUnwrapChild({ childNode, childLabelHash, childLabel, parentNode })
     parentCanBurnParentControlledFusesWithExpiry({
       parentNode,
       childNode,
@@ -964,7 +919,6 @@ function shouldRespectConstraints(contracts, getSigners) {
     })
 
     ownerCannotBurnFuses({ childNode })
-    ownerCanUnwrap({ childNode, childLabelHash })
     ownerIsOwnerWhenExpired({ childNode })
   })
 
@@ -1153,14 +1107,12 @@ function shouldRespectConstraints(contracts, getSigners) {
       parentNode,
     })
     parentCanReplaceOwner({ parentNode, childLabel, childNode })
-    parentCanUnwrapChild({ childNode, childLabelHash, childLabel, parentNode })
     parentCannotBurnParentControlledFuses({
       parentNode,
       childLabelHash,
       childNode,
     })
     ownerCannotBurnFuses({ childNode })
-    ownerCanUnwrap({ childNode, childLabelHash })
     ownerIsOwnerWhenExpired({ childNode })
   })
 
@@ -1186,14 +1138,12 @@ function shouldRespectConstraints(contracts, getSigners) {
 
     parentCanBurnFusesOrPCC({ childNode, childLabelHash, parentNode })
     parentCanReplaceOwner({ parentNode, childLabel, childNode })
-    parentCanUnwrapChild({ childNode, childLabelHash, childLabel, parentNode })
     parentCanBurnParentControlledFuses({
       parentNode,
       childNode,
       childLabelHash,
     })
     ownerCannotBurnFuses({ childNode })
-    ownerCanUnwrap({ childNode, childLabelHash })
     ownerIsOwnerWhenExpired({ childNode })
   })
 
@@ -1283,22 +1233,6 @@ function shouldRespectConstraints(contracts, getSigners) {
         NameWrapper2.setFuses(childNode, CANNOT_SET_RESOLVER),
       ).to.be.revertedWith(`OperationProhibited("${childNode}")`)
     })
-
-    it('Owner cannot unwrap and wrap to unburn PCC', async () => {
-      const [, fusesBefore] = await NameWrapper2.getData(childNode)
-      expect(fusesBefore).to.equal(PARENT_CANNOT_CONTROL)
-      await NameWrapper2.unwrap(parentNode, childLabelHash, account2)
-      await EnsRegistry2.setApprovalForAll(NameWrapper2.address, true)
-      await NameWrapper2.wrap(
-        encodeName(`${childLabel}.${parentLabel}.pop`),
-        account2,
-        EMPTY_ADDRESS,
-      )
-      const [, fusesAfter] = await NameWrapper2.getData(childNode)
-      expect(fusesAfter).to.equal(PARENT_CANNOT_CONTROL)
-    })
-
-    ownerCanUnwrap({ childNode, childLabelHash })
 
     ownerResetsToZeroWhenExpired({ childNode, fuses: PARENT_CANNOT_CONTROL })
   })
@@ -1488,12 +1422,6 @@ function shouldRespectConstraints(contracts, getSigners) {
       await NameWrapper2.setFuses(childNode, 0)
       const [, fusesAfter] = await NameWrapper2.getData(childNode)
       expect(fusesAfter).to.equal(CANNOT_UNWRAP | PARENT_CANNOT_CONTROL)
-    })
-
-    it('Owner cannot unwrap', async () => {
-      await expect(
-        NameWrapper2.unwrap(parentNode, childLabelHash, account2),
-      ).to.be.revertedWith(`OperationProhibited("${childNode}")`)
     })
 
     ownerResetsToZeroWhenExpired({
