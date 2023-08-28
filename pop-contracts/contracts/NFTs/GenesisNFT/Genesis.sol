@@ -88,12 +88,17 @@ contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, 
 
     function deEquipAllAccessories(uint256 _tokenId) external isTokenOwner(_tokenId) {
         for(uint i; i < accessorySlots; i++){
-            equippedAccessories[_tokenId][i] = Accessory(address(0), 0);
+            if(equippedAccessories[_tokenId][i].accessoryId != 0){
+                IERC1155Upgradeable(equippedAccessories[_tokenId][i].contractAddr).safeTransferFrom(address(this), msg.sender, _tokenId, 1, "");
+                equippedAccessories[_tokenId][i] = Accessory(address(0), 0);
+            }
         }
     }
 
     function deEquipAccessory(uint256 _tokenId, uint256 accessoryType) external isTokenOwner(_tokenId) {
         require(accessoryType <= accessorySlots, 'invalid accessoryType');
+        require(equippedAccessories[_tokenId][accessoryType].accessoryId != 0, "accessory already de-equipped");
+        IERC1155Upgradeable(equippedAccessories[_tokenId][accessoryType].contractAddr).safeTransferFrom(address(this), msg.sender, _tokenId, 1, "");
         equippedAccessories[_tokenId][accessoryType] = Accessory(address(0), 0);
     }
 
@@ -149,7 +154,7 @@ contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, 
         _safeMint(msg.sender, tokenId);
     }
 
-    function safeMint(address to, uint256 tokenId) external onlyRole(MINTER_ROLE) onlyRole(DEFAULT_ADMIN_ROLE) {
+    function safeMint(address to, uint256 tokenId) external onlyRole(MINTER_ROLE) {
         _tokenIdCounter.increment();
         _safeMint(to, tokenId);
     }
