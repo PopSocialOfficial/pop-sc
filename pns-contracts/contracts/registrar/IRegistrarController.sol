@@ -9,31 +9,9 @@ interface IRegistrarController {
 
     function available(string memory) external returns (bool);
 
-    function register(
-        string calldata,
-        address,
-        uint256,
-        address,
-        bytes[] calldata,
-        bool,
-        uint16
-    ) external payable;
-
     function registerWithRelayer(
         string calldata,
         address,
         bytes[] calldata
     ) external;
-
-    function registerWithERC20(
-        string calldata,
-        address,
-        uint256,
-        address,
-        bytes[] calldata,
-        uint16,
-        address
-    ) external;
-
-    function renew(string calldata, uint256) external payable;
 }

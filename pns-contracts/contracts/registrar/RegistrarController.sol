@@ -72,6 +72,7 @@ contract RegistrarController is
         PNS _ens,
         uint256 _basePrice
     ) ReverseClaimer(_ens, msg.sender) {
+        require(address(_nameWrapper.registrar()) == address(_base));
         base = _base;
         reverseRegistrar = _reverseRegistrar;
         nameWrapper = _nameWrapper;
@@ -108,60 +109,6 @@ contract RegistrarController is
         if (defaultResolver == address(0))
             revert DefaultResolverNotConfigured();
         _register(name, owner, MAX_EXPIRY, defaultResolver, data, true, 0, 0);
-    }
-
-    function register(
-        string calldata name,
-        address owner,
-        uint256 duration,
-        address resolver,
-        bytes[] calldata data,
-        bool reverseRecord,
-        uint16 ownerControlledFuses
-    ) public payable override {
-        uint256 price = rentPrice(name, duration, address(0));
-        if (msg.value < price) {
-            revert InsufficientValue();
-        }
-        _register(
-            name,
-            owner,
-            duration,
-            resolver,
-            data,
-            reverseRecord,
-            ownerControlledFuses,
-            price
-        );
-
-        if (msg.value > (price)) {
-            payable(msg.sender).transfer(msg.value - (price));
-        }
-    }
-
-    function registerWithERC20(
-        string calldata name,
-        address owner,
-        uint256 duration,
-        address resolver,
-        bytes[] calldata data,
-        uint16 ownerControlledFuses,
-        address token
-    ) public override {
-        if (basePrice[token] == 0) revert TokenNotSupported();
-        uint256 price = rentPrice(name, duration, token);
-        _register(
-            name,
-            owner,
-            duration,
-            resolver,
-            data,
-            true,
-            ownerControlledFuses,
-            price
-        );
-
-        IERC20(token).safeTransferFrom(msg.sender, address(this), price);
     }
 
     function _register(
@@ -209,25 +156,6 @@ contract RegistrarController is
             price,
             expires
         );
-    }
-
-    function renew(
-        string calldata name,
-        uint256 duration
-    ) external payable override {
-        bytes32 labelhash = keccak256(bytes(name));
-        uint256 tokenId = uint256(labelhash);
-        uint256 price = rentPrice(name, duration, address(0));
-        if (msg.value < price) {
-            revert InsufficientValue();
-        }
-        uint256 expires = nameWrapper.renew(tokenId, duration);
-
-        if (msg.value > price) {
-            payable(msg.sender).transfer(msg.value - price);
-        }
-
-        emit NameRenewed(name, labelhash, msg.value, expires);
     }
 
     function withdraw() public {

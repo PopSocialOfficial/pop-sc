@@ -51,12 +51,6 @@ interface INameWrapper is IERC1155 {
 
     function supportsInterface(bytes4 interfaceID) external view returns (bool);
 
-    function wrap(
-        bytes calldata name,
-        address wrappedOwner,
-        address resolver
-    ) external;
-
     function wrapETH2LD(
         string calldata label,
         address wrappedOwner,
@@ -76,8 +70,6 @@ interface INameWrapper is IERC1155 {
         uint256 labelHash,
         uint256 duration
     ) external returns (uint256 expires);
-
-    function unwrap(bytes32 node, bytes32 label, address owner) external;
 
     function unwrapETH2LD(
         bytes32 label,

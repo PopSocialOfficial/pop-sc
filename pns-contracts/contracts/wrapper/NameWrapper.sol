@@ -395,44 +395,6 @@ contract NameWrapper is
     }
 
     /**
-     * @notice Wraps a non .eth domain, of any kind. Could be a DNSSEC name vitalik.xyz or a subdomain
-     * @dev Can be called by the owner in the registry or an authorised caller in the registry
-     * @param name The name to wrap, in DNS format
-     * @param wrappedOwner Owner of the name in this contract
-     * @param resolver Resolver contract
-     */
-
-    function wrap(
-        bytes calldata name,
-        address wrappedOwner,
-        address resolver
-    ) public {
-        (bytes32 labelhash, uint256 offset) = name.readLabel(0);
-        bytes32 parentNode = name.namehash(offset);
-        bytes32 node = _makeNode(parentNode, labelhash);
-
-        names[node] = name;
-
-        if (parentNode == ETH_NODE) {
-            revert IncompatibleParent();
-        }
-
-        address owner = pns.owner(node);
-
-        if (owner != msg.sender && !pns.isApprovedForAll(owner, msg.sender)) {
-            revert Unauthorised(node, msg.sender);
-        }
-
-        if (resolver != address(0)) {
-            pns.setResolver(node, resolver);
-        }
-
-        pns.setOwner(node, address(this));
-
-        _wrap(node, name, wrappedOwner, 0, 0);
-    }
-
-    /**
      * @notice Unwraps a .eth domain. e.g. vitalik.eth
      * @dev Can be called by the owner in the wrapper or an authorised caller in the wrapper
      * @param labelhash Labelhash of the .eth domain
@@ -454,28 +416,6 @@ contract NameWrapper is
             registrant,
             uint256(labelhash)
         );
-    }
-
-    /**
-     * @notice Unwraps a non .eth domain, of any kind. Could be a DNSSEC name vitalik.xyz or a subdomain
-     * @dev Can be called by the owner in the wrapper or an authorised caller in the wrapper
-     * @param parentNode Parent namehash of the name e.g. vitalik.xyz would be namehash('xyz')
-     * @param labelhash Labelhash of the name, e.g. vitalik.xyz would be keccak256('vitalik')
-     * @param controller Sets the owner in the registry to this address
-     */
-
-    function unwrap(
-        bytes32 parentNode,
-        bytes32 labelhash,
-        address controller
-    ) public onlyTokenOwner(_makeNode(parentNode, labelhash)) {
-        if (parentNode == ETH_NODE) {
-            revert IncompatibleParent();
-        }
-        if (controller == address(0x0) || controller == address(this)) {
-            revert IncorrectTargetOwner(controller);
-        }
-        _unwrap(_makeNode(parentNode, labelhash), controller);
     }
 
     /**
@@ -875,7 +815,8 @@ contract NameWrapper is
             return wrapped;
         }
         try registrar.ownerOf(uint256(labelhash)) returns (address owner) {
-            return owner == address(this);
+            return
+                owner == address(this) && ownerOf(uint256(node)) != address(0);
         } catch {
             return false;
         }

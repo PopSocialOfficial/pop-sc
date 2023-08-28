@@ -52,8 +52,6 @@ interface Resolver is
 
     function setContenthash(bytes32 node, bytes calldata hash) external;
 
-    function setDnsrr(bytes32 node, bytes calldata data) external;
-
     function setName(bytes32 node, string calldata _name) external;
 
     function setPubkey(bytes32 node, bytes32 x, bytes32 y) external;

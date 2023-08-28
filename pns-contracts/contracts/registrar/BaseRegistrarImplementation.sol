@@ -9,9 +9,9 @@ contract BaseRegistrarImplementation is ERC721, IBaseRegistrar, Ownable {
     // A map of expiry times
     mapping(uint256 => uint256) expiries;
     // The PNS registry
-    PNS public pns;
+    PNS public immutable pns;
     // The namehash of the TLD this registrar owns (eg, .eth)
-    bytes32 public baseNode;
+    bytes32 public immutable baseNode;
     // A map of addresses that are authorised to register and renew names.
     mapping(address => bool) public controllers;
     uint256 public constant GRACE_PERIOD = 90 days;
