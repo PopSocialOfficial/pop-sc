@@ -875,7 +875,8 @@ contract NameWrapper is
             return wrapped;
         }
         try registrar.ownerOf(uint256(labelhash)) returns (address owner) {
-            return owner == address(this);
+            return
+                owner == address(this) && ownerOf(uint256(node)) != address(0);
         } catch {
             return false;
         }
