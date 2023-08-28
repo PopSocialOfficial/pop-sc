@@ -228,7 +228,7 @@ contract RegistrarController is
             payable(msg.sender).transfer(msg.value - price);
         }
 
-        emit NameRenewed(name, labelhash, msg.value, expires);
+        emit NameRenewed(name, labelhash, price, expires);
     }
 
     function withdraw() public {
