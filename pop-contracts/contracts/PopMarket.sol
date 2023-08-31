@@ -449,12 +449,12 @@ contract PopMarketPlace is
             (_bid.copies == 0 ? 1 : _bid.copies);
 
         if (isNative) {
-            (bool success, ) = payable(msg.sender).call{value: totalAmount}(
+            (bool success, ) = payable(_bid.bidder).call{value: totalAmount}(
                 ""
             );
             require(success, "Transfer Failed");
         } else {
-            safeTransferAmount(_order.paymentToken, msg.sender, totalAmount);
+            safeTransferAmount(_order.paymentToken, _bid.bidder, totalAmount);
         }
     }
 
