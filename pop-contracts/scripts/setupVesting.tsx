@@ -9,7 +9,7 @@ const tokenSaleProxyAbi = require('../contracts/abis/tokenSale.json');
 async function main() {
     const [owner] = await ethers.getSigners();
   try {
-    const vestingContract = new ethers.Contract("0x3Abe067A6BB12c0C39035653DB5d01d60a9669BF", tokenSaleProxyAbi, owner)
+    const vestingContract = new ethers.Contract("", tokenSaleProxyAbi, owner)
     
     let recipients = [
       "0x9749AA9F78E15385695069EC85689AD07f7e011E",

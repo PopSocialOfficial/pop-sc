@@ -11,7 +11,7 @@ async function main() {
     const [owner] = await ethers.getSigners();
   try {
     // replace with right address
-    const tokenSale = new ethers.Contract("0xb289D3B9D52c3D7b2da0200eD5Af8DD11e6190e0", tokenSaleAbi, owner)
+    const tokenSale = new ethers.Contract("0x3B99fC66230d8e43f847ED364E6f2c615ec0f86c", tokenSaleAbi, owner)
     
     let recipients = [
       "0x9749AA9F78E15385695069EC85689AD07f7e011E",
