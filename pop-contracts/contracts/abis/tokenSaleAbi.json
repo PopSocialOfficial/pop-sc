@@ -1,0 +1,383 @@
+[
+    {
+      "inputs": [],
+      "name": "ExceedsCap",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ExceedsRemainingAmount",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidBaseToken",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidTimestamp",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "NotActive",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "NotSettled",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "TooSmallDepositAmount",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ZeroAmount",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ZeroPrice",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Deposited",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "MAX_CAP",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "MIN_CAP",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "MIN_DURATION",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "SALE_INFO",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "B_TOKEN_0",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "B_TOKEN_1",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "TOKEN_PRICE",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "AMOUNT",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "START_TIMESTAMP",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "END_TIMESTAMP",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "SALE_STATUS",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "BASE_0_COLLECTED",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "BASE_1_COLLECTED",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "TOTAL_TOKENS_SOLD",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "NUM_BUYERS",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "CANCELLED",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_token",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_to",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "inCaseTokensGetStuck",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "bToken0",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "bToken1",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "tokenPrice",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "startTime",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "endTime",
+          "type": "uint256"
+        }
+      ],
+      "name": "initializeSale",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "presaleStatus",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "setMaxCap",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "setMinCap",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "sweepFunds",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_baseToken",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "userDeposit",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "userInfo",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "base0Deposited",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "base1Deposited",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "tokensOwed",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ]
+  

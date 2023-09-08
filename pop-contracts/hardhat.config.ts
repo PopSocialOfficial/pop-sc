@@ -77,9 +77,17 @@ const config: HardhatUserConfig & {
     //   url: "https://mumbai.rpc.thirdweb.com",
     //   accounts: [process.env.OWNER_PRIVATE_KEY ?? ""]
     // },
-    // tbsc: {
-    //   url: "https://binance-testnet.rpc.thirdweb.com",
-    //   accounts: [process.env.OWNER_PRIVATE_KEY ?? "", process.env.POP_PRIVATE_KEY ?? ""]
+    tbsc: {
+      url: "https://distinguished-red-tent.bsc-testnet.discover.quiknode.pro/d1eac418ed5fda22caed6ee2403a8551a0cdefc2/",
+      accounts: [process.env.OWNER_PRIVATE_KEY ?? ""]
+    },
+    // sepolia: {
+    //   url: "https://rpc.ankr.com/eth_sepolia",
+    //   accounts: [process.env.OWNER_PRIVATE_KEY ?? ""]
+    // },
+    // forkedBsc: {
+    //   url: "https://bsc.popoo.dev/",
+    //   accounts: [process.env.OWNER_PRIVATE_KEY ?? ""]
     // }
   },
   etherscan: {
