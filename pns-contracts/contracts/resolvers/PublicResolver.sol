@@ -123,7 +123,7 @@ contract PublicResolver is
 
     function isAuthorised(bytes32 node) internal view override returns (bool) {
         if (
-            msg.sender == trustedETHController ||
+            msg.sender == trustedETHController || // We need to be able to register/update records on a node via trustedETHController
             msg.sender == trustedReverseRegistrar
         ) {
             return true;

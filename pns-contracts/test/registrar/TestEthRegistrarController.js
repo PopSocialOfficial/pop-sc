@@ -22,8 +22,8 @@ const {
 } = require('../test-utils/constants')
 
 const DAY = 24 * 60 * 60
-const REGISTRATION_TIME = 28 * DAY
-const BUFFERED_REGISTRATION_COST = REGISTRATION_TIME + 3 * DAY
+const REGISTRATION_TIME = MAX_EXPIRY
+const BUFFERED_REGISTRATION_COST = REGISTRATION_TIME + BigInt(3 * DAY)
 const GRACE_PERIOD = 90 * DAY
 const NULL_ADDRESS = ZERO_ADDRESS
 
@@ -36,10 +36,8 @@ contract('RegistrarController', function () {
   let controller
   let controller2 // controller signed by accounts[1]
   let controller3 // controller signed by accounts[2] relayer
-  let priceOracle
   let reverseRegistrar
   let nameWrapper
-  let mockERC20
   let callData
 
   let ownerAccount // Account that owns the registrar
@@ -47,20 +45,8 @@ contract('RegistrarController', function () {
   let relayerAccount // Account that owns test names
   let accounts = []
 
-  async function registerName(
-    name,
-    txOptions = { value: BUFFERED_REGISTRATION_COST },
-  ) {
-    const tx = await controller.register(
-      name,
-      registrantAccount,
-      REGISTRATION_TIME,
-      NULL_ADDRESS,
-      [],
-      false,
-      0,
-      txOptions,
-    )
+  async function registerName(name, owner = registrantAccount, data = []) {
+    const tx = await controller3.registerWithRelayer(name, owner, data)
 
     return tx
   }
@@ -133,15 +119,6 @@ contract('RegistrarController', function () {
     ]
 
     resolver2 = await resolver.connect(signers[1])
-
-    const mockToken = await deploy(
-      'MockERC20',
-      'Ethereum Name Service Token',
-      'ENS',
-      [registrantAccount],
-    )
-
-    mockERC20 = mockToken.connect(signers[1])
   })
 
   beforeEach(async () => {
@@ -187,522 +164,51 @@ contract('RegistrarController', function () {
     expect(await controller.available(sha3('available'))).to.equal(true)
   })
 
-  it('should permit new registrations', async () => {
-    const name = 'newname'
-    const balanceBefore = await web3.eth.getBalance(controller.address)
-    const tx = await registerName(name)
-    const block = await provider.getBlock(tx.blockNumber)
-    await expect(tx)
-      .to.emit(controller, 'NameRegistered')
-      .withArgs(
-        name,
-        sha3(name),
-        registrantAccount,
-        REGISTRATION_TIME,
-        block.timestamp + REGISTRATION_TIME,
-      )
-
-    expect(
-      (await web3.eth.getBalance(controller.address)) - balanceBefore,
-    ).to.equal(REGISTRATION_TIME)
+  it('should set the default resolver', async () => {
+    await controller.setDefaultResolver(resolver.address)
+    expect(await controller.defaultResolver()).to.equal(resolver.address)
   })
 
-  it('should revert when not enough ether is transferred', async () => {
-    await expect(registerName('newname', { value: 0 })).to.be.revertedWith(
-      'InsufficientValue()',
+  it('only admin can set default resolver', async () => {
+    await expect(controller2.setDefaultResolver(resolver.address)).to.be
+      .reverted
+  })
+
+  it('revert if defaultResolver is not set', async () => {
+    // set relayer
+    const RELAYER_ROLE = ethers.utils.keccak256(
+      ethers.utils.toUtf8Bytes('RELAYER_ROLE'),
     )
-  })
+    await controller.grantRole(RELAYER_ROLE, relayerAccount)
 
-  it('should report registered names as unavailable', async () => {
-    const name = 'newname'
-    await registerName(name)
-    expect(await controller.available(name)).to.equal(false)
-  })
-
-  it('should permit new registrations with resolver and records', async () => {
-    var balanceBefore = await web3.eth.getBalance(controller.address)
-    var tx = await controller2.register(
-      'newconfigname',
-      registrantAccount,
-      REGISTRATION_TIME,
-      resolver.address,
-      callData,
-      false,
-      0,
-      { value: BUFFERED_REGISTRATION_COST },
-    )
-
-    const block = await provider.getBlock(tx.blockNumber)
-
-    await expect(tx)
-      .to.emit(controller, 'NameRegistered')
-      .withArgs(
-        'newconfigname',
-        sha3('newconfigname'),
-        registrantAccount,
-        REGISTRATION_TIME,
-        block.timestamp + REGISTRATION_TIME,
-      )
-
-    expect(
-      (await web3.eth.getBalance(controller.address)) - balanceBefore,
-    ).to.equal(REGISTRATION_TIME)
-
-    var nodehash = namehash('newconfigname.pop')
-    expect(await ens.resolver(nodehash)).to.equal(resolver.address)
-    expect(await ens.owner(nodehash)).to.equal(nameWrapper.address)
-    expect(await baseRegistrar.ownerOf(sha3('newconfigname'))).to.equal(
-      nameWrapper.address,
-    )
-    expect(await resolver['addr(bytes32)'](nodehash)).to.equal(
-      registrantAccount,
-    )
-    expect(await resolver['text'](nodehash, 'url')).to.equal('ethereum.com')
-    expect(await nameWrapper.ownerOf(nodehash)).to.equal(registrantAccount)
-  })
-
-  it('should not permit new registrations with 0 resolver', async () => {
-    await expect(
-      controller.register(
-        'newconfigname',
-        registrantAccount,
-        REGISTRATION_TIME,
-        NULL_ADDRESS,
-        callData,
-        false,
-        0,
-        { value: BUFFERED_REGISTRATION_COST },
-      ),
-    ).to.be.revertedWith('ResolverRequiredWhenDataSupplied()')
-  })
-
-  it('should not permit new registrations with EoA resolver', async () => {
-    await expect(
-      controller.register(
-        'newconfigname',
-        registrantAccount,
-        REGISTRATION_TIME,
-        registrantAccount,
-        callData,
-        false,
-        0,
-        { value: BUFFERED_REGISTRATION_COST },
-      ),
-    ).to.be.reverted
-  })
-
-  it('should not permit new registrations with an incompatible contract', async () => {
-    await expect(
-      controller.register(
-        'newconfigname',
-        registrantAccount,
-        REGISTRATION_TIME,
-        controller.address,
-        callData,
-        false,
-        0,
-        { value: BUFFERED_REGISTRATION_COST },
-      ),
-    ).to.be.revertedWith(
-      "Transaction reverted: function selector was not recognized and there's no fallback function",
-    )
-  })
-
-  it('should not permit new registrations with records updating a different name', async () => {
-    await expect(
-      controller2.register(
-        'awesome',
-        registrantAccount,
-        REGISTRATION_TIME,
-        resolver.address,
-        [
-          resolver.interface.encodeFunctionData('setAddr(bytes32,address)', [
-            namehash('othername.pop'),
-            registrantAccount,
-          ]),
-        ],
-        false,
-        0,
-        { value: BUFFERED_REGISTRATION_COST },
-      ),
-    ).to.be.revertedWith('multicall: All records must have a matching namehash')
-  })
-
-  it('should not permit new registrations with any record updating a different name', async () => {
-    await expect(
-      controller2.register(
-        'awesome',
-        registrantAccount,
-        REGISTRATION_TIME,
-        resolver.address,
-        [
-          resolver.interface.encodeFunctionData('setAddr(bytes32,address)', [
-            namehash('awesome.pop'),
-            registrantAccount,
-          ]),
-          resolver.interface.encodeFunctionData(
-            'setText(bytes32,string,string)',
-            [namehash('other.pop'), 'url', 'ethereum.com'],
-          ),
-        ],
-        false,
-        0,
-        { value: BUFFERED_REGISTRATION_COST },
-      ),
-    ).to.be.revertedWith('multicall: All records must have a matching namehash')
-  })
-
-  it('should permit a registration with resolver but no records', async () => {
-    const balanceBefore = await web3.eth.getBalance(controller.address)
-    let tx2 = await controller.register(
-      'newconfigname2',
-      registrantAccount,
-      REGISTRATION_TIME,
-      resolver.address,
-      [],
-      false,
-      0,
-      { value: BUFFERED_REGISTRATION_COST },
-    )
-
-    const block = await provider.getBlock(tx2.blockNumber)
-
-    await expect(tx2)
-      .to.emit(controller, 'NameRegistered')
-      .withArgs(
-        'newconfigname2',
-        sha3('newconfigname2'),
-        registrantAccount,
-        REGISTRATION_TIME,
-        block.timestamp + REGISTRATION_TIME,
-      )
-
-    const nodehash = namehash('newconfigname2.pop')
-    expect(await ens.resolver(nodehash)).to.equal(resolver.address)
-    expect(await resolver['addr(bytes32)'](nodehash)).to.equal(NULL_ADDRESS)
-    expect(
-      (await web3.eth.getBalance(controller.address)) - balanceBefore,
-    ).to.equal(REGISTRATION_TIME)
-  })
-
-  it('should reject duplicate registrations', async () => {
-    const label = 'newname'
-    await registerName(label)
-
-    await expect(
-      controller.register(
-        label,
-        registrantAccount,
-        REGISTRATION_TIME,
-        NULL_ADDRESS,
-        [],
-        false,
-        0,
-        {
-          value: BUFFERED_REGISTRATION_COST,
-        },
-      ),
-    ).to.be.revertedWith(`NameNotAvailable("${label}")`)
-  })
-
-  it('should allow anyone to renew a name without changing fuse expiry', async () => {
-    await registerName('newname')
-    var nodehash = namehash('newname.pop')
-    var fuseExpiry = (await nameWrapper.getData(nodehash))[2]
-    var expires = await baseRegistrar.nameExpires(sha3('newname'))
-    var balanceBefore = await web3.eth.getBalance(controller.address)
-    const duration = 86400
-    const price = await controller.rentPrice(
-      sha3('newname'),
-      duration,
-      ZERO_ADDRESS,
-    )
-    await controller.renew('newname', duration, { value: price })
-    var newExpires = await baseRegistrar.nameExpires(sha3('newname'))
-    var newFuseExpiry = (await nameWrapper.getData(nodehash))[2]
-    expect(newExpires.toNumber() - expires.toNumber()).to.equal(duration)
-    expect(newFuseExpiry.toNumber() - fuseExpiry.toNumber()).to.equal(86400)
-
-    expect(
-      (await web3.eth.getBalance(controller.address)) - balanceBefore,
-    ).to.equal(86400)
-  })
-
-  it('should allow token owners to renew a name', async () => {
-    const CANNOT_UNWRAP = 1
-    const PARENT_CANNOT_CONTROL = 64
-
-    await registerName('newname')
-    var nodehash = namehash('newname.pop')
-    const [, fuses, fuseExpiry] = await nameWrapper.getData(nodehash)
-
-    var expires = await baseRegistrar.nameExpires(sha3('newname'))
-    var balanceBefore = await web3.eth.getBalance(controller.address)
-    const duration = 86400
-    const price = await controller.rentPrice(
-      sha3('newname'),
-      duration,
-      ZERO_ADDRESS,
-    )
-    await controller2.renew('newname', duration, { value: price })
-    var newExpires = await baseRegistrar.nameExpires(sha3('newname'))
-    const [, newFuses, newFuseExpiry] = await nameWrapper.getData(nodehash)
-    expect(newExpires.toNumber() - expires.toNumber()).to.equal(duration)
-    expect(newFuseExpiry.toNumber() - fuseExpiry.toNumber()).to.equal(duration)
-    expect(newFuses).to.equal(fuses)
-    expect(
-      (await web3.eth.getBalance(controller.address)) - balanceBefore,
-    ).to.equal(86400)
-  })
-
-  it('non wrapped names can renew', async () => {
-    const label = 'newname'
-    const tokenId = sha3(label)
-    const nodehash = namehash(`${label}.pop`)
-    // this is to allow user to register without namewrapped
-    await baseRegistrar.addController(ownerAccount)
-    await baseRegistrar.register(tokenId, ownerAccount, 84600)
-
-    expect(await nameWrapper.ownerOf(nodehash)).to.equal(ZERO_ADDRESS)
-    expect(await baseRegistrar.ownerOf(tokenId)).to.equal(ownerAccount)
-
-    var expires = await baseRegistrar.nameExpires(tokenId)
-    const duration = 86400
-    const price = await controller.rentPrice(tokenId, duration, ZERO_ADDRESS)
-    await controller.renew(label, duration, { value: price })
-
-    expect(await baseRegistrar.ownerOf(tokenId)).to.equal(ownerAccount)
-    expect(await nameWrapper.ownerOf(nodehash)).to.equal(ZERO_ADDRESS)
-    var newExpires = await baseRegistrar.nameExpires(tokenId)
-    expect(newExpires.toNumber() - expires.toNumber()).to.equal(duration)
-  })
-
-  it('should require sufficient value for a renewal', async () => {
-    await expect(controller.renew('name', 86400)).to.be.revertedWith(
-      'InsufficientValue()',
-    )
-  })
-
-  it('should allow anyone to withdraw funds and transfer to the registrar owner', async () => {
-    await controller.withdraw({ from: ownerAccount })
-    expect(parseInt(await web3.eth.getBalance(controller.address))).to.equal(0)
-  })
-
-  it('should set the reverse record of the account', async () => {
-    await controller.register(
-      'reverse',
-      registrantAccount,
-      REGISTRATION_TIME,
-      resolver.address,
-      [],
-      true,
-      0,
-      { value: BUFFERED_REGISTRATION_COST },
-    )
-
-    expect(await resolver.name(getReverseNode(ownerAccount))).to.equal(
-      'reverse.pop',
-    )
-  })
-
-  it('should not set the reverse record of the account when set to false', async () => {
-    await controller.register(
-      'noreverse',
-      registrantAccount,
-      REGISTRATION_TIME,
-      resolver.address,
-      [],
-      false,
-      0,
-      { value: BUFFERED_REGISTRATION_COST },
-    )
-
-    expect(await resolver.name(getReverseNode(ownerAccount))).to.equal('')
-  })
-
-  it('should auto wrap the name and set the ERC721 owner to the wrapper', async () => {
-    const label = 'wrapper'
-    const name = label + '.pop'
-    await controller.register(
-      label,
-      registrantAccount,
-      REGISTRATION_TIME,
-      resolver.address,
-      [],
-      true,
-      0,
-      { value: BUFFERED_REGISTRATION_COST },
-    )
-
-    expect(await nameWrapper.ownerOf(namehash(name))).to.equal(
-      registrantAccount,
-    )
-
-    expect(await ens.owner(namehash(name))).to.equal(nameWrapper.address)
-    expect(await baseRegistrar.ownerOf(sha3(label))).to.equal(
-      nameWrapper.address,
-    )
-  })
-
-  it('should auto wrap the name and allow fuses and expiry to be set', async () => {
-    const MAX_INT_64 = 2n ** 64n - 1n
-    const label = 'fuses'
-    const name = label + '.pop'
-    const tx = await controller.register(
-      label,
-      registrantAccount,
-      REGISTRATION_TIME,
-      resolver.address,
-      [],
-      true,
-      1,
-      { value: BUFFERED_REGISTRATION_COST },
-    )
-
-    const block = await provider.getBlock(tx.block)
-
-    const [, fuses, expiry] = await nameWrapper.getData(namehash(name))
-    expect(fuses).to.equal(PARENT_CANNOT_CONTROL | CANNOT_UNWRAP | IS_DOT_ETH)
-    expect(expiry).to.equal(REGISTRATION_TIME + GRACE_PERIOD + block.timestamp)
-  })
-
-  it('approval should reduce gas for registration', async () => {
-    const label = 'other'
-    const name = label + '.pop'
-    const node = namehash(name)
-
-    const gasA = await controller2.estimateGas.register(
-      label,
-      registrantAccount,
-      REGISTRATION_TIME,
-      resolver.address,
-      [
-        resolver.interface.encodeFunctionData('setAddr(bytes32,address)', [
-          node,
-          registrantAccount,
-        ]),
-      ],
-      true,
-      1,
-      { value: BUFFERED_REGISTRATION_COST },
-    )
-
-    await resolver2.setApprovalForAll(controller.address, true)
-
-    const gasB = await controller2.estimateGas.register(
-      label,
-      registrantAccount,
-      REGISTRATION_TIME,
-      resolver2.address,
-      [
-        resolver.interface.encodeFunctionData('setAddr(bytes32,address)', [
-          node,
-          registrantAccount,
-        ]),
-      ],
-      true,
-      1,
-      { value: BUFFERED_REGISTRATION_COST },
-    )
-
-    const tx = await controller2.register(
-      label,
-      registrantAccount,
-      REGISTRATION_TIME,
-      resolver2.address,
-      [
-        resolver.interface.encodeFunctionData('setAddr(bytes32,address)', [
-          node,
-          registrantAccount,
-        ]),
-      ],
-      true,
-      1,
-      { value: BUFFERED_REGISTRATION_COST },
-    )
-
-    console.log((await tx.wait()).gasUsed.toString())
-
-    console.log(gasA.toString(), gasB.toString())
-
-    expect(await nameWrapper.ownerOf(node)).to.equal(registrantAccount)
-    expect(await ens.owner(namehash(name))).to.equal(nameWrapper.address)
-    expect(await baseRegistrar.ownerOf(sha3(label))).to.equal(
-      nameWrapper.address,
-    )
-    expect(await resolver2['addr(bytes32)'](node)).to.equal(registrantAccount)
-  })
-
-  it('should not permit new registrations with non resolver function calls', async () => {
     const label = 'newconfigname'
-    const name = `${label}.pop`
-    const node = namehash(name)
-    const secondTokenDuration = 788400000 // keep bogus NFT for 25 years;
-    const callData = [
-      baseRegistrar.interface.encodeFunctionData(
-        'register(uint256,address,uint)',
-        [node, registrantAccount, secondTokenDuration],
-      ),
-    ]
     await expect(
-      controller.register(
-        label,
-        registrantAccount,
-        REGISTRATION_TIME,
-        baseRegistrar.address,
-        callData,
-        false,
-        0,
-        { value: BUFFERED_REGISTRATION_COST },
-      ),
-    ).to.be.revertedWith(
-      "Transaction reverted: function selector was not recognized and there's no fallback function",
+      controller3.registerWithRelayer(label, registrantAccount, callData),
+    ).to.be.revertedWith('DefaultResolverNotConfigured')
+  })
+
+  it('revert if defaultResolver is not set', async () => {
+    // set relayer
+    const RELAYER_ROLE = ethers.utils.keccak256(
+      ethers.utils.toUtf8Bytes('RELAYER_ROLE'),
     )
+    await controller.grantRole(RELAYER_ROLE, relayerAccount)
+
+    const label = 'newconfigname'
+    await expect(
+      controller3.registerWithRelayer(label, registrantAccount, callData),
+    ).to.be.revertedWith('DefaultResolverNotConfigured')
   })
 
-  describe('#setBasePrice', () => {
-    it('should set the base price', async () => {
-      await controller.setBasePrice(ZERO_ADDRESS, 100)
-      expect(await controller.basePrice(ZERO_ADDRESS)).to.equal(100)
-    })
-
-    it('only admin can set base price', async () => {
-      await expect(controller2.setBasePrice(ZERO_ADDRESS, 100)).to.be.reverted
-    })
-  })
-
-  describe('#setDefaultResolver', () => {
-    it('should set the default resolver', async () => {
+  describe('register', () => {
+    beforeEach(async () => {
       await controller.setDefaultResolver(resolver.address)
-      expect(await controller.defaultResolver()).to.equal(resolver.address)
-    })
-
-    it('only admin can set default resolver', async () => {
-      await expect(controller2.setDefaultResolver(resolver.address)).to.be
-        .reverted
-    })
-  })
-
-  describe('#registerWithRelayer', () => {
-    it('revert if defaultResolver is not set', async () => {
-      // set relayer
       const RELAYER_ROLE = ethers.utils.keccak256(
         ethers.utils.toUtf8Bytes('RELAYER_ROLE'),
       )
       await controller.grantRole(RELAYER_ROLE, relayerAccount)
-
-      const label = 'newconfigname'
-      await expect(
-        controller3.registerWithRelayer(label, registrantAccount, callData),
-      ).to.be.revertedWith('DefaultResolverNotConfigured')
     })
     it('register with relayer', async () => {
-      // set relayer
-      const RELAYER_ROLE = ethers.utils.keccak256(
-        ethers.utils.toUtf8Bytes('RELAYER_ROLE'),
-      )
-      await controller.grantRole(RELAYER_ROLE, relayerAccount)
-
       // setDefaultResolver
       await controller.setDefaultResolver(resolver.address)
 
@@ -742,66 +248,109 @@ contract('RegistrarController', function () {
       expect(await resolver['text'](nodehash, 'url')).to.equal('ethereum.com')
       expect(await nameWrapper.ownerOf(nodehash)).to.equal(registrantAccount)
     })
-  })
+    it('should report registered names as unavailable', async () => {
+      const name = 'newname'
+      await registerName(name)
+      expect(await controller.available(name)).to.equal(false)
+    })
 
-  describe('#registerWithERC20', () => {
-    it('register with erc20', async () => {
-      // set base price for erc20
-      await controller.setBasePrice(mockERC20.address, ONE_WAI)
-
-      const label = 'newconfigname'
-      await mockERC20.approve(controller.address, BUFFERED_REGISTRATION_COST)
-      var tx = await controller2.registerWithERC20(
-        'newconfigname',
-        registrantAccount,
-        REGISTRATION_TIME,
-        resolver.address,
-        callData,
-        0,
-        mockERC20.address,
+    it('should not permit new registrations with records updating a different name', async () => {
+      await expect(
+        registerName('awesome', registrantAccount, [
+          resolver.interface.encodeFunctionData('setAddr(bytes32,address)', [
+            namehash('othername.pop'),
+            registrantAccount,
+          ]),
+        ]),
+      ).to.be.revertedWith(
+        'multicall: All records must have a matching namehash',
       )
+    })
 
-      const block = await provider.getBlock(tx.blockNumber)
+    it('should not permit new registrations with any record updating a different name', async () => {
+      await expect(
+        registerName('awesome', registrantAccount, [
+          resolver.interface.encodeFunctionData('setAddr(bytes32,address)', [
+            namehash('awesome.pop'),
+            registrantAccount,
+          ]),
+          resolver.interface.encodeFunctionData(
+            'setText(bytes32,string,string)',
+            [namehash('other.pop'), 'url', 'ethereum.com'],
+          ),
+        ]),
+      ).to.be.revertedWith(
+        'multicall: All records must have a matching namehash',
+      )
+    })
 
-      await expect(tx)
+    it('should permit a registration with resolver but no records', async () => {
+      const balanceBefore = await web3.eth.getBalance(controller.address)
+      let tx2 = await registerName('newconfigname2', registrantAccount, [])
+
+      const block = await provider.getBlock(tx2.blockNumber)
+
+      await expect(tx2)
         .to.emit(controller, 'NameRegistered')
         .withArgs(
-          label,
-          sha3(label),
+          'newconfigname2',
+          sha3('newconfigname2'),
           registrantAccount,
-          REGISTRATION_TIME,
-          REGISTRATION_TIME + block.timestamp,
+          0,
+          BigInt(block.timestamp) + REGISTRATION_TIME,
         )
 
-      var nodehash = namehash(`${label}.pop`)
+      const nodehash = namehash('newconfigname2.pop')
       expect(await ens.resolver(nodehash)).to.equal(resolver.address)
-      expect(await ens.owner(nodehash)).to.equal(nameWrapper.address)
+      expect(await resolver['addr(bytes32)'](nodehash)).to.equal(NULL_ADDRESS)
+    })
+
+    it('should reject duplicate registrations', async () => {
+      const label = 'newname'
+      await registerName(label)
+
+      await expect(
+        registerName(label, registrantAccount, []),
+      ).to.be.revertedWith(`NameNotAvailable("${label}")`)
+    })
+
+    it('should allow anyone to withdraw funds and transfer to the registrar owner', async () => {
+      await controller.withdraw({ from: ownerAccount })
+      expect(parseInt(await web3.eth.getBalance(controller.address))).to.equal(
+        0,
+      )
+    })
+
+    it('should not set the reverse record of the account when set to false', async () => {
+      await registerName('noreverse', registrantAccount, [])
+
+      expect(await resolver.name(getReverseNode(ownerAccount))).to.equal('')
+    })
+
+    it('should auto wrap the name and set the ERC721 owner to the wrapper', async () => {
+      const label = 'wrapper'
+      const name = label + '.pop'
+      await registerName(label, registrantAccount, [])
+
+      expect(await nameWrapper.ownerOf(namehash(name))).to.equal(
+        registrantAccount,
+      )
+
+      expect(await ens.owner(namehash(name))).to.equal(nameWrapper.address)
       expect(await baseRegistrar.ownerOf(sha3(label))).to.equal(
         nameWrapper.address,
       )
-      expect(await resolver['addr(bytes32)'](nodehash)).to.equal(
-        registrantAccount,
-      )
-      expect(await resolver['text'](nodehash, 'url')).to.equal('ethereum.com')
-      expect(await nameWrapper.ownerOf(nodehash)).to.equal(registrantAccount)
+    })
+  })
+
+  describe('#setBasePrice', () => {
+    it('should set the base price', async () => {
+      await controller.setBasePrice(ZERO_ADDRESS, 100)
+      expect(await controller.basePrice(ZERO_ADDRESS)).to.equal(100)
     })
 
-    it('revert if paytoken is not set', async () => {
-      // set base price for erc20
-      await controller.setBasePrice(mockERC20.address, 0)
-
-      await mockERC20.approve(controller.address, BUFFERED_REGISTRATION_COST)
-      await expect(
-        controller2.registerWithERC20(
-          'newconfigname',
-          registrantAccount,
-          REGISTRATION_TIME,
-          resolver.address,
-          callData,
-          0,
-          mockERC20.address,
-        ),
-      ).to.be.revertedWith('TokenNotSupported')
+    it('only admin can set base price', async () => {
+      await expect(controller2.setBasePrice(ZERO_ADDRESS, 100)).to.be.reverted
     })
   })
 })
