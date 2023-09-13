@@ -89,6 +89,11 @@ const config: HardhatUserConfig & {
     //   url: "https://bsc.popoo.dev/",
     //   accounts: [process.env.OWNER_PRIVATE_KEY ?? ""]
     // }
+    bsc: {
+      chainId: 56,
+      url: "https://bsc-dataseed1.binance.org",
+      accounts: [process.env.OWNER_PRIVATE_KEY ?? ""]
+    },
   },
   etherscan: {
     apiKey: process.env.POLYGONSCAN_API_KEY,

@@ -18,12 +18,12 @@ async function main() {
     const implementation = await TokenSaleDistributorFactory.deploy(); // 1
     console.log('Implementation deployed...');
 
-    
+
     await proxy.setPendingImplementation(implementation.address).then(async() => {
       setTimeout(async function() {
         await implementation.becomeImplementation(proxy.address).then(() => {
           const tokenSaleDistributor = TokenSaleDistributorFactory.attach(proxy.address);
-  
+
           console.log('PROXY ADDR', tokenSaleDistributor.address);
           console.log('IMPLEMENTATION ADDR', implementation.address);
 
