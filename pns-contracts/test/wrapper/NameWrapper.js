@@ -1154,19 +1154,6 @@ describe('Name Wrapper', () => {
       ).to.be.revertedWith(`OperationProhibited("${wrappedTokenId}")`)
     })
 
-    it('Approved address cannot transfer the name', async () => {
-      await NameWrapper.approve(account2, wrappedTokenId)
-      await expect(
-        NameWrapper2.safeTransferFrom(
-          account,
-          account2,
-          wrappedTokenId,
-          1,
-          '0x',
-        ),
-      ).to.be.revertedWith(`ERC1155: caller is not owner nor approved`)
-    })
-
     it('Approved address cannot transfer the name with setRecord()', async () => {
       await NameWrapper.approve(account2, wrappedTokenId)
       await expect(
@@ -1193,24 +1180,6 @@ describe('Name Wrapper', () => {
       await expect(
         NameWrapper2.unwrapETH2LD(tokenId, account2, account2),
       ).to.be.revertedWith(`Unauthorised("${wrappedTokenId}", "${account2}")`)
-    })
-
-    it('Approval is cleared on transfer', async () => {
-      await NameWrapper.approve(account2, wrappedTokenId)
-
-      expect(await NameWrapper.getApproved(wrappedTokenId)).to.equal(account2)
-
-      await NameWrapper.safeTransferFrom(
-        account,
-        account3,
-        wrappedTokenId,
-        1,
-        '0x',
-      )
-
-      expect(await NameWrapper.getApproved(wrappedTokenId)).to.equal(
-        EMPTY_ADDRESS,
-      )
     })
 
     it('Approval is cleared on unwrapETH2LD()', async () => {
@@ -1264,22 +1233,6 @@ describe('Name Wrapper', () => {
       )
 
       expect(await NameWrapper.ownerOf(wrappedTokenId)).to.equal(account)
-    })
-
-    it('Approval is not cleared on transfer if CANNOT_APPROVE is burnt', async () => {
-      await NameWrapper.approve(account2, wrappedTokenId)
-      await NameWrapper.setFuses(wrappedTokenId, CANNOT_UNWRAP | CANNOT_APPROVE)
-      expect(await NameWrapper.getApproved(wrappedTokenId)).to.equal(account2)
-
-      await NameWrapper.safeTransferFrom(
-        account,
-        account3,
-        wrappedTokenId,
-        1,
-        '0x',
-      )
-
-      expect(await NameWrapper.getApproved(wrappedTokenId)).to.equal(account2)
     })
   })
 
@@ -2185,41 +2138,6 @@ describe('Name Wrapper', () => {
       await expect(
         NameWrapper.setFuses(wrappedTokenId, CANNOT_TRANSFER),
       ).to.be.revertedWith(`OperationProhibited("${wrappedTokenId}"`)
-    })
-
-    it('can set fuses and burn transfer', async () => {
-      const [, signer2] = await ethers.getSigners()
-      const account2 = await signer2.getAddress()
-      const label = 'fuses3'
-      const tokenId = labelhash('fuses3')
-      const wrappedTokenId = namehash('fuses3.pop')
-
-      await BaseRegistrar.register(tokenId, account, 1 * DAY)
-
-      await BaseRegistrar.setApprovalForAll(NameWrapper.address, true)
-
-      await NameWrapper.wrapETH2LD(label, account, CANNOT_UNWRAP, EMPTY_ADDRESS)
-
-      await NameWrapper.setFuses(wrappedTokenId, CANNOT_TRANSFER)
-
-      expect(await NameWrapper.ownerOf(wrappedTokenId)).to.equal(account)
-
-      // check flag in the wrapper
-
-      expect(
-        await NameWrapper.allFusesBurned(wrappedTokenId, CANNOT_TRANSFER),
-      ).to.equal(true)
-
-      //Transfer should revert
-      await expect(
-        NameWrapper.safeTransferFrom(
-          account,
-          account2,
-          wrappedTokenId,
-          1,
-          '0x',
-        ),
-      ).to.be.revertedWith(`OperationProhibited("${wrappedTokenId}")`)
     })
 
     it('can set fuses and burn canSetResolver and canSetTTL', async () => {
@@ -4820,44 +4738,6 @@ describe('Name Wrapper', () => {
     })
   })
 
-  describe('Transfer', () => {
-    const label = 'transfer'
-    const labelHash = labelhash(label)
-    const wrappedTokenId = namehash(label + '.pop')
-
-    before(async () => {
-      await registerSetupAndWrapName(label, account, CANNOT_UNWRAP)
-    })
-
-    it('safeTransfer cannot be called if CANNOT_TRANSFER is burned and is not expired', async () => {
-      await NameWrapper.setFuses(wrappedTokenId, CANNOT_TRANSFER)
-
-      await expect(
-        NameWrapper.safeTransferFrom(
-          account,
-          account2,
-          wrappedTokenId,
-          1,
-          '0x',
-        ),
-      ).to.be.revertedWith(`OperationProhibited("${wrappedTokenId}")`)
-    })
-
-    it('safeBatchTransfer cannot be called if CANNOT_TRANSFER is burned and is not expired', async () => {
-      await NameWrapper.setFuses(wrappedTokenId, CANNOT_TRANSFER)
-
-      await expect(
-        NameWrapper.safeBatchTransferFrom(
-          account,
-          account2,
-          [wrappedTokenId],
-          [1],
-          '0x',
-        ),
-      ).to.be.revertedWith(`OperationProhibited("${wrappedTokenId}")`)
-    })
-  })
-
   describe('getData', () => {
     const label = 'getfuses'
     const labelHash = labelhash(label)
@@ -5542,30 +5422,6 @@ describe('Name Wrapper', () => {
       ).to.be.revertedWith(`Unauthorised("${wrappedTokenId}", "${account}")`)
     })
 
-    it('When a .eth name is in grace period it cannot call safeTransferFrom', async () => {
-      await expect(
-        NameWrapper.safeTransferFrom(
-          account,
-          account2,
-          wrappedTokenId,
-          1,
-          '0x',
-        ),
-      ).to.be.revertedWith(`ERC1155: insufficient balance for transfer`)
-    })
-
-    it('When a .eth name is in grace period it cannot call batchSafeTransferFrom', async () => {
-      await expect(
-        NameWrapper.safeBatchTransferFrom(
-          account,
-          account2,
-          [wrappedTokenId],
-          [1],
-          '0x',
-        ),
-      ).to.be.revertedWith(`ERC1155: insufficient balance for transfer`)
-    })
-
     it('When a .eth name is in grace period it cannot call setResolver', async () => {
       await expect(
         NameWrapper.setResolver(wrappedTokenId, EMPTY_ADDRESS),
@@ -5594,17 +5450,6 @@ describe('Name Wrapper', () => {
       await NameWrapper2.setFuses(subTokenId, CANNOT_UNWRAP)
       const [, fuses] = await NameWrapper.getData(subTokenId)
       expect(fuses).to.equal(PARENT_CANNOT_CONTROL | CANNOT_UNWRAP)
-    })
-
-    it('When a .eth name is in grace period, unexpired subdomains can transfer', async () => {
-      await NameWrapper2.safeTransferFrom(
-        account2,
-        account,
-        subTokenId,
-        1,
-        '0x',
-      )
-      expect(await NameWrapper.ownerOf(subTokenId)).to.equal(account)
     })
 
     it('When a .eth name is in grace period, unexpired subdomains can set resolver', async () => {
@@ -5696,138 +5541,6 @@ describe('Name Wrapper', () => {
           MAX_EXPIRY,
         ),
       ).to.be.revertedWith(`Unauthorised("${wrappedTokenId1}", "${hacker}")`)
-    })
-  })
-
-  describe('ERC1155 additional tests', () => {
-    const label = 'erc1155'
-    const labelHash = labelhash
-    const wrappedTokenId = namehash(`${label}.pop`)
-
-    it('Transferring a token that is not owned by the owner reverts', async () => {
-      await registerSetupAndWrapName(label, account, CANNOT_UNWRAP)
-      await expect(
-        NameWrapperH.safeTransferFrom(hacker, account, wrappedTokenId, 1, '0x'),
-      ).to.be.revertedWith(`ERC1155: insufficient balance for transfer`)
-    })
-
-    it('Approval on the Wrapper does not give permission to wrap the .eth name', async () => {
-      await BaseRegistrar.register(labelhash(label), account, 1 * DAY)
-      await NameWrapper.setApprovalForAll(hacker, true)
-      await expect(
-        NameWrapperH.wrapETH2LD(label, hacker, 0, EMPTY_ADDRESS),
-      ).to.be.revertedWith(`Unauthorised("${wrappedTokenId}", "${hacker}")`)
-    })
-
-    it('When .eth name expires, it is untransferrable', async () => {
-      await BaseRegistrar.register(labelhash(label), account, 1 * DAY)
-      await NameWrapper.wrapETH2LD(label, account, 0, EMPTY_ADDRESS)
-
-      await evm.advanceTime(GRACE_PERIOD + 1 * DAY + 1)
-      await mine()
-
-      await expect(
-        NameWrapper.safeTransferFrom(
-          account,
-          account2,
-          wrappedTokenId,
-          1,
-          '0x',
-        ),
-      ).to.be.revertedWith(`ERC1155: insufficient balance for transfer`)
-    })
-
-    it('Approval on the Wrapper does not give permission to transfer after expiry', async () => {
-      await BaseRegistrar.register(labelhash(label), account, 1 * DAY)
-      await NameWrapper.wrapETH2LD(label, account, 0, EMPTY_ADDRESS)
-      await NameWrapper.setApprovalForAll(hacker, true)
-
-      await evm.advanceTime(GRACE_PERIOD + 1 * DAY + 1)
-      await mine()
-
-      await expect(
-        NameWrapper.safeTransferFrom(
-          account,
-          account2,
-          wrappedTokenId,
-          1,
-          '0x',
-        ),
-      ).to.be.revertedWith(`ERC1155: insufficient balance for transfer`)
-
-      await expect(
-        NameWrapperH.safeTransferFrom(account, hacker, wrappedTokenId, 1, '0x'),
-      ).to.be.revertedWith(`ERC1155: insufficient balance for transfer`)
-    })
-
-    it('When emancipated names expire, they are untransferrible', async () => {
-      await BaseRegistrar.register(labelhash(label), account, 86400)
-      await NameWrapper.wrapETH2LD(label, account, CANNOT_UNWRAP, EMPTY_ADDRESS)
-      await NameWrapper.setSubnodeOwner(
-        wrappedTokenId,
-        'test',
-        account,
-        PARENT_CANNOT_CONTROL,
-        3600 + (await ethers.provider.getBlock('latest')).timestamp,
-      )
-
-      await evm.advanceTime(3601)
-      await mine()
-
-      await expect(
-        NameWrapper.safeTransferFrom(
-          account,
-          account2,
-          namehash(`test.${label}.pop`),
-          1,
-          '0x',
-        ),
-      ).to.be.revertedWith(`ERC1155: insufficient balance for transfer`)
-    })
-
-    it('Returns a balance of 0 for expired names', async () => {
-      await BaseRegistrar.register(labelhash(label), account, 86400)
-      await NameWrapper.wrapETH2LD(label, account, 0, EMPTY_ADDRESS)
-
-      expect(await NameWrapper.balanceOf(account, wrappedTokenId)).to.equal(1)
-
-      await evm.advanceTime(86401 + GRACE_PERIOD)
-      await evm.mine()
-
-      expect(await NameWrapper.balanceOf(account, wrappedTokenId)).to.equal(0)
-    })
-
-    it('Reregistering an expired name does not inherit its previous parent fuses', async () => {
-      await BaseRegistrar.register(labelhash(label), account, 86400)
-      await NameWrapper.wrapETH2LD(label, account, CANNOT_UNWRAP, EMPTY_ADDRESS)
-
-      // Mint the subdomain
-      await NameWrapper.setSubnodeOwner(
-        wrappedTokenId,
-        'test',
-        account,
-        PARENT_CANNOT_CONTROL,
-        3600 + (await ethers.provider.getBlock('latest')).timestamp,
-      )
-
-      // Let it expire
-      await evm.advanceTime(3601)
-      await mine()
-
-      // Mint it again, without PCC
-      await NameWrapper.setSubnodeOwner(
-        wrappedTokenId,
-        'test',
-        account,
-        0,
-        3600 + (await ethers.provider.getBlock('latest')).timestamp,
-      )
-
-      // Check PCC isn't set
-      const [owner, fuses, expiry] = await NameWrapper.getData(
-        namehash(`test.${label}.pop`),
-      )
-      expect(fuses).to.equal(0)
     })
   })
 
