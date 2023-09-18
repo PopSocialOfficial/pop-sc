@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/draft-IERC20Permit.sol";
 import "./IRegistrarController.sol";
 
 error InvalidPrice();
@@ -15,16 +16,10 @@ contract RegistrationHelper is Ownable {
     using SafeERC20 for IERC20;
     IRegistrarController controller;
     IERC20 quoteToken;
-    uint256 public bnbPrice;
     uint256 public popPrice;
 
-    constructor(
-        address _controller,
-        address _quoteToken,
-        uint256 _bnbPrice,
-        uint256 _popPrice
-    ) {
-        _setPrice(_bnbPrice, _popPrice);
+    constructor(address _controller, address _quoteToken, uint256 _popPrice) {
+        _setPrice(_popPrice);
         _setController(_controller);
         _setQuoteToken(_quoteToken);
     }
@@ -33,19 +28,31 @@ contract RegistrationHelper is Ownable {
         string calldata name,
         address owner,
         bytes[] calldata data
-    ) public payable {
-        if (msg.value != bnbPrice) revert InvalidPrice();
+    ) public {
         controller.registerWithRelayer(name, owner, data);
     }
 
-    function registerWithERC20(
+    function registerWithPermit(
         string calldata name,
         address owner,
-        bytes[] calldata data
+        bytes[] calldata data,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
     ) public {
+        IERC20Permit(address(quoteToken)).permit(
+            owner,
+            address(this),
+            popPrice,
+            deadline,
+            v,
+            r,
+            s
+        );
         controller.registerWithRelayer(name, owner, data);
 
-        quoteToken.safeTransferFrom(msg.sender, address(this), popPrice);
+        quoteToken.safeTransferFrom(owner, address(this), popPrice);
     }
 
     function sweepFunds(address payable to) external onlyOwner {
@@ -63,8 +70,8 @@ contract RegistrationHelper is Ownable {
         IERC20(_token).safeTransfer(_to, _amount);
     }
 
-    function setPrice(uint256 _bnbPrice, uint256 _popPrice) external onlyOwner {
-        _setPrice(_bnbPrice, _popPrice);
+    function setPrice(uint256 _popPrice) external onlyOwner {
+        _setPrice(_popPrice);
     }
 
     function setController(address _controller) external onlyOwner {
@@ -75,9 +82,8 @@ contract RegistrationHelper is Ownable {
         _setQuoteToken(_quoteToken);
     }
 
-    function _setPrice(uint256 _bnbPrice, uint256 _popPrice) internal {
-        if (_bnbPrice == 0 || _popPrice == 0) revert InvalidPrice();
-        bnbPrice = _bnbPrice;
+    function _setPrice(uint256 _popPrice) internal {
+        if (_popPrice == 0) revert InvalidPrice();
         popPrice = _popPrice;
     }
 

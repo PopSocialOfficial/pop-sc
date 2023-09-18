@@ -28,7 +28,6 @@ const GRACE_PERIOD = 90 * DAY
 const NULL_ADDRESS = ZERO_ADDRESS
 const ONE_WAI = 1
 
-const BNB_PRICE = ethers.utils.parseEther('0.01')
 const POP_PRICE = ethers.utils.parseEther('20')
 describe('RegistrationHelper', () => {
   let ens
@@ -46,25 +45,80 @@ describe('RegistrationHelper', () => {
   let mockToken
 
   let owner
-  let partner
+  let relayer
   let user
   let users
   /* Utility funcs */
 
   async function registerName(name, owner = user.address, data = []) {
-    const tx = await registrationHelper2.register(name, owner, data, {
-      value: BNB_PRICE,
-    })
+    const tx = await registrationHelper2.register(name, owner, data)
     return tx
   }
 
-  async function registerWithERC20(name, owner = user.address, data = []) {
-    await mockToken.connect(user).approve(registrationHelper.address, POP_PRICE)
-    const tx = await registrationHelper2.registerWithERC20(name, owner, data)
+  async function registerWithPermit(name, owner = user, data = []) {
+    const { timestamp } = await ethers.provider.getBlock('latest')
+    const deadline = timestamp + 4200
+
+    const nonces = await mockToken.nonces(owner.address)
+
+    const domain = {
+      name: await mockToken.name(),
+      version: '1',
+      chainId: (await ethers.provider.getNetwork()).chainId,
+      verifyingContract: mockToken.address,
+    }
+
+    const types = {
+      Permit: [
+        {
+          name: 'owner',
+          type: 'address',
+        },
+        {
+          name: 'spender',
+          type: 'address',
+        },
+        {
+          name: 'value',
+          type: 'uint256',
+        },
+        {
+          name: 'nonce',
+          type: 'uint256',
+        },
+        {
+          name: 'deadline',
+          type: 'uint256',
+        },
+      ],
+    }
+
+    const values = {
+      owner: owner.address,
+      spender: registrationHelper.address,
+      value: POP_PRICE,
+      nonce: nonces,
+      deadline: deadline,
+    }
+
+    const signature = await owner._signTypedData(domain, types, values)
+
+    const sig = ethers.utils.splitSignature(signature)
+
+    const recovered = ethers.utils.verifyTypedData(domain, types, values, sig)
+    const tx = await registrationHelper2.registerWithPermit(
+      name,
+      owner.address,
+      data,
+      deadline,
+      sig.v,
+      sig.r,
+      sig.s,
+    )
     return tx
   }
   before(async () => {
-    ;[owner, partner, user, relayer, ...users] = await ethers.getSigners()
+    ;[owner, user, relayer, ...users] = await ethers.getSigners()
 
     ens = await deploy('PNSRegistry')
 
@@ -120,11 +174,10 @@ describe('RegistrationHelper', () => {
       'RegistrationHelper',
       controller.address,
       mockToken.address,
-      BNB_PRICE,
       POP_PRICE,
     )
 
-    registrationHelper2 = registrationHelper.connect(user)
+    registrationHelper2 = registrationHelper.connect(relayer)
 
     mockNFT = await deploy('MockNFT')
 
@@ -182,7 +235,7 @@ describe('RegistrationHelper', () => {
         registrationHelper.address,
       )
 
-      expect(balanceAfter.sub(balanceBefore)).equal(BNB_PRICE)
+      expect(balanceAfter.sub(balanceBefore)).equal(0)
     })
 
     it('Should able to register', async () => {
@@ -206,7 +259,7 @@ describe('RegistrationHelper', () => {
         registrationHelper.address,
       )
 
-      await registerWithERC20(label, user.address, callData)
+      await registerWithPermit(label, user, callData)
       const nodehash = namehash(`${label}.pop`)
       expect(await ens.resolver(nodehash)).to.equal(resolver.address)
       expect(await ens.owner(nodehash)).to.equal(nameWrapper.address)
