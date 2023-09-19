@@ -8,11 +8,12 @@ async function main() {
   console.log(`Account balance: ${balance.toString()}`)
 
   const PopooTokenFac = await ethers.getContractFactory("PopToken");
-  const popooToken = await PopooTokenFac.deploy(200000000);
+  const popooToken = await PopooTokenFac.deploy(ethers.utils.parseEther('200000000'));
 
   await popooToken.deployed();
 
   console.log('PPT address', popooToken.address);
+  console.log('balance', await popooToken.balanceOf(owner.address));
 
 }
 
