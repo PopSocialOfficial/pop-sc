@@ -15,6 +15,7 @@ import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {BytesUtils} from "./BytesUtils.sol";
 import {ERC20Recoverable} from "../utils/ERC20Recoverable.sol";
+import {ERC1155FuseSBT} from "./ERC1155FuseSBT.sol";
 
 error Unauthorised(bytes32 node, address addr);
 error IncompatibleParent();
@@ -30,7 +31,7 @@ error NameIsStillExpired();
 
 contract NameWrapper is
     Ownable,
-    ERC1155Fuse,
+    ERC1155FuseSBT,
     INameWrapper,
     Controllable,
     IERC721Receiver,
@@ -53,7 +54,6 @@ contract NameWrapper is
     bytes32 private constant ROOT_NODE =
         0x0000000000000000000000000000000000000000000000000000000000000000;
 
-    address minter;
     INameWrapperUpgrade public upgradeContract;
     uint64 private constant MAX_EXPIRY = type(uint64).max;
 
@@ -1142,5 +1142,9 @@ contract NameWrapper is
 
     function setMinter(address _minter) public onlyOwner {
         minter = _minter;
+    }
+
+    function setDisableSBT(bool _disableSBT) public onlyOwner {
+        disableSBT = _disableSBT;
     }
 }

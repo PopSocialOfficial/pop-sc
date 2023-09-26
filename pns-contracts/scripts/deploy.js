@@ -8,7 +8,13 @@ const {
   EMPTY_BYTES32,
 } = require('../test/test-utils/constants')
 
+const POP_PRICE = ethers.utils.parseEther('20')
+const PPT_ADDRESS = '' //
+
 async function main() {
+  if (PPT_ADDRESS.length === 0) {
+    throw new Error('Please set PPT_ADDRESS')
+  }
   const basePrice = 1 // One wei
   const [owner] = await ethers.getSigners()
   const ens = await deploy('PNSRegistry')
@@ -97,6 +103,17 @@ async function main() {
   await nameWrapper.setMinter(partnerNftMinter.address)
 
   await controller.setDefaultResolver(resolver.address)
+
+  const registrationHelper = await deploy(
+    'RegistrationHelper',
+    controller.address,
+    PPT_ADDRESS, // PPT address
+    POP_PRICE,
+  )
+
+  console.log(`RegistrationHelper deployed at ${registrationHelper.address}`)
+
+  await controller.grantRole(RELAYER_ROLE, registrationHelper.address)
 }
 
 main()
