@@ -5649,4 +5649,50 @@ describe('Name Wrapper', () => {
       )
     })
   })
+
+  describe('setDisableSBT', () => {
+    const label = 'register'
+    const labelHash = labelhash(label)
+    const wrappedTokenId = namehash(label + '.pop')
+
+    before(async () => {
+      await BaseRegistrar.addController(NameWrapper.address)
+      await NameWrapper.setController(account, true)
+
+      await NameWrapper.registerAndWrapETH2LD(
+        label,
+        account2,
+        86400,
+        EMPTY_ADDRESS,
+        CAN_DO_EVERYTHING,
+      )
+    })
+
+    it('transfer reverts when disableSBT is false', async function () {
+      await expect(
+        NameWrapper2.safeTransferFrom(
+          account,
+          account2,
+          wrappedTokenId,
+          1,
+          '0x',
+        ),
+      ).to.be.revertedWith('SOULBOUND: Non-transferable')
+    })
+
+    it('only owner can call', async function () {
+      await expect(NameWrapper2.setDisableSBT(true)).to.be.reverted
+    })
+
+    it('transfer success when disableSBT is true', async function () {
+      await NameWrapper.setDisableSBT(true)
+      await NameWrapper2.safeTransferFrom(
+        account2,
+        account,
+        wrappedTokenId,
+        1,
+        '0x',
+      )
+    })
+  })
 })
