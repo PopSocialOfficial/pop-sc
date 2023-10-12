@@ -32,11 +32,11 @@ async function main() {
   )
 
   const metaDataService = await deploy(
-    'StaticMetadataService',
-    'https://ens.domains',
+    'PNSMetadataService',
+    'https://meta.popsocial.io/metadata/',
   )
 
-  console.log(`StaticMetadataService deployed at ${metaDataService.address}`)
+  console.log(`PNSMetadataService deployed at ${metaDataService.address}`)
 
   const reverseRegistrar = await deploy('ReverseRegistrar', ens.address)
 
