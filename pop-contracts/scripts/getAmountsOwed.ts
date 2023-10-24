@@ -9,20 +9,20 @@ const csvWriter = require('csv-write-stream');
 
 async function main() {
     const [owner] = await ethers.getSigners();
-    const tokenSale = new ethers.Contract("0x3D94bB8bEF2dD11CBE08953607521B7da180363d", tokenSaleAbi, owner)
+    const tokenSale = new ethers.Contract("0x9bd38D8B153777b16168c709b893A1E8aE067117", tokenSaleAbi, owner)
     try {
 
       let recipients: string[] = [];
-      const csvFilePath = path.join(__dirname, 'token_sale_event_deposited.csv');
+      const csvFilePath = path.join(__dirname, 'token_sale_event_deposited2.csv');
 
       fs.createReadStream(csvFilePath)
       .pipe(csv())
       .on('data', (row) => {
-        const recipient = row.to; // Assuming "to" is the header for the recipient column in your CSV
-        const amount = row.amount; // Assuming "amount" is the header for the amount column in your CSV
+        const recipient = row.from; // Assuming "to" is the header for the recipient column in your CSV
+        // const amount = row.amount; // Assuming "amount" is the header for the amount column in your CSV
     
         // Check if recipient and amount are valid before processing
-        if (recipient && amount) {
+        if (recipient) {
           // Check if the recipient already exists in the recipients array
           const recipientIndex = recipients.indexOf(recipient);
     
@@ -47,7 +47,7 @@ async function main() {
         }
 
         // Create a writable stream for the CSV file
-        const writableStream = fs.createWriteStream('tokensOwed.csv');
+        const writableStream = fs.createWriteStream('tokensOwed2.csv');
         const writer = csvWriter();
 
         // Pipe the data to the CSV file

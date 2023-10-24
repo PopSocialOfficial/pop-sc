@@ -77,26 +77,26 @@ const config: HardhatUserConfig & {
     //   url: "https://mumbai.rpc.thirdweb.com",
     //   accounts: [process.env.OWNER_PRIVATE_KEY ?? ""]
     // },
-    // tbsc: {
-    //   url: "https://distinguished-red-tent.bsc-testnet.discover.quiknode.pro/d1eac418ed5fda22caed6ee2403a8551a0cdefc2/",
-    //   accounts: [process.env.OWNER_PRIVATE_KEY ?? ""]
-    // },
+    tbsc: {
+      url: "https://bsc-testnet.blockpi.network/v1/rpc/public",
+      accounts: [process.env.OWNER_PRIVATE_KEY ?? ""]
+    },
     // sepolia: {
     //   url: "https://rpc.ankr.com/eth_sepolia",
     //   accounts: [process.env.OWNER_PRIVATE_KEY ?? ""]
     // },
-    // forkedBsc: {
-    //   url: "https://bsc.popoo.dev/",
-    //   accounts: [process.env.OWNER_PRIVATE_KEY ?? ""]
-    // },
+    forkedBsc: {
+      url: "https://bsc.popoo.dev/",
+      accounts: [process.env.OWNER_PRIVATE_KEY ?? ""]
+    },
     bsc: {
       url: "https://rpc.ankr.com/bsc",
       accounts: [process.env.OWNER_PRIVATE_KEY ?? ""]
     }
   },
   etherscan: {
-    apiKey: process.env.POLYGONSCAN_API_KEY,
-    // apiKey: process.env.BSC_API_KEY,
+    // apiKey: process.env.POLYGONSCAN_API_KEY,
+    apiKey: process.env.BSC_API_KEY,
   },
 };
 
