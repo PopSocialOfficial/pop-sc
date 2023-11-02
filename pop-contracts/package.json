@@ -35,6 +35,9 @@
   "dependencies": {
     "@openzeppelin/contracts": "^4.6.0",
     "@openzeppelin/contracts-upgradeable": "^4.7.0",
+    "ethereum-multicall": "^2.21.0",
+    "ethers-multicall": "^0.2.3",
+    "papaparse": "^5.4.1",
     "solidity-coverage": "^0.8.4"
   }
 }

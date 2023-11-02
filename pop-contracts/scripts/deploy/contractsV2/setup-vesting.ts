@@ -7,7 +7,8 @@ import { time } from '@nomicfoundation/hardhat-network-helpers'
 import { utils, BigNumber } from 'ethers';
 
 const hre = require('hardhat')
-
+const Papa = require('papaparse');
+const fs = require('fs');
 interface VestingAllocation {
   // address: string;
   // name: string;
@@ -42,122 +43,164 @@ async function main() {
     const [owner] = await ethers.getSigners();
     const TokenSaleDistributorFactory = await hre.ethers.getContractFactory("TokenSaleDistributor");
     // const signer = await impersonateSigner('0xe981E1060D44debBdB851efc63ee79Db24C2B6a4');
-    // const currentTime = await time.latest();
-    const currentTime = 1695218400; // Wednesday, 20 September 2023 14:00:00
-    time.increaseTo(currentTime);
-    // const vestingMaster : VestingMaster[] = [{
-    //   name: "Ecosystem",
-    //   address: '0x088FaFe4368Ad0DA11C8ea4Ceb7f9c3d7361919D',
-    //   allocations: [
-    //     {
-    //       tokensAllocated: 35000000,
-    //       cliff: 0,
-    //       durationMonths: 15,
-    //       cliffPerc: '0',
-    //       startTime: currentTime,
-    //     },
-    //     {
-    //       tokensAllocated: 17500000,
-    //       cliff: 0,
-    //       durationMonths: 15,
-    //       cliffPerc: '0',
-    //       startTime: currentTime + (2628000 * 15),
-    //     },
-    //     {
-    //       tokensAllocated: 17500000,
-    //       cliff: 0,
-    //       durationMonths: 30,
-    //       cliffPerc: '0',
-    //       startTime: currentTime + (2628000 * 30),
-    //     },
-    //   ],
-    // },
-    // {
-    //   name: "Foundation",
-    //   address: '0x00BB74B493B7e580A866C314847fA8B225e0837D',
-    //   allocations: [
-    //     {
-    //       tokensAllocated: 60000000,
-    //       cliff: 6,
-    //       durationMonths: 24,
-    //       cliffPerc: '50000000000000000', // 0.05 in WEI
-    //       startTime: currentTime,
-    //     },
-    //   ],
-    // },
-    // {
-    //   name: "Strategic",
-    //   address: '0x779Cb8b04af7Bc3232CC1e55f67ecDFB249420F6',
-    //   allocations: [
-    //     {
-    //       tokensAllocated: 9000000,
-    //       cliff: 6,
-    //       durationMonths: 24,
-    //       cliffPerc: '50000000000000000', // 5e17
-    //       startTime: currentTime,
-    //     },
-    //   ],
-    // },
-    // {
-    //   name: "Team",
-    //   address: '0x3f6a60B720Da916a016C3F8Fef61AC4B1c5462B6',
-    //   allocations: [
-    //     {
-    //       tokensAllocated: 30000000,
-    //       cliff: 6,
-    //       durationMonths: 30,
-    //       cliffPerc: '50000000000000000', // 5e17
-    //       startTime: currentTime,
-    //     },
-    //   ],
-    // },
-    // {
-    //   name: "Advisors",
-    //   address: '0x81F45BAa6d4aF1e6a0Fc0Cbbe7C2d50ff8489Bf0',
-    //   allocations: [
-    //     {
-    //       tokensAllocated: 4000000,
-    //       cliff: 6,
-    //       durationMonths: 24,
-    //       cliffPerc: '50000000000000000', // 5e17
-    //       startTime: currentTime,
-    //     },
-    //   ],
-    // },
-    // {
-    //   name: "Treasury",
-    //   address: '0x4e1538d7027329a7733f03D6DF032b18561330a2',
-    //   allocations: [
-    //     {
-    //       tokensAllocated: 4000000,
-    //       cliff: 6,
-    //       durationMonths: 24,
-    //       cliffPerc: '20000000000000000', // 5e17
-    //       startTime: currentTime,
-    //     },
-    //   ],
-    // },
-    // {
-    //   name: "Airdrop",
-    //   address: '0x94b1a721764288EFF48fBe935fC14F43893bA1aA',
-    //   allocations: [
-    //     {
-    //       tokensAllocated: 6000000,
-    //       cliff: 2,
-    //       durationMonths: 6,
-    //       cliffPerc: '0',
-    //       startTime: currentTime,
-    //     },
-    //   ],
-    // }]
+    const currentTime = 1698141600;
+    // time.increaseTo(currentTime);
+    const vestingMaster : VestingMaster[] = [
+      {
+        name: "Ecosystem",
+        address: '0x088FaFe4368Ad0DA11C8ea4Ceb7f9c3d7361919D',
+        allocations: [
+          {
+            tokensAllocated: 4666667,
+            cliff: 0, // 0.05 in WEI,
+            durationMonths: 0,
+            cliffPerc: '0',
+            startTime: currentTime + (2628000 * 1),
+          },
+          {
+            tokensAllocated: 30333333,
+            cliff: 0, // 0.05 in WEI,
+            durationMonths: 13,
+            cliffPerc: '0',
+            startTime: currentTime + (2628000 * 1),
+          },
+          {
+            tokensAllocated: 17500000,
+            cliff: 0,
+            durationMonths: 15,
+            cliffPerc: '0',
+            startTime: currentTime + (2628000 * 14),
+          },
+          {
+            tokensAllocated: 17500000,
+            cliff: 0,
+            durationMonths: 30,
+            cliffPerc: '0',
+            startTime: currentTime + (2628000 * 29),
+          },
+        ],
+      },
+      {
+        name: "Foundation",
+        address: '0x00BB74B493B7e580A866C314847fA8B225e0837D',
+        allocations: [
+          {
+            tokensAllocated: 60000000,
+            cliff: 5,
+            durationMonths: 24,
+            cliffPerc: '50000000000000000', // 0.05 in WEI
+            startTime: currentTime,
+          },
+        ],
+      },
+      {
+        name: "Strategic",
+        address: '0x779Cb8b04af7Bc3232CC1e55f67ecDFB249420F6',
+        allocations: [
+          {
+            tokensAllocated: 1000000,
+            cliff: 0,
+            durationMonths: 0,
+            cliffPerc: '45000000000000000', // 5e17
+            startTime: currentTime + (2628000 * 2),
+          },
+          {
+            tokensAllocated: 450000,
+            cliff: 0,
+            durationMonths: 0,
+            cliffPerc: '45000000000000000', // 5e17
+            startTime: currentTime + (2628000 * 5),
+          },
+          {
+            tokensAllocated: 8550000,
+            cliff: 0,
+            durationMonths: 24,
+            cliffPerc: '0', // 5e17
+            startTime: currentTime + (2628000 * 5),
+          },
+        ],
+      },
+      {
+        name: "Team",
+        address: '0x3f6a60B720Da916a016C3F8Fef61AC4B1c5462B6',
+        allocations: [
+          {
+            tokensAllocated: 30000000,
+            cliff: 5,
+            durationMonths: 30,
+            cliffPerc: '50000000000000000', // 5e17
+            startTime: currentTime,
+          },
+        ],
+      },
+      {
+        name: "Advisors",
+        address: '0x81F45BAa6d4aF1e6a0Fc0Cbbe7C2d50ff8489Bf0',
+        allocations: [
+          {
+            tokensAllocated: 4000000,
+            cliff: 5,
+            durationMonths: 24,
+            cliffPerc: '50000000000000000', // 5e17
+            startTime: currentTime,
+          },
+        ],
+      },
+      {
+        name: "Treasury",
+        address: '0x4e1538d7027329a7733f03D6DF032b18561330a2',
+        allocations: [
+          {
+            tokensAllocated: 5530000,
+            cliff: 5,
+            durationMonths: 24,
+            cliffPerc: '50000000000000000', // 5e17
+            startTime: currentTime,
+          },
+        ],
+      },
+      {
+        name: "Airdrop",
+        address: '0x94b1a721764288EFF48fBe935fC14F43893bA1aA',
+        allocations: [
+          {
+            tokensAllocated: 6000000,
+            cliff: 2,
+            durationMonths: 6,
+            cliffPerc: '0',
+            startTime: currentTime,
+          },
+        ],
+      },
+      {
+        name: "MarketMaking",
+        address: '0x6Fc93cE1825Bd659c99c5CeF890fE19D7Ce3b705',
+        allocations: [
+          {
+            tokensAllocated: 3000000,
+            cliff: 0,
+            durationMonths: 0,
+            cliffPerc: '0',
+            startTime: currentTime + (2628000 * 3),
+          },
+          {
+            tokensAllocated: 3500000,
+            cliff: 0,
+            durationMonths: 0,
+            cliffPerc: '0',
+            startTime: currentTime + (2628000 * 6),
+          },
+        ],
+      },
+    ]
 
-    // const addressMapped = vestingMaster.map((vest) => vest.allocations.map((allocation) => vest.address))
-    // const linearMapped = vestingMaster.map((vest) => vest.allocations.map((allocation) => false))
-    // const startTimeMapped = vestingMaster.map((vest) => vest.allocations.map((allocation) => allocation.startTime))
-    // const tokensAllocatedMapped = vestingMaster.map((vest) => vest.allocations.map((allocation) => ethers.utils.parseEther(allocation.tokensAllocated.toString())))
-    // const cliffMapped = vestingMaster.map((vest) => vest.allocations.map((allocation) => allocation.cliff * 2628000))
-    // const durationMonthsMapped = vestingMaster.map((vest) => vest.allocations.map((allocation) => allocation.durationMonths))
-    // const cliffPercMapped = vestingMaster.map((vest) => vest.allocations.map((allocation) => allocation.cliffPerc))
+    const addressMapped = vestingMaster.map((vest) => vest.allocations.map((allocation) => vest.address))
+    const linearMapped = vestingMaster.map((vest) => vest.allocations.map((allocation) => false))
+    const startTimeMapped = vestingMaster.map((vest) => vest.allocations.map((allocation) => allocation.startTime))
+    const tokensAllocatedMapped = vestingMaster.map((vest) => vest.allocations.map((allocation) => ethers.utils.parseEther(allocation.tokensAllocated.toString())))
+    const cliffMapped = vestingMaster.map((vest) => vest.allocations.map((allocation) => allocation.cliff * 2628000))
+    const durationMonthsMapped = vestingMaster.map((vest) => vest.allocations.map((allocation) => allocation.durationMonths))
+    const cliffPercMapped = vestingMaster.map((vest) => vest.allocations.map((allocation) => allocation.cliffPerc))
 
     // console.log(addressMapped.flat())
     // console.log(linearMapped.flat())
@@ -166,7 +209,7 @@ async function main() {
     // console.log(cliffMapped.flat())
     // console.log(cliffPercMapped.flat())
     // console.log(tokensAllocatedMapped.flat())
-    const tokenSaleDistributor = await TokenSaleDistributorFactory.attach('0x85C9beC5F8291B987bEfE66cc8896b68D60340c6');
+    const tokenSaleDistributor = await TokenSaleDistributorFactory.attach('0xBD3CCBDD468fA11eac9e8240ebBA3daC83c12aa5');
     // await tokenSaleDistributor.setAllocations(
     //   addressMapped.flat(),
     //   linearMapped.flat(),
@@ -177,36 +220,36 @@ async function main() {
     //   tokensAllocatedMapped.flat(),
     // );
 
-    // console.log('Done');
+    console.log('Done');
 
-    const vestingMaster = [{
-      name: "Ecosystem",
-      address: '0x088FaFe4368Ad0DA11C8ea4Ceb7f9c3d7361919D',
-    },
-    {
-      name: "Foundation",
-      address: '0x00BB74B493B7e580A866C314847fA8B225e0837D',
-    },
-    {
-      name: "Strategic",
-      address: '0x779Cb8b04af7Bc3232CC1e55f67ecDFB249420F6',
-    },
-    {
-      name: "Team",
-      address: '0x3f6a60B720Da916a016C3F8Fef61AC4B1c5462B6',
-    },
-    {
-      name: "Advisors",
-      address: '0x81F45BAa6d4aF1e6a0Fc0Cbbe7C2d50ff8489Bf0',
-    },
-    {
-      name: "Treasury",
-      address: '0x4e1538d7027329a7733f03D6DF032b18561330a2',
-    },
-    {
-      name: "Airdrop",
-      address: '0x94b1a721764288EFF48fBe935fC14F43893bA1aA',
-    }]
+    // const vestingMaster = [{
+    //   name: "Ecosystem",
+    //   address: '0x088FaFe4368Ad0DA11C8ea4Ceb7f9c3d7361919D',
+    // },
+    // {
+    //   name: "Foundation",
+    //   address: '0x00BB74B493B7e580A866C314847fA8B225e0837D',
+    // },
+    // {
+    //   name: "Strategic",
+    //   address: '0x779Cb8b04af7Bc3232CC1e55f67ecDFB249420F6',
+    // },
+    // {
+    //   name: "Team",
+    //   address: '0x3f6a60B720Da916a016C3F8Fef61AC4B1c5462B6',
+    // },
+    // {
+    //   name: "Advisors",
+    //   address: '0x81F45BAa6d4aF1e6a0Fc0Cbbe7C2d50ff8489Bf0',
+    // },
+    // {
+    //   name: "Treasury",
+    //   address: '0x4e1538d7027329a7733f03D6DF032b18561330a2',
+    // },
+    // {
+    //   name: "Airdrop",
+    //   address: '0x94b1a721764288EFF48fBe935fC14F43893bA1aA',
+    // }]
 
     function dateFromEpoch(epoch: number) {
       return new Date(epoch * 1000).toLocaleDateString("en-US");
@@ -214,7 +257,7 @@ async function main() {
     const monthlyBreakdowns = [];
     const prevClaimable :{ [x: string]: BigNumber } = {};
     for (let i = 1; i < 62; i++) {
-      await time.increase(2628000);
+      await time.increase(2628000 + 500);
       for(const vesting of vestingMaster) {
         let deduct = BigNumber.from(0);
         if(prevClaimable[vesting.name] !== undefined) {
@@ -222,6 +265,8 @@ async function main() {
         }
         const totalClaimable = await tokenSaleDistributor.totalClaimable(vesting.address);
         const totalClaimableAfterDeduct = totalClaimable.sub(deduct);
+        console.log('epoch', await time.latest())
+        console.log('dateFromEpoch(await time.latest())', dateFromEpoch(await time.latest()))
         monthlyBreakdowns.push({
           date: dateFromEpoch(await time.latest()),
           vesting: vesting.name,
@@ -231,8 +276,12 @@ async function main() {
       }
 
     }
-    console.log(JSON.stringify(monthlyBreakdowns))
-    
+    // console.log(JSON.stringify(monthlyBreakdowns))
+    const csv = Papa.unparse(monthlyBreakdowns);
+  fs.writeFile('final_alloc.csv', csv, (err) => {
+    if (err) throw err;
+    console.log('CSV file has been saved!');
+  });
     
 
 }

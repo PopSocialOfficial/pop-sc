@@ -11,12 +11,22 @@ import {
   setNextBlockTimestamp,
 } from "../utils";
 import { time } from '@nomicfoundation/hardhat-network-helpers'
+const Papa = require('papaparse');
+const fs = require('fs');
 // const {
 //   BigNumber,
 //   utils: {
 //     parseEther,
 //   },
 // } = ethers;
+
+function epochToDate(epoch) {
+  const date = new Date(epoch * 1000); // Convert to milliseconds
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based in JS, so we add 1
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+}
 
 interface VestingAllocation {
   // address: string;
@@ -61,34 +71,43 @@ describe("TokenSaleDistributor", function () {
 
     tokenSaleDistributor = TokenSaleDistributorFactory.attach(proxy.address);
     await tokenSaleDistributor.setTokenAddress('0xdf061250302e5ccae091b18ca2b45914d785f214');
-    const currentTime = await time.latest();
-    console.log(currentTime);
-    console.log(currentTime + (2628000 * 15));
-    console.log(currentTime + (2628000 * 30));
-    vestingMaster.push({
+    // const currentTime = await time.latest();
+    const currentTime = 1698141600
+    // console.log(currentTime);
+    // console.log(currentTime + (2628000 * 15));
+    // console.log(currentTime + (2628000 * 30));
+    vestingMaster.push(
+    {
       name: "Ecosystem",
       address: '0x088FaFe4368Ad0DA11C8ea4Ceb7f9c3d7361919D',
       allocations: [
         {
-          tokensAllocated: 35000000,
-          cliff: 0,
-          durationMonths: 15,
+          tokensAllocated: 4666667,
+          cliff: 0, // 0.05 in WEI,
+          durationMonths: 0,
           cliffPerc: '0',
-          startTime: currentTime,
+          startTime: currentTime + (2628000 * 1),
+        },
+        {
+          tokensAllocated: 30333333,
+          cliff: 0, // 0.05 in WEI,
+          durationMonths: 13,
+          cliffPerc: '0',
+          startTime: currentTime + (2628000 * 1),
         },
         {
           tokensAllocated: 17500000,
           cliff: 0,
           durationMonths: 15,
           cliffPerc: '0',
-          startTime: currentTime + (2628000 * 15),
+          startTime: currentTime + (2628000 * 14),
         },
         {
           tokensAllocated: 17500000,
           cliff: 0,
           durationMonths: 30,
           cliffPerc: '0',
-          startTime: currentTime + (2628000 * 30),
+          startTime: currentTime + (2628000 * 29),
         },
       ],
     },
@@ -98,7 +117,7 @@ describe("TokenSaleDistributor", function () {
       allocations: [
         {
           tokensAllocated: 60000000,
-          cliff: 6,
+          cliff: 5,
           durationMonths: 24,
           cliffPerc: '50000000000000000', // 0.05 in WEI
           startTime: currentTime,
@@ -110,11 +129,25 @@ describe("TokenSaleDistributor", function () {
       address: '0x779Cb8b04af7Bc3232CC1e55f67ecDFB249420F6',
       allocations: [
         {
-          tokensAllocated: 9000000,
-          cliff: 6,
+          tokensAllocated: 1000000,
+          cliff: 0,
+          durationMonths: 0,
+          cliffPerc: '45000000000000000', // 5e17
+          startTime: currentTime + (2628000 * 2),
+        },
+        {
+          tokensAllocated: 450000,
+          cliff: 0,
+          durationMonths: 0,
+          cliffPerc: '45000000000000000', // 5e17
+          startTime: currentTime + (2628000 * 5),
+        },
+        {
+          tokensAllocated: 8550000,
+          cliff: 0,
           durationMonths: 24,
-          cliffPerc: '50000000000000000', // 5e17
-          startTime: currentTime,
+          cliffPerc: '0', // 5e17
+          startTime: currentTime + (2628000 * 5),
         },
       ],
     },
@@ -124,7 +157,7 @@ describe("TokenSaleDistributor", function () {
       allocations: [
         {
           tokensAllocated: 30000000,
-          cliff: 6,
+          cliff: 5,
           durationMonths: 30,
           cliffPerc: '50000000000000000', // 5e17
           startTime: currentTime,
@@ -137,7 +170,7 @@ describe("TokenSaleDistributor", function () {
       allocations: [
         {
           tokensAllocated: 4000000,
-          cliff: 6,
+          cliff: 5,
           durationMonths: 24,
           cliffPerc: '50000000000000000', // 5e17
           startTime: currentTime,
@@ -149,10 +182,10 @@ describe("TokenSaleDistributor", function () {
       address: '0x4e1538d7027329a7733f03D6DF032b18561330a2',
       allocations: [
         {
-          tokensAllocated: 4000000,
-          cliff: 6,
+          tokensAllocated: 5530000,
+          cliff: 5,
           durationMonths: 24,
-          cliffPerc: '20000000000000000', // 5e17
+          cliffPerc: '50000000000000000', // 5e17
           startTime: currentTime,
         },
       ],
@@ -169,7 +202,28 @@ describe("TokenSaleDistributor", function () {
           startTime: currentTime,
         },
       ],
-    })
+    },
+    {
+      name: "MarketMaking",
+      address: '0x6Fc93cE1825Bd659c99c5CeF890fE19D7Ce3b705',
+      allocations: [
+        {
+          tokensAllocated: 3000000,
+          cliff: 0,
+          durationMonths: 0,
+          cliffPerc: '0',
+          startTime: currentTime + (2628000 * 3),
+        },
+        {
+          tokensAllocated: 3500000,
+          cliff: 0,
+          durationMonths: 0,
+          cliffPerc: '0',
+          startTime: currentTime + (2628000 * 6),
+        },
+      ],
+    },
+    )
   }
 
   describe("Monthly Vesting", function () {
@@ -203,11 +257,11 @@ describe("TokenSaleDistributor", function () {
       it("zero claimable before cliff", async function () {
         // const mapping : {[x: string] : string} = {};
         const prevClaimable :{ [x: string]: BigNumber } = {};
-
+        const startTime = 1698141600
         const monthlyBreakdowns = [];
         for (let i = 1; i < 62; i++) {
           console.log(`========== MONTH ${i} ===========`)
-          await time.increase(2628000);
+          await time.increase(2628000 + 500);
           for(const vesting of vestingMaster) {
             // let claimable = BigNumber.from(0);
             // for(const allocation of vesting.allocations) {
@@ -230,8 +284,10 @@ describe("TokenSaleDistributor", function () {
             const totalClaimable = await tokenSaleDistributor.totalClaimable(vesting.address);
             const totalClaimableAfterDeduct = totalClaimable.sub(deduct);
             // mapping[vesting.name] = ethers.utils.formatEther(totalClaimable.toString())
+            // const currentTimeX = await time.latest();
             monthlyBreakdowns.push({
-              month: i,
+              // date: epochToDate(startTime + (2628000 * i)),
+              date: startTime + (2628000 * i),
               vesting: vesting.name,
               claimable: ethers.utils.formatEther(totalClaimableAfterDeduct.toString()),
             })
@@ -244,7 +300,12 @@ describe("TokenSaleDistributor", function () {
           }
 
         }
-        console.log(JSON.stringify(monthlyBreakdowns))
+        const csv = Papa.unparse(monthlyBreakdowns);
+        fs.writeFile('data.csv', csv, (err) => {
+          if (err) throw err;
+          console.log('CSV file has been saved!');
+        });
+        // console.log(JSON.stringify(monthlyBreakdowns))
       });
     });
   });
