@@ -37,7 +37,7 @@ contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, 
     }
 
     function initialize(address[] memory _whitelistedContracts) initializer public {
-        __ERC721_init("Genesis NFT", "GENESIS");
+        __ERC721_init("Popbit", "PBT");
         __ERC721URIStorage_init();
         __AccessControl_init();
 
