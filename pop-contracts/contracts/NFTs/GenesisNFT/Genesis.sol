@@ -2,7 +2,6 @@
 pragma solidity 0.8.10;
 
 import "@openzeppelin/contracts/utils/Counters.sol";
-
 import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
@@ -12,7 +11,6 @@ import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.so
 
 contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, ERC721URIStorageUpgradeable, IERC1155ReceiverUpgradeable {
     using Counters for Counters.Counter;
-    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
     struct Accessory {
         address contractAddr;
@@ -29,7 +27,9 @@ contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, 
     // mapping(tokenId => mapping(accessoryTypeId => Accessory))
     mapping(uint256 => mapping(uint256 => Accessory)) public equippedAccessories;
     mapping(uint256 => address) public accessoryOrder;
+    uint256 public totalSupply;
     uint8 public accessorySlots;
+
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -42,10 +42,9 @@ contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, 
         __AccessControl_init();
 
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _grantRole(MINTER_ROLE, msg.sender);
 
-        accessorySlots = 4;
-        setWhitelisted(_whitelistedContracts, 4);
+        accessorySlots = 2;
+        setWhitelisted(_whitelistedContracts, 2);
     }
 
     modifier isTokenOwner(uint256 tokenId) {
@@ -65,6 +64,10 @@ contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, 
             require(accessoryOrder[i] == _accessories[i].contractAddr, "wrong order");
         }
         _;
+    }
+
+    function setTotalSupply(uint256 _totalSupply) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        totalSupply = _totalSupply;
     }
 
     function getTotalSupply() external view returns (uint256) {
@@ -149,14 +152,17 @@ contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, 
     }
 
     function claim(uint256 tokenId) external onlyWhitelisted {
+        require(_tokenIdCounter.current() < totalSupply, "max supply reached");
         require(balanceOf(msg.sender) == 0, "max 1 per wallet");
         _tokenIdCounter.increment();
         _safeMint(msg.sender, tokenId);
     }
 
-    function safeMint(address to, uint256 tokenId) external onlyRole(MINTER_ROLE) {
+    function safeMint(address to, uint256 tokenId) external {
+        require(_tokenIdCounter.current() < totalSupply, "max supply reached");
+        require(balanceOf(msg.sender) == 0, "max 1 per wallet");
         _tokenIdCounter.increment();
-        _safeMint(to, tokenId);
+        _safeMint(msg.sender, tokenId);
     }
 
     // The following functions are overrides required by Solidity.
