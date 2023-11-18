@@ -2,6 +2,7 @@ import {Contract} from "ethers";
 import hre, {ethers, upgrades} from "hardhat";
 import {MerkleTree} from 'merkletreejs';
 import keccak256 from 'keccak256';
+import axios from 'axios';
 
 
 interface Accessory {
