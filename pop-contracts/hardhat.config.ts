@@ -4,10 +4,10 @@ import "@nomicfoundation/hardhat-verify";
 import "@openzeppelin/hardhat-upgrades";
 import "@typechain/hardhat";
 import chai from "chai";
-import { solidity } from "ethereum-waffle";
+import {solidity} from "ethereum-waffle";
 import "hardhat-contract-sizer";
 import "hardhat-gas-reporter";
-import { HardhatUserConfig, task } from "hardhat/config";
+import {HardhatUserConfig} from "hardhat/config";
 import "solidity-coverage";
 
 chai.use(solidity);
@@ -81,10 +81,11 @@ const config: HardhatUserConfig & {
       url: "https://bsc-testnet.blockpi.network/v1/rpc/public",
       accounts: [process.env.OWNER_PRIVATE_KEY ?? ""]
     },
-    // sepolia: {
-    //   url: "https://rpc.ankr.com/eth_sepolia",
-    //   accounts: [process.env.OWNER_PRIVATE_KEY ?? ""]
-    // },
+    goerli: {
+      // url: "https://goerli.infura.io/v3/dd365a18158e4879b2c02cde2c2519a7",
+      url: "https://eth-goerli.g.alchemy.com/v2/MC8Dohq0AJdQsi_6inCTXAMTnPlLSMBl",
+      accounts: [process.env.OWNER_PRIVATE_KEY ?? ""]
+    },
     forkedBsc: {
       url: "https://bsc.popoo.dev/",
       accounts: [process.env.OWNER_PRIVATE_KEY ?? ""]

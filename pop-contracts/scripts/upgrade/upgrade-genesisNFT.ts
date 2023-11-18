@@ -2,7 +2,7 @@ import { ethers, upgrades } from "hardhat";
 
 async function main() {
 
-    const genesisNFTAddr = "";
+    const genesisNFTAddr = "0xBC3935F2E72675842fD0781989f9a8BDEA4ae060";
 
     const GenesisNFTV2 = await ethers.getContractFactory("Genesis");
     const genesisNFT = await upgrades.upgradeProxy(genesisNFTAddr, GenesisNFTV2);

@@ -5,11 +5,12 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155ReceiverUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
+import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
+import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 
-contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, ERC721URIStorageUpgradeable, IERC1155ReceiverUpgradeable {
+contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, IERC1155ReceiverUpgradeable {
     using Counters for Counters.Counter;
 
     struct Accessory {
@@ -19,17 +20,16 @@ contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, 
 
     Counters.Counter private _tokenIdCounter;
     mapping(address => bool) public whitelistedContracts;
-    mapping(address => bool) public whitelistedEOA;
-    // hat --> 0
-    // fur --> 1
-    // clothes --> 2
-    // glasses --> 3
-    // mapping(tokenId => mapping(accessoryTypeId => Accessory))
     mapping(uint256 => mapping(uint256 => Accessory)) public equippedAccessories;
     mapping(uint256 => address) public accessoryOrder;
     uint256 public totalSupply;
+    uint256 public salePrice;
+    uint256 public saleStartAt;
+    string public baseURI;
+    bytes32 public whitelistMerkleRoot;
     uint8 public accessorySlots;
 
+    event AccessoriesUpdates(uint256 indexed tokenId, Accessory[]);
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -38,9 +38,7 @@ contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, 
 
     function initialize(address[] memory _whitelistedContracts) initializer public {
         __ERC721_init("Popbit", "PBT");
-        __ERC721URIStorage_init();
         __AccessControl_init();
-
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
 
         accessorySlots = 2;
@@ -48,64 +46,60 @@ contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, 
     }
 
     modifier isTokenOwner(uint256 tokenId) {
-        require(ownerOf(tokenId) == msg.sender, "not owner");
-        _;
-    }
-
-    modifier onlyWhitelisted() {
-        require(whitelistedEOA[msg.sender] == true, "not whitelisted");
+        require(ownerOf(tokenId) == msg.sender, "Genesis: not owner");
         _;
     }
 
     modifier validAccessories(Accessory[] memory _accessories) {
-        require(_accessories.length <= accessorySlots, "wrong length");
+        require(_accessories.length <= accessorySlots, "Genesis: wrong length");
         for(uint256 i; i < _accessories.length; i++){
-            require(whitelistedContracts[_accessories[i].contractAddr] == true, "not whitelisted");
-            require(accessoryOrder[i] == _accessories[i].contractAddr, "wrong order");
+            require(whitelistedContracts[_accessories[i].contractAddr] == true, "Genesis: not whitelisted");
+            require(accessoryOrder[i] == _accessories[i].contractAddr, "Genesis: wrong order");
         }
         _;
     }
 
-    function setTotalSupply(uint256 _totalSupply) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        totalSupply = _totalSupply;
-    }
+    // ======================================================== Accessory Functions ========================================================
 
-    function getTotalSupply() external view returns (uint256) {
-        return _tokenIdCounter.current();
-    }
-
-    function addToWhitelist(address[] calldata _whitelistAddrs) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        for (uint i; i < _whitelistAddrs.length; i++) {
-            whitelistedEOA[_whitelistAddrs[i]] = true;
+    function setAccessoryOrder(address[] calldata accessoryContracts) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        for (uint i; i < accessoryContracts.length; i++) {
+            accessoryOrder[i] = accessoryContracts[i];
         }
     }
 
-    /**
-     * @notice Remove from whitelist
-     */
-    function removeFromWhitelist(address[] calldata _whitelistAddrs) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        for (uint i = 0; i < _whitelistAddrs.length; i++) {
-            whitelistedEOA[_whitelistAddrs[i]] = false;
+    function setAccessorySlots(uint8 _accessorySlots) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        accessorySlots = _accessorySlots;
+    }
+
+    function getEquippedAccessories(uint256 _tokenId) public view returns (Accessory[] memory) {
+        Accessory[] memory accessories = new Accessory[](accessorySlots);
+        for (uint i; i < accessorySlots; i++) {
+            accessories[i] = equippedAccessories[_tokenId][i];
         }
+        return accessories;
     }
 
     function deEquipAllAccessories(uint256 _tokenId) external isTokenOwner(_tokenId) {
         for(uint i; i < accessorySlots; i++){
             if(equippedAccessories[_tokenId][i].accessoryId != 0){
-                IERC1155Upgradeable(equippedAccessories[_tokenId][i].contractAddr).safeTransferFrom(address(this), msg.sender, _tokenId, 1, "");
+                IERC1155Upgradeable(equippedAccessories[_tokenId][i].contractAddr).safeTransferFrom(address(this), msg.sender, equippedAccessories[_tokenId][i].accessoryId, 1, "");
                 equippedAccessories[_tokenId][i] = Accessory(address(0), 0);
             }
         }
+
+        emit AccessoriesUpdates(_tokenId, getEquippedAccessories(_tokenId));
     }
 
     function deEquipAccessory(uint256 _tokenId, uint256 accessoryType) external isTokenOwner(_tokenId) {
-        require(accessoryType <= accessorySlots, 'invalid accessoryType');
-        require(equippedAccessories[_tokenId][accessoryType].accessoryId != 0, "accessory already de-equipped");
-        IERC1155Upgradeable(equippedAccessories[_tokenId][accessoryType].contractAddr).safeTransferFrom(address(this), msg.sender, _tokenId, 1, "");
+        require(accessoryType <= accessorySlots, 'Genesis: invalid accessoryType');
+        require(equippedAccessories[_tokenId][accessoryType].accessoryId != 0, "Genesis: accessory already de-equipped");
+        IERC1155Upgradeable(equippedAccessories[_tokenId][accessoryType].contractAddr).safeTransferFrom(address(this), msg.sender, equippedAccessories[_tokenId][accessoryType].accessoryId, 1, "");
         equippedAccessories[_tokenId][accessoryType] = Accessory(address(0), 0);
+
+        emit AccessoriesUpdates(_tokenId, getEquippedAccessories(_tokenId));
     }
 
-    function equipAccessories(uint256 _tokenId, Accessory[] calldata _accessories, string memory _uri) external isTokenOwner(_tokenId) validAccessories(_accessories) {
+    function equipAccessories(uint256 _tokenId, Accessory[] calldata _accessories) external isTokenOwner(_tokenId) validAccessories(_accessories) {
         for(uint i; i < _accessories.length; i++) {
             Accessory memory previous = equippedAccessories[_tokenId][i];
             if(previous.contractAddr != address(0) && previous.accessoryId != 0){
@@ -117,70 +111,92 @@ contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, 
             }
             equippedAccessories[_tokenId][i] = current;
         }
-        _setTokenURI(_tokenId, _uri);
-    }
 
-    function setAccessoryOrder(address[] calldata accessoryContracts) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        for(uint i; i < accessoryContracts.length; i++){
-            accessoryOrder[i] = accessoryContracts[i];
-        }
+        emit AccessoriesUpdates(_tokenId, getEquippedAccessories(_tokenId));
     }
 
     function setWhitelisted(address[] memory _whitelistedContracts, uint8 _accessorySlots) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(_whitelistedContracts.length == _accessorySlots, "wrong length");
+        require(_whitelistedContracts.length == _accessorySlots, "Genesis: wrong length");
         for(uint i; i < _whitelistedContracts.length; i++){
             whitelistedContracts[_whitelistedContracts[i]] = true;
         }
         accessorySlots = _accessorySlots;
     }
 
-    function setAccessorySlots(uint8 _accessorySlots) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        accessorySlots = _accessorySlots;
-    }
-
     function addWhitelistedContract(address _contractAddr) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(_contractAddr != address(0), 'no address 0');
+        require(_contractAddr != address(0), 'Genesis: no address 0');
         whitelistedContracts[_contractAddr] = true;
     }
 
     function removeWhitelistedContracts(address[] memory _whitelistedContracts) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        for(uint i; i < _whitelistedContracts.length; i++){
-            if(whitelistedContracts[_whitelistedContracts[i]] == true){
+        for (uint i; i < _whitelistedContracts.length; i++) {
+            if (whitelistedContracts[_whitelistedContracts[i]] == true) {
                 whitelistedContracts[_whitelistedContracts[i]] = false;
             }
         }
     }
 
-    function claim(uint256 tokenId) external onlyWhitelisted {
-        require(_tokenIdCounter.current() < totalSupply, "max supply reached");
-        require(balanceOf(msg.sender) == 0, "max 1 per wallet");
-        _tokenIdCounter.increment();
-        _safeMint(msg.sender, tokenId);
+    // ======================================================== NFT Functions ========================================================
+
+    function setTotalSupply(uint256 _totalSupply) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        totalSupply = _totalSupply;
     }
 
-    function safeMint(address to, uint256 tokenId) external {
-        require(_tokenIdCounter.current() < totalSupply, "max supply reached");
-        require(balanceOf(msg.sender) == 0, "max 1 per wallet");
+    function getTotalSupply() external view returns (uint256) {
+        return _tokenIdCounter.current();
+    }
+
+    function setSalePrice(uint256 _salePrice) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        salePrice = _salePrice;
+    }
+
+    function setSaleStartAt(uint256 _saleStartAt) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        saleStartAt = _saleStartAt;
+    }
+
+    function setWhitelistMerkleRoot(bytes32 _whitelistMerkleRoot) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        whitelistMerkleRoot = _whitelistMerkleRoot;
+    }
+
+    function safeMint(address to, bytes32[] calldata merkleProof) external payable {
+        require(msg.value >= salePrice, "Genesis: not enough ether sent");
+        require(block.timestamp >= saleStartAt, "Genesis: sale has not started");
+        require(_tokenIdCounter.current() < totalSupply, "Genesis: max supply reached");
+        require(balanceOf(to) == 0, "Genesis: max 1 per wallet");
+        if (whitelistMerkleRoot != bytes32(0)) {
+            require(
+                MerkleProof.verify(merkleProof, whitelistMerkleRoot, keccak256(abi.encodePacked(_msgSender()))),
+                "Genesis: invalid merkle proof"
+            );
+        }
         _tokenIdCounter.increment();
-        _safeMint(msg.sender, tokenId);
+        _safeMint(to, _tokenIdCounter.current());
     }
 
     // The following functions are overrides required by Solidity.
     function _burn(
         uint256 tokenId
-    ) internal override(ERC721Upgradeable, ERC721URIStorageUpgradeable) {
+    ) internal override(ERC721Upgradeable) {
         super._burn(tokenId);
     }
 
-    function tokenURI(
-        uint256 tokenId
-    ) public view override(ERC721Upgradeable, ERC721URIStorageUpgradeable) returns (string memory) {
-        return super.tokenURI(tokenId);
+    function setBaseURI(string calldata _baseURI) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        baseURI = _baseURI;
+    }
+
+    function _baseURI() internal override view virtual returns (string memory) {
+        return baseURI;
+    }
+
+    function withdraw() external onlyRole(DEFAULT_ADMIN_ROLE) {
+        uint256 balance = address(this).balance;
+        (bool success,) = _msgSender().call{value: balance}("");
+        require(success, "Genesis: failed to send to owner");
     }
 
     function supportsInterface(
         bytes4 interfaceId
-    ) public view override(ERC721Upgradeable, ERC721URIStorageUpgradeable, IERC165Upgradeable, AccessControlUpgradeable) returns (bool) {
+    ) public view override(ERC721Upgradeable, IERC165Upgradeable, AccessControlUpgradeable) returns (bool) {
         return super.supportsInterface(interfaceId);
     }
 
