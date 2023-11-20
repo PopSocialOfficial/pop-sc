@@ -141,7 +141,7 @@ contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, 
         totalSupply = _totalSupply;
     }
 
-    function getTotalSupply() external view returns (uint256) {
+    function getCurrentSupply() external view returns (uint256) {
         return _tokenIdCounter.current();
     }
 

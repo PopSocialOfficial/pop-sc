@@ -39,7 +39,7 @@ async function main() {
 }
 
 async function verify() {
-    let address = "0x4BBB6F8A5D0e51539Aa99A122e85D0Ebda2Ce645"
+    let address = "0xfd9E0bAfD17E4b0f54e6dAa0271Da478110622De"
     await hre.run("verify:verify", {
         address: address
     });
@@ -123,14 +123,14 @@ async function init() {
 
     // url need to deploy
     // let base_uri = "https://popbit-ipfs.adev.popoo.foundation/popbit-test/json/"
-    let base_uri = "https://ipfs.popsocial.io/popbit/json/"
-    console.log(await admin_proxy.setBaseURI(base_uri, {gasLimit: 10000000}))
-    console.log(await admin_proxy.setSalePrice(ethers.utils.parseEther("0.005")))
-    console.log(await admin_proxy.setTotalSupply(1000))
+    // let base_uri = "https://ipfs.popsocial.io/popbit/json/"
+    // console.log(await admin_proxy.setBaseURI(base_uri, {gasLimit: 10000000}))
+    // console.log(await admin_proxy.setSalePrice(ethers.utils.parseEther("0.005")))
+    // console.log(await admin_proxy.setTotalSupply(1000))
 
     // Need to be set as start time
-    let start_at = Math.floor(new Date().getTime() / 1000)
-    console.log(await admin_proxy.setSaleStartAt(1700165094), {gasLimit: 10000000})
+    // let start_at = Math.floor(new Date().getTime() / 1000)
+    // console.log(await admin_proxy.setSaleStartAt(1700165094), {gasLimit: 10000000})
 
 
     console.log(await admin_proxy.baseURI())
@@ -138,6 +138,9 @@ async function init() {
     console.log(await admin_proxy.saleStartAt())
     console.log(await admin_proxy.salePrice())
     console.log(await admin_proxy.whitelistMerkleRoot())
+    console.log(await admin_proxy.totalSupply())
+    console.log(await admin_proxy.getCurrentSupply())
+    console.log(await admin_proxy.setTotalSupply(17))
 
 
     // use white list
@@ -237,4 +240,4 @@ async function test_accessory() {
 // init().then()
 // verify().then()
 
-verify().then()
+init().then()
