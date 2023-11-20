@@ -41,7 +41,6 @@ contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, 
         __AccessControl_init();
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
 
-        accessorySlots = 2;
         setWhitelisted(_whitelistedContracts, 2);
     }
 
@@ -161,7 +160,7 @@ contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, 
     function safeMint(address to, bytes32[] calldata merkleProof) external payable {
         require(msg.value >= salePrice, "Genesis: not enough ether sent");
         require(block.timestamp >= saleStartAt, "Genesis: sale has not started");
-        require(_tokenIdCounter.current() < totalSupply, "Genesis: max supply reached");
+        require(_tokenIdCounter.current() <= totalSupply, "Genesis: max supply reached");
         require(balanceOf(to) == 0, "Genesis: max 1 per wallet");
         if (whitelistMerkleRoot != bytes32(0)) {
             require(

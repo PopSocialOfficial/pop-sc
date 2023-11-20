@@ -1,8 +1,8 @@
 import {Contract} from "ethers";
 import hre, {ethers, upgrades} from "hardhat";
 import {MerkleTree} from 'merkletreejs';
-import keccak256 from 'keccak256';
 import axios from 'axios';
+import keccak256 from 'keccak256';
 
 
 interface Accessory {
@@ -39,7 +39,7 @@ async function main() {
 }
 
 async function verify() {
-    let address = "0x726D6BAcD620152E2E40bd6C75062Bee30F45729"
+    let address = "0x4BBB6F8A5D0e51539Aa99A122e85D0Ebda2Ce645"
     await hre.run("verify:verify", {
         address: address
     });
@@ -72,9 +72,13 @@ async function get_tree() {
     //     '0xff8834d3eD45773a8f51908e021Fe36a374bb030',
     //     '0x42c4e30b6af9C1b730F016C0B29dCc3Ab41bb745',
     //     '0xDf37b75345536F73976311FF86e97b51d299D21F',
-    //     '0x2917115014beea46CA2d6aD3935c26C21439Fbc2'
+    //     '0x2917115014beea46CA2d6aD3935c26C21439Fbc2',
+    //     '0x31ec3751bB2535A961B5A407260BD40dD16382Ab',
+    //     '0x6d10c4961d25Fd608C8A762D9B82c9E01cFd0329',
+    //     '0xF552f5d3590626D37a05AA4497C2418731247312',
+    //     '0x920AB8B0BE3A4dFca924857a9d545ad6B4d895c4',
+    //     '0x2c4c54f8735e4d09f0731a682cce56013aafd939'
     // ]
-
 }
 
 let merkleTree: MerkleTree;
@@ -118,15 +122,16 @@ async function init() {
     console.log(await admin_proxy.name())
 
     // url need to deploy
-    let base_uri = "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/test/json/"
+    // let base_uri = "https://popbit-ipfs.adev.popoo.foundation/popbit-test/json/"
+    let base_uri = "https://ipfs.popsocial.io/popbit/json/"
     console.log(await admin_proxy.setBaseURI(base_uri, {gasLimit: 10000000}))
     console.log(await admin_proxy.setSalePrice(ethers.utils.parseEther("0.005")))
     console.log(await admin_proxy.setTotalSupply(1000))
 
-
     // Need to be set as start time
     let start_at = Math.floor(new Date().getTime() / 1000)
     console.log(await admin_proxy.setSaleStartAt(1700165094), {gasLimit: 10000000})
+
 
     console.log(await admin_proxy.baseURI())
     console.log(await admin_proxy.tokenURI(1))
@@ -137,16 +142,16 @@ async function init() {
 
     // use white list
     // white list need to deploy
-    console.log(await admin_proxy.setWhitelistMerkleRoot("0x" + await getMerkleRoot()))
-
-    let wallet = ethers.Wallet.createRandom();
-    console.log(wallet.address, wallet.privateKey)
-    let proof_3 = await getProof(admin.address)
-    console.log(proof_3)
-    console.log(await admin_proxy.safeMint(admin.address, proof_3, {
-        value: ethers.utils.parseEther("0.005"),
-        gasLimit: 10000000
-    }))
+    // console.log(await admin_proxy.setWhitelistMerkleRoot("0x" + await getMerkleRoot()))
+    //
+    // let wallet = ethers.Wallet.createRandom();
+    // console.log(wallet.address, wallet.privateKey)
+    // let proof_3 = await getProof(admin.address)
+    // console.log(proof_3)
+    // console.log(await admin_proxy.safeMint(admin.address, proof_3, {
+    //     value: ethers.utils.parseEther("0.005"),
+    //     gasLimit: 10000000
+    // }))
 
     //
     // // no white list
@@ -158,6 +163,28 @@ async function init() {
 
     // withdraw
     // await admin_proxy.withdraw({gasLimit: 10000000})
+}
+
+async function set_white_list_merkleroot() {
+
+    let Genesis_address = "0xBC3935F2E72675842fD0781989f9a8BDEA4ae060"
+    const [admin] = await ethers.getSigners();
+    console.log(admin.address)
+    let accessory = await ethers.getContractFactory("Genesis")
+    let admin_proxy = accessory.attach(Genesis_address)
+    console.log(await admin_proxy.name())
+
+    console.log(await getMerkleRoot())
+    console.log(await admin_proxy.setWhitelistMerkleRoot("0x" + await getMerkleRoot()))
+    //
+    // let wallet = ethers.Wallet.createRandom();
+    // console.log(wallet.address, wallet.privateKey)
+    // let proof_3 = await getProof(admin.address)
+    // console.log(proof_3)
+    // console.log(await admin_proxy.safeMint(admin.address, proof_3, {
+    //     value: ethers.utils.parseEther("0.005"),
+    //     gasLimit: 10000000
+    // }))
 }
 
 
@@ -206,6 +233,8 @@ async function test_accessory() {
 
 // We recommend this pattern to be able to use async/await everywhere
 // and properly handle errors.
-main().then()
+// main().then()
 // init().then()
 // verify().then()
+
+verify().then()
