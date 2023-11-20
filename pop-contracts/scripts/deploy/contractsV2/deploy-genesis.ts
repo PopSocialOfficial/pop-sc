@@ -123,14 +123,15 @@ async function init() {
 
     // url need to deploy
     // let base_uri = "https://popbit-ipfs.adev.popoo.foundation/popbit-test/json/"
-    // let base_uri = "https://ipfs.popsocial.io/popbit/json/"
-    // console.log(await admin_proxy.setBaseURI(base_uri, {gasLimit: 10000000}))
-    // console.log(await admin_proxy.setSalePrice(ethers.utils.parseEther("0.005")))
-    // console.log(await admin_proxy.setTotalSupply(1000))
+    let base_uri = "https://ipfs.popsocial.io/popbit/json/"
+    console.log(await admin_proxy.setBaseURI(base_uri, {gasLimit: 10000000}))
+    console.log(await admin_proxy.setSalePrice(ethers.utils.parseEther("0.005")))
+    console.log(await admin_proxy.setTotalSupply(1000))
 
     // Need to be set as start time
-    // let start_at = Math.floor(new Date().getTime() / 1000)
-    // console.log(await admin_proxy.setSaleStartAt(1700165094), {gasLimit: 10000000})
+    let start_at = Math.floor(new Date().getTime() / 1000)
+    // 1700596800 utc 22 20:00
+    console.log(await admin_proxy.setSaleStartAt(1700596800), {gasLimit: 10000000})
 
 
     console.log(await admin_proxy.baseURI())
@@ -145,7 +146,7 @@ async function init() {
 
     // use white list
     // white list need to deploy
-    // console.log(await admin_proxy.setWhitelistMerkleRoot("0x" + await getMerkleRoot()))
+    console.log(await admin_proxy.setWhitelistMerkleRoot("0x" + await getMerkleRoot()))
     //
     // let wallet = ethers.Wallet.createRandom();
     // console.log(wallet.address, wallet.privateKey)
@@ -237,7 +238,7 @@ async function test_accessory() {
 // We recommend this pattern to be able to use async/await everywhere
 // and properly handle errors.
 // main().then()
-// init().then()
+init().then()
 // verify().then()
 
-init().then()
+// set_white_list_merkleroot().then()
