@@ -12,13 +12,21 @@ async function main() {
     const HatNFT: ContractFactory = await ethers.getContractFactory("Accessory");
     const ClothesNFT: ContractFactory = await ethers.getContractFactory("Accessory");
 
-    const hatDeploy = await upgrades.deployProxy(HatNFT, ['Popbit Hat', 'HAT', 'https://d37oornn0327yg.cloudfront.net/data/metadata/popbit/json/{id}.json'], {initializer: 'initialize'});
+    // test
+    let hat_url = "https://popbit-ipfs.adev.popoo.foundation/popbit-test/json/hat/{id}"
+    // prod
+    // let hat_url = "https://ipfs.popsocial.io/popbit/json/hat/{id}"
+    const hatDeploy = await upgrades.deployProxy(HatNFT, ['Popbit Hat', 'HAT', hat_url], {initializer: 'initialize'});
     const hatDeployed = await hatDeploy.deployed();
     console.log(`Hat Accessory Proxy deployed at address ${hatDeploy.address}`);
     console.log(await upgrades.erc1967.getImplementationAddress(hatDeploy.address), "implementation");
     console.log(await upgrades.erc1967.getAdminAddress(hatDeploy.address), 'admin address');
 
-    const clothesDeploy = await upgrades.deployProxy(ClothesNFT, ['Popbit Clothes', 'CLOTHES', 'https://d37oornn0327yg.cloudfront.net/data/metadata/popbit/json/{id}.json'], {initializer: 'initialize'});
+    // test
+    let cloth_url = "https://popbit-ipfs.adev.popoo.foundation/popbit-test/json/cloth/{id}"
+    // prod
+    // let hat_url = "https://ipfs.popsocial.io/popbit/json/cloth/{id}"
+    const clothesDeploy = await upgrades.deployProxy(ClothesNFT, ['Popbit Clothes', 'CLOTHES', cloth_url], {initializer: 'initialize'});
     const clothesDeployed = await clothesDeploy.deployed();
     console.log(`Clothes Accessory Proxy deployed at address ${clothesDeploy.address}`);
     console.log(await upgrades.erc1967.getImplementationAddress(clothesDeploy.address), "implementation");
