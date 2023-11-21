@@ -141,7 +141,7 @@ async function init() {
     console.log(await admin_proxy.whitelistMerkleRoot())
     console.log(await admin_proxy.totalSupply())
     console.log(await admin_proxy.getCurrentSupply())
-    console.log(await admin_proxy.setTotalSupply(17))
+    console.log(await admin_proxy.setTotalSupply(20))
 
 
     // use white list

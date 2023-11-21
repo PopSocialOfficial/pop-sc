@@ -9,8 +9,9 @@ import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155ReceiverUpgrad
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/interfaces/IERC4906Upgradeable.sol";
 
-contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, IERC1155ReceiverUpgradeable {
+contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, IERC4906Upgradeable, IERC1155ReceiverUpgradeable {
     using Counters for Counters.Counter;
 
     struct Accessory {
@@ -87,6 +88,7 @@ contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, 
         }
 
         emit AccessoriesUpdates(_tokenId, getEquippedAccessories(_tokenId));
+        emit MetadataUpdate(_tokenId);
     }
 
     function deEquipAccessory(uint256 _tokenId, uint256 accessoryType) external isTokenOwner(_tokenId) {
@@ -96,6 +98,7 @@ contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, 
         equippedAccessories[_tokenId][accessoryType] = Accessory(address(0), 0);
 
         emit AccessoriesUpdates(_tokenId, getEquippedAccessories(_tokenId));
+        emit MetadataUpdate(_tokenId);
     }
 
     function equipAccessories(uint256 _tokenId, Accessory[] calldata _accessories) external isTokenOwner(_tokenId) validAccessories(_accessories) {
@@ -112,6 +115,7 @@ contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, 
         }
 
         emit AccessoriesUpdates(_tokenId, getEquippedAccessories(_tokenId));
+        emit MetadataUpdate(_tokenId);
     }
 
     function setWhitelisted(address[] memory _whitelistedContracts, uint8 _accessorySlots) public onlyRole(DEFAULT_ADMIN_ROLE) {
@@ -181,6 +185,7 @@ contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, 
 
     function setBaseURI(string calldata _baseURI) external onlyRole(DEFAULT_ADMIN_ROLE) {
         baseURI = _baseURI;
+        emit MetadataUpdate(_tokenId);
     }
 
     function _baseURI() internal override view virtual returns (string memory) {
@@ -193,12 +198,10 @@ contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, 
         require(success, "Genesis: failed to send to owner");
     }
 
-    function supportsInterface(
-        bytes4 interfaceId
-    ) public view override(ERC721Upgradeable, IERC165Upgradeable, AccessControlUpgradeable) returns (bool) {
-        return super.supportsInterface(interfaceId);
-    }
 
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721Upgradeable, IERC165Upgradeable) returns (bool) {
+        return interfaceId == bytes4(0x49064906) || super.supportsInterface(interfaceId);
+    }
     function onERC1155Received(
         address,
         address,
