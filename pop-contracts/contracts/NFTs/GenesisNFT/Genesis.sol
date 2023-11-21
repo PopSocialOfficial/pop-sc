@@ -185,7 +185,7 @@ contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, 
 
     function setBaseURI(string calldata _baseURI) external onlyRole(DEFAULT_ADMIN_ROLE) {
         baseURI = _baseURI;
-        emit MetadataUpdate(_tokenId);
+        emit BatchMetadataUpdate(1, _tokenIdCounter.current());
     }
 
     function _baseURI() internal override view virtual returns (string memory) {
@@ -199,9 +199,12 @@ contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, 
     }
 
 
-    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721Upgradeable, IERC165Upgradeable) returns (bool) {
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view override(ERC721Upgradeable, IERC165Upgradeable, AccessControlUpgradeable) returns (bool) {
         return interfaceId == bytes4(0x49064906) || super.supportsInterface(interfaceId);
     }
+
     function onERC1155Received(
         address,
         address,
