@@ -82,7 +82,13 @@ contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, 
     function deEquipAllAccessories(uint256 _tokenId) external isTokenOwner(_tokenId) {
         for(uint i; i < accessorySlots; i++){
             if(equippedAccessories[_tokenId][i].accessoryId != 0){
-                IERC1155Upgradeable(equippedAccessories[_tokenId][i].contractAddr).safeTransferFrom(address(this), msg.sender, equippedAccessories[_tokenId][i].accessoryId, 1, "");
+                IERC1155Upgradeable(equippedAccessories[_tokenId][i].contractAddr).safeTransferFrom(
+                    address(this),
+                    msg.sender,
+                    equippedAccessories[_tokenId][i].accessoryId,
+                    1,
+                    ""
+                );
                 equippedAccessories[_tokenId][i] = Accessory(address(0), 0);
             }
         }
@@ -94,7 +100,13 @@ contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, 
     function deEquipAccessory(uint256 _tokenId, uint256 accessoryType) external isTokenOwner(_tokenId) {
         require(accessoryType <= accessorySlots, 'Genesis: invalid accessoryType');
         require(equippedAccessories[_tokenId][accessoryType].accessoryId != 0, "Genesis: accessory already de-equipped");
-        IERC1155Upgradeable(equippedAccessories[_tokenId][accessoryType].contractAddr).safeTransferFrom(address(this), msg.sender, equippedAccessories[_tokenId][accessoryType].accessoryId, 1, "");
+        IERC1155Upgradeable(equippedAccessories[_tokenId][accessoryType].contractAddr).safeTransferFrom(
+            address(this),
+            msg.sender,
+            equippedAccessories[_tokenId][accessoryType].accessoryId,
+            1,
+            ""
+        );
         equippedAccessories[_tokenId][accessoryType] = Accessory(address(0), 0);
 
         emit AccessoriesUpdates(_tokenId, getEquippedAccessories(_tokenId));
@@ -105,11 +117,23 @@ contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, 
         for(uint i; i < _accessories.length; i++) {
             Accessory memory previous = equippedAccessories[_tokenId][i];
             if(previous.contractAddr != address(0) && previous.accessoryId != 0){
-                IERC1155Upgradeable(previous.contractAddr).safeTransferFrom(address(this), msg.sender, previous.accessoryId, 1, "");
+                IERC1155Upgradeable(previous.contractAddr).safeTransferFrom(
+                    address(this),
+                    msg.sender,
+                    previous.accessoryId,
+                    1,
+                    ""
+                );
             }
             Accessory memory current = _accessories[i];
             if(current.accessoryId != 0){
-                IERC1155Upgradeable(current.contractAddr).safeTransferFrom(msg.sender, address(this), current.accessoryId, 1, "");
+                IERC1155Upgradeable(current.contractAddr).safeTransferFrom(
+                    msg.sender,
+                    address(this),
+                    current.accessoryId,
+                    1,
+                    ""
+                );
             }
             equippedAccessories[_tokenId][i] = current;
         }
@@ -197,7 +221,6 @@ contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, 
         (bool success,) = _msgSender().call{value: balance}("");
         require(success, "Genesis: failed to send to owner");
     }
-
 
     function supportsInterface(
         bytes4 interfaceId

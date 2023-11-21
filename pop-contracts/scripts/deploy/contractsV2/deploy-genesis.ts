@@ -39,7 +39,7 @@ async function main() {
 }
 
 async function verify() {
-    let address = "0xfd9E0bAfD17E4b0f54e6dAa0271Da478110622De"
+    let address = "0x92D19481ed3de8a6063e5Be02AE7Fe8Cfa44EF90"
     await hre.run("verify:verify", {
         address: address
     });
@@ -238,7 +238,7 @@ async function test_accessory() {
 // We recommend this pattern to be able to use async/await everywhere
 // and properly handle errors.
 // main().then()
-init().then()
-// verify().then()
+// init().then()
+verify().then()
 
 // set_white_list_merkleroot().then()
