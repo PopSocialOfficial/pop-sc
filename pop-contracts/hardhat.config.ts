@@ -70,6 +70,11 @@ const config: HardhatUserConfig & {
     artifacts: "./artifacts"
   },
   networks: {
+    hardhat: {
+			// gas: 12000000,
+			blockGasLimit: 1299510655191,
+			allowUnlimitedContractSize: true,
+		},
     localhost: {
       url: "http://127.0.0.1:8545/",
     },

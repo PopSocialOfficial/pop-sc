@@ -31,18 +31,26 @@ contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, 
     uint8 public accessorySlots;
 
     event AccessoriesUpdates(uint256 indexed tokenId, Accessory[]);
+    bytes32 public constant FUND_CLAIMER_ROLE = keccak256("FUND_CLAIMER_ROLE");
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
     }
 
-    function initialize(address[] memory _whitelistedContracts) initializer public {
+    function initialize(
+        uint256 _totalSupply,
+        uint256 _startTime,
+        uint256 _salePrice,
+        address fundRaiseClaimer
+    ) initializer public {
         __ERC721_init("Popbit", "PBT");
         __AccessControl_init();
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-
-        setWhitelisted(_whitelistedContracts, 2);
+        _grantRole(FUND_CLAIMER_ROLE, fundRaiseClaimer);
+        totalSupply = _totalSupply;
+        salePrice = _salePrice;
+        saleStartAt = _startTime;
     }
 
     modifier isTokenOwner(uint256 tokenId) {
@@ -188,7 +196,7 @@ contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, 
     function safeMint(address to, bytes32[] calldata merkleProof) external payable {
         require(msg.value >= salePrice, "Genesis: not enough ether sent");
         require(block.timestamp >= saleStartAt, "Genesis: sale has not started");
-        require(_tokenIdCounter.current() <= totalSupply, "Genesis: max supply reached");
+        require(_tokenIdCounter.current() < totalSupply, "Genesis: max supply reached");
         require(balanceOf(to) == 0, "Genesis: max 1 per wallet");
         if (whitelistMerkleRoot != bytes32(0)) {
             require(
@@ -216,7 +224,7 @@ contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, 
         return baseURI;
     }
 
-    function withdraw() external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function withdraw() external onlyRole(FUND_CLAIMER_ROLE) {
         uint256 balance = address(this).balance;
         (bool success,) = _msgSender().call{value: balance}("");
         require(success, "Genesis: failed to send to owner");

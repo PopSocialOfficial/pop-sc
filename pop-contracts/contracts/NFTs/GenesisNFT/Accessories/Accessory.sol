@@ -16,11 +16,12 @@ contract Accessory is ERC1155Upgradeable, OwnableUpgradeable {
         _disableInitializers();
     }
 
-    function initialize(string memory _name, string memory _symbol, string memory uri_) initializer public {
+    function initialize(string memory _name, string memory _symbol, string memory uri_, uint256 _totalSupply) initializer public {
         __ERC1155_init(uri_);
         __Ownable_init();
         name = _name;
         symbol = _symbol;
+        totalSupply = _totalSupply;
     }
 
     function setPoint(uint _id, uint _points) external onlyOwner {
