@@ -53,8 +53,18 @@ const config: HardhatUserConfig & {
             }
           }
       }
-    ]
-    
+    ],
+    // overrides: {
+    //   "contracts/NFTs/GenesisNFT/Genesis.sol": {
+    //     version: "0.8.10",
+    //     settings: {
+    //       optimizer: {
+    //         enabled: true,
+    //         runs: 1000,
+    //       },
+    //     },
+    //   },
+    // },
   },
   contractSizer: {
     alphaSort: true,
@@ -98,12 +108,26 @@ const config: HardhatUserConfig & {
     bsc: {
       url: "https://rpc.ankr.com/bsc",
       accounts: [process.env.OWNER_PRIVATE_KEY ?? ""]
+    },
+    eth: {
+      url: "https://eth.llamarpc.com",
+      accounts: [process.env.OWNER_PRIVATE_KEY ?? ""]
     }
   },
   etherscan: {
     // apiKey: process.env.POLYGONSCAN_API_KEY,
-    apiKey: process.env.BSC_API_KEY,
+    // apiKey: process.env.BSC_API_KEY,
+    apiKey: '58UI76KD9RPIC6PFU765DBTVDSXKI16NXW',
+    
   },
+  gasReporter: {
+    currency: "USD",
+    gasPriceApi:
+      "https://api.basescan.org/api?module=proxy&action=eth_gasPrice",
+    token: "ETH",
+    enabled: true,
+  },
+
 };
 
 export default config;

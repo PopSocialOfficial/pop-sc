@@ -408,6 +408,8 @@ describe("Genesis NFT testing", function () {
 
         // Should not let mint more than supply.
         await genesisNFT.setTotalSupply(1);
+        expect(await genesisNFT.totalSupply()).to.eq(1);
+        expect(await genesisNFT.getCurrentSupply()).to.eq(1);
         await expect(genesisNFT.connect(alice).safeMint(alice.address, merklTreeRoot.getHexProof(keccak256(alice.address)), {
             value: ethers.utils.parseEther('1')
         })).to.be.revertedWith('Genesis: max supply reached');
