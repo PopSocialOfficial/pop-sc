@@ -8,7 +8,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155ReceiverUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
-import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
+// import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/interfaces/IERC4906Upgradeable.sol";
 
 contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, IERC4906Upgradeable, IERC1155ReceiverUpgradeable {
@@ -33,6 +33,10 @@ contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, 
     event AccessoriesUpdates(uint256 indexed tokenId, Accessory[]);
     bytes32 public constant FUND_CLAIMER_ROLE = keccak256("FUND_CLAIMER_ROLE");
 
+    uint256 public adminMintedCount;
+    uint256 public constant MAX_ADMIN_MINT = 50;
+    event AdminMint(address indexed to, uint256 tokenId);
+
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
@@ -48,6 +52,7 @@ contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, 
         __AccessControl_init();
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(FUND_CLAIMER_ROLE, fundRaiseClaimer);
+        require(_totalSupply > 0, "totalSupply must be greater than 0");
         totalSupply = _totalSupply;
         salePrice = _salePrice;
         saleStartAt = _startTime;
@@ -266,5 +271,23 @@ contract Genesis is Initializable, ERC721Upgradeable, AccessControlUpgradeable, 
                 )
             )
         );
+    }
+
+    function mintBatch(address[] calldata toAddresses) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(toAddresses.length <= MAX_ADMIN_MINT - adminMintedCount, "Genesis: Exceeds admin mint limit");
+
+        for (uint256 i = 0; i < toAddresses.length; i++) {
+            address to = toAddresses[i];
+            require(balanceOf(to) == 0, "Genesis: Max 1 per wallet");
+
+            if (adminMintedCount < MAX_ADMIN_MINT) {
+                // Skip merkle proof verification for admin minting
+                _tokenIdCounter.increment();
+                _safeMint(to, _tokenIdCounter.current());
+                adminMintedCount++;
+
+                emit AdminMint(to, _tokenIdCounter.current());
+            }
+        }
     }
 }
