@@ -11,7 +11,7 @@ async function main() {
     genesisNFT = await upgrades.deployProxy(GenesisNFT, [
         3000, // totalSupply
         1702576800, // startTime
-        10000000000000000, // startPrice 0.01 ETH
+        '10000000000000000', // startPrice 0.01 ETH
         '0x6ff20d3006d2AE0D996f28B25A96c66EF62Dc045', // fundRaiseClaimer ETH Msig
     ], {initializer: 'initialize'});
 
@@ -19,7 +19,7 @@ async function main() {
    
     console.log(`Cool Cappy Proxy deployed at address ${genesisNFT.address}`);
     console.log(await upgrades.erc1967.getImplementationAddress(genesisNFT.address), "implementation");
-    console.log(await upgrades.erc1967.getAdminAddress(genesisNFT.address), 'admin address');
+    console.log(await upgrades.erc1967.getAdminAddress(genesisNFT.address), 'proxy admin address');
 
     // const receipt = await genesisNFT.deployTransaction.wait();
     // const transactionReceipt = await ethers.provider.getTransactionReceipt(receipt.transactionHash);
