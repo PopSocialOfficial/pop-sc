@@ -58,9 +58,6 @@ describe("Accessory NFT testing", async function () {
         let signature = await getSignature(signer, bob.address, 1, 1, hatNFT.address)
         expect(await hatNFT.mint(bob.address, 1, 1, [], signature, {gasLimit: 70000})).to.emit(hatNFT, "ServerReport")
             .withArgs(11111);
-
         expect(await hatNFT.balanceOf(bob.address, 1)).to.equal(1);
-
-
     });
 });
