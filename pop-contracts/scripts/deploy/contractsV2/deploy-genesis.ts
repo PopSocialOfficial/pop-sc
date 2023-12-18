@@ -61,7 +61,8 @@ export function checkWhiteList(allowList: string[], currentAddress: string) {
 
 
 async function get_tree() {
-    let url = "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/popbit/whitelist.json"
+    // let url = "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/popbit/whitelist.json"
+    let url = "https://popoo-web2.s3.ap-northeast-1.amazonaws.com/data/metadata/cappys/whitelist.json"
     let res = await axios({
         method: 'get',
         maxBodyLength: Infinity,
@@ -115,6 +116,7 @@ async function checkAllowlisted(address: string | undefined) {
 async function init() {
 
     let Genesis_address = "0xBC3935F2E72675842fD0781989f9a8BDEA4ae060"
+    // let Genesis_address = "0xC1Dd2B220559d44Dab31f753bEcD4B030fAa5ef8"
     const [admin] = await ethers.getSigners();
     console.log(admin.address)
     let accessory = await ethers.getContractFactory("Genesis")
@@ -124,29 +126,29 @@ async function init() {
     // url need to deploy
     // let base_uri = "https://popbit-ipfs.adev.popoo.foundation/popbit-test/json/"
     let base_uri = "https://ipfs.popsocial.io/popbit/json/"
-    console.log(await admin_proxy.setBaseURI(base_uri, {gasLimit: 10000000}))
-    console.log(await admin_proxy.setSalePrice(ethers.utils.parseEther("0.005")))
-    console.log(await admin_proxy.setTotalSupply(1000))
+    // console.log(await admin_proxy.setBaseURI(base_uri, {gasLimit: 10000000}))
+    // console.log(await admin_proxy.setSalePrice(ethers.utils.parseEther("0.005")))
+    // console.log(await admin_proxy.setTotalSupply(1000))
 
     // Need to be set as start time
     let start_at = Math.floor(new Date().getTime() / 1000)
     // 1700596800 utc 22 20:00
-    console.log(await admin_proxy.setSaleStartAt(1700596800), {gasLimit: 10000000})
+    console.log(await admin_proxy.setSaleStartAt(1700573355), {gasLimit: 10000000})
 
 
     console.log(await admin_proxy.baseURI())
-    console.log(await admin_proxy.tokenURI(1))
+    // console.log(await admin_proxy.tokenURI(1))
     console.log(await admin_proxy.saleStartAt())
     console.log(await admin_proxy.salePrice())
     console.log(await admin_proxy.whitelistMerkleRoot())
     console.log(await admin_proxy.totalSupply())
     console.log(await admin_proxy.getCurrentSupply())
-    console.log(await admin_proxy.setTotalSupply(20))
+    console.log(await admin_proxy.setTotalSupply(22))
 
 
     // use white list
     // white list need to deploy
-    console.log(await admin_proxy.setWhitelistMerkleRoot("0x" + await getMerkleRoot()))
+    // console.log(await admin_proxy.setWhitelistMerkleRoot("0x" + await getMerkleRoot()))
     //
     // let wallet = ethers.Wallet.createRandom();
     // console.log(wallet.address, wallet.privateKey)
@@ -177,9 +179,10 @@ async function set_white_list_merkleroot() {
     let accessory = await ethers.getContractFactory("Genesis")
     let admin_proxy = accessory.attach(Genesis_address)
     console.log(await admin_proxy.name())
-
+    console.log("===================")
     console.log(await getMerkleRoot())
-    console.log(await admin_proxy.setWhitelistMerkleRoot("0x" + await getMerkleRoot()))
+    console.log("===================")
+    // console.log(await admin_proxy.setWhitelistMerkleRoot("0x" + await getMerkleRoot()))
     //
     // let wallet = ethers.Wallet.createRandom();
     // console.log(wallet.address, wallet.privateKey)
@@ -205,7 +208,6 @@ async function test_accessory() {
     let accessory_hat = Accessory.attach(accessory_hat_address)
     let accessory_clothe = Accessory.attach(accessory_clothe_address)
 
-
     console.log(await admin_proxy.getEquippedAccessories(10))
     console.log(await admin_proxy.accessoryOrder(0))
     console.log(await admin_proxy.accessoryOrder(1))
@@ -224,14 +226,30 @@ async function test_accessory() {
     // await accessory_clothe.setApprovalForAll(Genesis_address, true)
 
     const accessoriesToEquip = [
-        {contractAddr: accessory_hat_address, accessoryId: 1},
-        {contractAddr: accessory_clothe_address, accessoryId: 1},
+        // {contractAddr: accessory_hat_address, accessoryId: 1},
+        // {contractAddr: accessory_clothe_address, accessoryId: 1},
     ]
     // let tx = await admin_proxy.equipAccessories(10, accessoriesToEquip);
-    // let tx = await admin_proxy.deEquipAllAccessories(10, {gasLimit: 10000000});
-    let tx = await admin_proxy.deEquipAccessory(10, 1);
+    let tx = await admin_proxy.deEquipAllAccessories(10, {gasLimit: 10000000});
+    // // let tx = await admin_proxy.deEquipAccessory(10, 1);
     await tx.wait()
     console.log(tx.hash)
+}
+
+async function mint_okx() {
+    let Genesis_address = "0xC1Dd2B220559d44Dab31f753bEcD4B030fAa5ef8"
+    const [admin] = await ethers.getSigners();
+    console.log(admin.address)
+    let accessory = await ethers.getContractFactory("Genesis")
+    let admin_proxy = accessory.attach(Genesis_address)
+    console.log(await admin_proxy.name())
+
+    let proof_3 = await getProof(admin.address)
+    console.log(proof_3)
+    console.log(await admin_proxy.safeMint(admin.address, proof_3, {
+        value: ethers.utils.parseEther("0.005"),
+        gasLimit: 120000
+    }))
 
 }
 
@@ -239,6 +257,7 @@ async function test_accessory() {
 // and properly handle errors.
 // main().then()
 // init().then()
-verify().then()
+// verify().then()
 
-// set_white_list_merkleroot().then()
+set_white_list_merkleroot().then()
+// init().then()

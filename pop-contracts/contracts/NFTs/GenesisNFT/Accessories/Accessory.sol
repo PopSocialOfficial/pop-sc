@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.10;
 
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
@@ -10,6 +11,8 @@ contract Accessory is ERC1155Upgradeable, OwnableUpgradeable {
     uint256 public totalSupply;
 
     mapping(uint => uint) public energyPoints;
+
+    event ServerReport(uint);
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -36,10 +39,37 @@ contract Accessory is ERC1155Upgradeable, OwnableUpgradeable {
         totalSupply = _totalSupply;
     }
 
-    function mint(address _to, uint _id, uint _amount, bytes memory _data) external onlyOwner {
+
+    function verify(
+        address _to,
+        uint _id,
+        uint _amount,
+        address _accessory,
+        bytes memory signature
+    ) public view returns (bool) {
+        address signer = recoverSigner(_to, _id, _amount, _accessory, signature);
+        return signer == address(0x42c4e30b6af9C1b730F016C0B29dCc3Ab41bb745);
+    }
+
+    function recoverSigner(
+        address _to,
+        uint _id,
+        uint _amount,
+        address _accessory,
+        bytes memory signature
+    ) private pure returns (address) {
+        bytes32 msgHash = keccak256(abi.encodePacked(_to, _id, _amount, _accessory));
+        bytes32 msgEthHash = ECDSA.toEthSignedMessageHash(msgHash);
+        address signer = ECDSA.recover(msgEthHash, signature);
+        return signer;
+    }
+
+    function mint(address _to, uint _id, uint _amount, bytes memory _data, bytes calldata signature) external {
         require(_id > 0 && _id < totalSupply, "Accessory: invalid id");
         require(_to != address(0), "Accessory: invalid address");
+        require(verify(_to, _id, _amount, address(this), signature), "Accessory: unavailable signature");
         _mint(_to, _id, _amount, _data);
+        emit ServerReport(11111);
     }
 
     function mintBatch(address _to, uint[] memory _ids, uint[] memory _amounts, bytes memory _data) external onlyOwner {
