@@ -278,8 +278,6 @@ contract CoolCappy is Initializable, ERC721Upgradeable, AccessControlUpgradeable
 
         for (uint256 i = 0; i < toAddresses.length; i++) {
             address to = toAddresses[i];
-            require(balanceOf(to) == 0, "CoolCappy: Max 1 per wallet");
-
             if (adminMintedCount < MAX_ADMIN_MINT) {
                 // Skip merkle proof verification for admin minting
                 _tokenIdCounter.increment();
