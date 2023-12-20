@@ -16,12 +16,12 @@ dotenv.config();
 
 const config: HardhatUserConfig & {
   contractSizer: {
-    alphaSort: boolean,
-    disambiguatePaths: boolean,
-    runOnCompile: boolean,
-    strict: boolean,
-    only: string[]
-  }
+    alphaSort: boolean;
+    disambiguatePaths: boolean;
+    runOnCompile: boolean;
+    strict: boolean;
+    only: string[];
+  };
 } = {
   defaultNetwork: "localhost",
   solidity: {
@@ -31,28 +31,28 @@ const config: HardhatUserConfig & {
         settings: {
           optimizer: {
             enabled: true,
-            runs: 200
-          }
-        }
+            runs: 200,
+          },
+        },
       },
       {
         version: "0.8.9",
-          settings: {
-            optimizer: {
-              enabled: true,
-              runs: 200
-            }
-          }
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
       },
       {
         version: "0.8.1",
-          settings: {
-            optimizer: {
-              enabled: true,
-              runs: 200
-            }
-          }
-      }
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
+      },
     ],
     // overrides: {
     //   "contracts/NFTs/GenesisNFT/Genesis.sol": {
@@ -71,20 +71,21 @@ const config: HardhatUserConfig & {
     disambiguatePaths: false,
     runOnCompile: true,
     strict: true,
-    only: [':Max', ":Pop", ":Cyber", ":Coolpo", ":Genesis"],
+    only: [":Max", ":Pop", ":Cyber", ":Coolpo", ":Genesis"],
   },
   paths: {
     sources: "./contracts",
     tests: "./test",
     cache: "./cache",
-    artifacts: "./artifacts"
+    artifacts: "./artifacts",
   },
   networks: {
     hardhat: {
-			// gas: 12000000,
-			blockGasLimit: 1299510655191,
-			allowUnlimitedContractSize: true,
-		},
+      chainId: 31337,
+      // gas: 12000000,
+      blockGasLimit: 1299510655191,
+      allowUnlimitedContractSize: true,
+    },
     localhost: {
       url: "http://127.0.0.1:8545/",
     },
@@ -94,31 +95,30 @@ const config: HardhatUserConfig & {
     // },
     tbsc: {
       url: "https://bsc-testnet.blockpi.network/v1/rpc/public",
-      accounts: [process.env.OWNER_PRIVATE_KEY ?? ""]
+      accounts: [process.env.OWNER_PRIVATE_KEY ?? ""],
     },
     goerli: {
       // url: "https://goerli.infura.io/v3/dd365a18158e4879b2c02cde2c2519a7",
       url: "https://eth-goerli.g.alchemy.com/v2/MC8Dohq0AJdQsi_6inCTXAMTnPlLSMBl",
-      accounts: [process.env.OWNER_PRIVATE_KEY ?? ""]
+      accounts: [process.env.OWNER_PRIVATE_KEY ?? ""],
     },
     forkedBsc: {
       url: "https://bsc.popoo.dev/",
-      accounts: [process.env.OWNER_PRIVATE_KEY ?? ""]
+      accounts: [process.env.OWNER_PRIVATE_KEY ?? ""],
     },
     bsc: {
       url: "https://rpc.ankr.com/bsc",
-      accounts: [process.env.OWNER_PRIVATE_KEY ?? ""]
+      accounts: [process.env.OWNER_PRIVATE_KEY ?? ""],
     },
     eth: {
       url: "https://eth.llamarpc.com",
-      accounts: [process.env.OWNER_PRIVATE_KEY ?? ""]
-    }
+      accounts: [process.env.OWNER_PRIVATE_KEY ?? ""],
+    },
   },
   etherscan: {
     // apiKey: process.env.POLYGONSCAN_API_KEY,
     // apiKey: process.env.BSC_API_KEY,
-    apiKey: '58UI76KD9RPIC6PFU765DBTVDSXKI16NXW',
-    
+    apiKey: "58UI76KD9RPIC6PFU765DBTVDSXKI16NXW",
   },
   gasReporter: {
     currency: "USD",
@@ -127,7 +127,6 @@ const config: HardhatUserConfig & {
     token: "ETH",
     enabled: true,
   },
-
 };
 
 export default config;
