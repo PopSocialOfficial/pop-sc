@@ -23,7 +23,7 @@ async function main() {
     console.log(await upgrades.erc1967.getAdminAddress(hatDeploy.address), 'admin address');
 
     // test
-    let cloth_url = "https://ipfs.popsocial.io/popbit/json/cloth/{id}"
+    let cloth_url = "https://ipfs.popsocial.io/popbit/json/clothes/{id}"
     // prod
     // let hat_url = "https://ipfs.popsocial.io/popbit/json/cloth/{id}"
     const clothesDeploy = await upgrades.deployProxy(ClothesNFT, ['Popbit Clothes', 'CLOTHES', cloth_url, 1000], {initializer: 'initialize'});
