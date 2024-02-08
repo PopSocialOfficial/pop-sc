@@ -76,7 +76,7 @@ contract Accessory is ERC1155Upgradeable, OwnableUpgradeable, EIP712Upgradeable 
     }
 
     function mint(address _to, uint _id, uint _amount, uint order_id, uint deadline, bytes memory _data, uint8 v, bytes32 r, bytes32 s) external {
-        require(_id > 0 && _id < totalSupply, "Accessory: invalid id");
+        require(_id > 0 && _id <= totalSupply, "Accessory: invalid id");
         require(_to != address(0), "Accessory: invalid address");
         require(verify(_to, _id, _amount, order_id, address(this), deadline, v, r, s), "Accessory: unavailable signature");
         _mint(_to, _id, _amount, _data);
@@ -85,7 +85,7 @@ contract Accessory is ERC1155Upgradeable, OwnableUpgradeable, EIP712Upgradeable 
 
     function mintBatch(address _to, uint[] memory _ids, uint[] memory _amounts, bytes memory _data) external onlyOwner {
         for (uint i; i < _ids.length; i++) {
-            require(_ids[i] > 0 && _ids[i] < totalSupply, "Accessory: invalid id");
+            require(_ids[i] > 0 && _ids[i] <= totalSupply, "Accessory: invalid id");
         }
         require(_to != address(0), "Accessory: invalid address");
         _mintBatch(_to, _ids, _amounts, _data);
