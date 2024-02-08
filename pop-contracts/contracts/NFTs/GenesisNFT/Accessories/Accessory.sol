@@ -76,7 +76,6 @@ contract Accessory is ERC1155Upgradeable, OwnableUpgradeable, EIP712Upgradeable 
     }
 
     function mint(address _to, uint _id, uint _amount, uint order_id, uint deadline, bytes memory _data, uint8 v, bytes32 r, bytes32 s) external {
-        console.log("aaaa");
         require(_id > 0 && _id < totalSupply, "Accessory: invalid id");
         require(_to != address(0), "Accessory: invalid address");
         require(verify(_to, _id, _amount, order_id, address(this), deadline, v, r, s), "Accessory: unavailable signature");
