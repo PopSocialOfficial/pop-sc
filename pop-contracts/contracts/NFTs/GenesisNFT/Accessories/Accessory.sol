@@ -26,8 +26,8 @@ contract Accessory is ERC1155Upgradeable, OwnableUpgradeable, EIP712Upgradeable 
         _disableInitializers();
     }
 
-    function initialize(string memory _name, string memory _symbol, string memory uri_, uint256 _totalSupply) initializer public {
-        __ERC1155_init(uri_);
+    function initialize(string memory _name, string memory _symbol, string memory _uri, uint256 _totalSupply) initializer public {
+        __ERC1155_init(_uri);
         __Ownable_init();
         name = _name;
         symbol = _symbol;
@@ -40,8 +40,8 @@ contract Accessory is ERC1155Upgradeable, OwnableUpgradeable, EIP712Upgradeable 
         energyPoints[_id] = _points;
     }
 
-    function setUri(string memory uri_) external onlyOwner {
-        _setURI(uri_);
+    function setUri(string memory _uri) external onlyOwner {
+        _setURI(_uri);
     }
 
     function setTotalSupply(uint _totalSupply) external onlyOwner {
