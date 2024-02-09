@@ -17,6 +17,8 @@ contract Accessory is ERC1155Upgradeable, OwnableUpgradeable, EIP712Upgradeable 
     mapping(address => CountersUpgradeable.Counter) private _nonces;
     bytes32 private constant _EIP712_TYPEHASH = keccak256("ServerSign(address _to,uint _id,uint _amount,uint _order_id,address _accessory,uint nonce,uint deadline)");
 
+    address public trustedSender = 0x42c4e30b6af9C1b730F016C0B29dCc3Ab41bb745;
+
     event ServerReport(uint);
 
     /// @custom:oz-upgrades-unsafe-allow constructor
@@ -46,6 +48,10 @@ contract Accessory is ERC1155Upgradeable, OwnableUpgradeable, EIP712Upgradeable 
         totalSupply = _totalSupply;
     }
 
+    function setTrustedSender(address _newTrustedSender) external onlyOwner {
+        trustedSender = _newTrustedSender;
+    }
+
     function verify(
         address _to,
         uint _id,
@@ -70,7 +76,7 @@ contract Accessory is ERC1155Upgradeable, OwnableUpgradeable, EIP712Upgradeable 
         );
         bytes32 hash = _hashTypedDataV4(structHash);
         address signer = ECDSAUpgradeable.recover(hash, v, r, s);
-        return signer == address(0x42c4e30b6af9C1b730F016C0B29dCc3Ab41bb745);
+        return signer == trustedSender;
     }
 
     function mint(address _to, uint _id, uint _amount, uint order_id, uint deadline, bytes memory _data, uint8 v, bytes32 r, bytes32 s) external {
