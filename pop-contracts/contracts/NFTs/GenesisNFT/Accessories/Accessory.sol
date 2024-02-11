@@ -13,11 +13,10 @@ contract Accessory is ERC1155Upgradeable, OwnableUpgradeable, EIP712Upgradeable 
     string public name;
     string public symbol;
     uint256 public totalSupply;
+    address public trustedSender;
     mapping(uint => uint) public energyPoints;
     mapping(address => CountersUpgradeable.Counter) private _nonces;
     bytes32 private constant _EIP712_TYPEHASH = keccak256("ServerSign(address _to,uint _id,uint _amount,uint _order_id,address _accessory,uint nonce,uint deadline)");
-
-    address public trustedSender = 0x42c4e30b6af9C1b730F016C0B29dCc3Ab41bb745;
 
     event ServerReport(uint);
 
@@ -26,13 +25,13 @@ contract Accessory is ERC1155Upgradeable, OwnableUpgradeable, EIP712Upgradeable 
         _disableInitializers();
     }
 
-    function initialize(string memory _name, string memory _symbol, string memory _uri, uint256 _totalSupply) initializer public {
+    function initialize(string memory _name, string memory _symbol, string memory _uri, uint256 _totalSupply,address _trustedSender) initializer public {
         __ERC1155_init(_uri);
         __Ownable_init();
         name = _name;
         symbol = _symbol;
         totalSupply = _totalSupply;
-
+        trustedSender = _trustedSender;
         EIP712Upgradeable.__EIP712_init(_name, "1");
     }
 

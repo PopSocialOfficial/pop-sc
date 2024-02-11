@@ -111,7 +111,7 @@ const config: HardhatUserConfig & {
       accounts: [process.env.OWNER_PRIVATE_KEY ?? ""],
     },
     eth: {
-      url: "https://eth.llamarpc.com",
+      url: "https://eth-mainnet.g.alchemy.com/v2/FFu5IIrBSewvjb4p-oQSkIpchJjYnzmC",
       accounts: [process.env.OWNER_PRIVATE_KEY ?? ""],
     },
   },

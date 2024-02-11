@@ -182,7 +182,7 @@ async function set_white_list_merkleroot() {
     console.log("===================")
     console.log(await getMerkleRoot())
     console.log("===================")
-    // console.log(await admin_proxy.setWhitelistMerkleRoot("0x" + await getMerkleRoot()))
+    console.log(await admin_proxy.setWhitelistMerkleRoot("0x" + await getMerkleRoot()))
     //
     // let wallet = ethers.Wallet.createRandom();
     // console.log(wallet.address, wallet.privateKey)
