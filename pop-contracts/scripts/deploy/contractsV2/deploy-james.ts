@@ -7,30 +7,31 @@ async function main() {
   console.log(`Deploying contracts with the account: ${deployer.address}`);
   let genesisNFT: Contract;
 
-  const GenesisNFT = await ethers.getContractFactory("Genesis");
+  const GenesisNFT = await ethers.getContractFactory("James");
   genesisNFT = await upgrades.deployProxy(
     GenesisNFT,
     [
-      1000, // totalSupply
-      1700596800, // startTime
-      0, // startPrice
-      "0x4ec5aebdfbabd8269007248f06cc9d3688515704",
-      // "0x6ff20d3006d2AE0D996f28B25A96c66EF62Dc045", // fundRaiseClaimer ETH Msig
+      2101, // totalSupply
+      1702576800, // startTime
+      "0", // startPrice 0.01 ETH
+      "0x4ec5aebdfbabd8269007248f06cc9d3688515704", // fundRaiseClaimer ETH Msig
     ],
     { initializer: "initialize" }
   );
 
   await genesisNFT.deployed();
 
-  console.log(`GenesisNFT Proxy deployed at address ${genesisNFT.address}`);
+  console.log(`James Proxy deployed at address ${genesisNFT.address}`);
   console.log(
     await upgrades.erc1967.getImplementationAddress(genesisNFT.address),
     "implementation"
   );
   console.log(
     await upgrades.erc1967.getAdminAddress(genesisNFT.address),
-    "admin address"
+    "proxy admin address"
   );
+
+  //baseURI : https://ipfs.popsocial.io/james/json/
 
   // const receipt = await genesisNFT.deployTransaction.wait();
   // const transactionReceipt = await ethers.provider.getTransactionReceipt(receipt.transactionHash);

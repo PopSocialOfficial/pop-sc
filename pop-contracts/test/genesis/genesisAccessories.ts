@@ -6,14 +6,16 @@ import {
   utils,
   BigNumber,
   Signature,
+  Signer,
 } from "ethers";
-import {type SignerWithAddress} from '@nomiclabs/hardhat-ethers/signers'
-import {Interface} from "@ethersproject/abi";
-import {expect} from "chai";
+import { type SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { Interface } from "@ethersproject/abi";
+import { expect } from "chai";
 import { Accessory, ContractDeployStruct } from "../interfaces";
 import hre, { ethers, upgrades, network } from "hardhat";
-import {generateMerkl} from './utils'
-import keccak256 from 'keccak256'
+import { generateMerkl } from "./utils";
+import keccak256 from "keccak256";
+
 describe("Accessory NFT testing", async function () {
   let hatNFT: Contract, clothesNFT: Contract;
 
@@ -21,9 +23,10 @@ describe("Accessory NFT testing", async function () {
   let bob: SignerWithAddress;
   let alice: SignerWithAddress;
   let fundRaiseClaimer: SignerWithAddress;
+  let relayer: SignerWithAddress;
 
   before(async () => {
-    [owner, bob, alice, fundRaiseClaimer] = await ethers.getSigners();
+    [owner, bob, alice, fundRaiseClaimer, relayer] = await ethers.getSigners();
 
     const HatNFT: ContractFactory = await ethers.getContractFactory(
       "Accessory"
@@ -43,7 +46,14 @@ describe("Accessory NFT testing", async function () {
       async (contract: ContractDeployStruct) => {
         const contractDeploy = await upgrades.deployProxy(
           contract.factory,
-          [contract.name, contract.symbol, "http://example.com", 100],
+          [
+            contract.name,
+            contract.symbol,
+            "http://example.com",
+            100,
+            fundRaiseClaimer.address,
+            relayer.address,
+          ],
           { initializer: "initialize" }
         );
         const deployedContract = await contractDeploy.deployed();
@@ -57,7 +67,7 @@ describe("Accessory NFT testing", async function () {
   });
 
   async function getSignature(
-    signer: Wallet,
+    signer: Signer,
     _to: string,
     _id: Number,
     _amount: Number,
@@ -68,7 +78,6 @@ describe("Accessory NFT testing", async function () {
     const message = {
       EIP712Domain: {
         name: await accessory.name(),
-        // name: "Accessory",
         version: "1",
         chainId: Number(await network.provider.send("eth_chainId")),
         verifyingContract: accessory.address,
@@ -94,7 +103,8 @@ describe("Accessory NFT testing", async function () {
         deadline: BigNumber.from(deadline),
       },
     };
-    const signature = await signer._signTypedData(
+    let signer_wallet: Wallet = signer as Wallet;
+    const signature = await signer_wallet._signTypedData(
       message.EIP712Domain,
       message.types,
       message.values
@@ -107,11 +117,11 @@ describe("Accessory NFT testing", async function () {
   }
 
   it("mint Accessory", async function () {
-    let signer_key =
-      "ad00e9fd5f3cbc9ba74d43df85281cbc8bb6adfda591be7e309e13cc98f81e92";
-    const signer = new ethers.Wallet(signer_key);
+    // let signer_key =
+    //   "ad00e9fd5f3cbc9ba74d43df85281cbc8bb6adfda591be7e309e13cc98f81e92";
+    // const signer = new ethers.Wallet(signer_key);
     let params = {
-      signer: signer,
+      signer: fundRaiseClaimer,
       _to: bob.address,
       _id: 1,
       _amount: 1,
@@ -135,8 +145,7 @@ describe("Accessory NFT testing", async function () {
         sig.message.values,
         sig.signature
       )
-    ).to.equal(signer.address);
-    console.log(signer.address);
+    ).to.equal(fundRaiseClaimer.address);
     expect(
       await hatNFT.mint(
         params._to,
@@ -156,5 +165,13 @@ describe("Accessory NFT testing", async function () {
       .to.emit(hatNFT, "ServerReport")
       .withArgs(params._order_id);
     expect(await hatNFT.balanceOf(bob.address, 1)).to.equal(1);
+  });
+
+  it("mintBatch Accessory ", async function () {
+    await hatNFT
+      .connect(relayer)
+      .mintBatch(relayer.address, [1, 2], [1, 1], []);
+    expect(await hatNFT.balanceOf(relayer.address, 1)).to.equal(1);
+    expect(await hatNFT.balanceOf(relayer.address, 2)).to.equal(1);
   });
 });

@@ -116,6 +116,7 @@ async function test() {
     accessory_address
   );
   // await hat_admin_proxy.mint("0x2917115014beea46CA2d6aD3935c26C21439Fbc2", 1, 1, [], signature, {gasLimit: 70000})
+  console.log(signature);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

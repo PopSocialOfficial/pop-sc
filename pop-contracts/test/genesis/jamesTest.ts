@@ -10,7 +10,7 @@ import { generateMerkl } from "./utils";
 const { BigNumber } = ethers;
 import keccak256 from "keccak256";
 
-describe("Cool Cappy NFT testing", function () {
+describe("james NFT testing", function () {
   let owner: SignerWithAddress;
   let bob: SignerWithAddress;
   let alice: SignerWithAddress;
@@ -25,7 +25,7 @@ describe("Cool Cappy NFT testing", function () {
   beforeEach(async () => {
     [owner, bob, alice, fundRaiseClaimer, relayer] = await ethers.getSigners();
 
-    const GenesisNFT = await ethers.getContractFactory("CoolCappy");
+    const GenesisNFT = await ethers.getContractFactory("James");
     genesisNFT = await upgrades.deployProxy(
       GenesisNFT,
       [
@@ -37,12 +37,6 @@ describe("Cool Cappy NFT testing", function () {
       { initializer: "initialize" }
     );
     await genesisNFT.deployed();
-
-    for (let i = 0; i < accessories.length; i++) {
-      const addr = await genesisNFT.accessoryOrder(i);
-      expect(addr).to.equal(accessories[i].contractAddr);
-      console.log(addr, i);
-    }
   });
 
   it("Should be able to claim if whitelisted", async function () {
@@ -92,7 +86,7 @@ describe("Cool Cappy NFT testing", function () {
           bob.address,
           merklTreeRoot.getHexProof(keccak256(bob.address))
         )
-    ).to.be.revertedWith("CoolCappy: max 3 per wallet");
+    ).to.be.revertedWith("James: max 3 per wallet");
   });
 
   it("Should not be able to claim if not whitelisted", async function () {
@@ -103,7 +97,7 @@ describe("Cool Cappy NFT testing", function () {
         bob.address,
         merklTreeRoot.getHexProof(keccak256(bob.address))
       )
-    ).to.be.revertedWith("CoolCappy: invalid merkle proof");
+    ).to.be.revertedWith("James: invalid merkle proof");
   });
 
   it("Should support latest changes", async function () {
@@ -122,7 +116,7 @@ describe("Cool Cappy NFT testing", function () {
             value: ethers.utils.parseEther("0.5"),
           }
         )
-    ).to.be.revertedWith("CoolCappy: not enough ether sent");
+    ).to.be.revertedWith("James: not enough ether sent");
 
     await expect(
       genesisNFT
@@ -150,7 +144,7 @@ describe("Cool Cappy NFT testing", function () {
             value: ethers.utils.parseEther("1"),
           }
         )
-    ).to.be.revertedWith("CoolCappy: max supply reached");
+    ).to.be.revertedWith("James: max supply reached");
 
     // should let withdraw funds.
     const balBefore = await ethers.provider.getBalance(relayer.address);

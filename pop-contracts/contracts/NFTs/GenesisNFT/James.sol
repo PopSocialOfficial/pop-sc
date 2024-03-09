@@ -11,7 +11,7 @@ import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 // import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/interfaces/IERC4906Upgradeable.sol";
 
-contract CoolCappy is Initializable, ERC721Upgradeable, AccessControlUpgradeable, IERC4906Upgradeable, IERC1155ReceiverUpgradeable {
+contract James is Initializable, ERC721Upgradeable, AccessControlUpgradeable, IERC4906Upgradeable, IERC1155ReceiverUpgradeable {
 	using Counters for Counters.Counter;
 	
 	struct Accessory {
@@ -50,7 +50,7 @@ contract CoolCappy is Initializable, ERC721Upgradeable, AccessControlUpgradeable
 		uint256 _salePrice,
 		address _relayer
 	) initializer public {
-		__ERC721_init("Cool Cappys", "CCPY");
+		__ERC721_init("James", "J");
 		__AccessControl_init();
 		_grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
 		_grantRole(MINT_ROLE, _relayer);
@@ -61,7 +61,7 @@ contract CoolCappy is Initializable, ERC721Upgradeable, AccessControlUpgradeable
 	}
 	
 	modifier isTokenOwner(uint256 tokenId) {
-		require(ownerOf(tokenId) == msg.sender, "CoolCappy: not owner");
+		require(ownerOf(tokenId) == msg.sender, "James: not owner");
 		_;
 	}
 	
@@ -88,14 +88,14 @@ contract CoolCappy is Initializable, ERC721Upgradeable, AccessControlUpgradeable
 	}
 	
 	function safeMint(address to, bytes32[] calldata merkleProof) external payable {
-		require(msg.value >= salePrice, "CoolCappy: not enough ether sent");
-		require(block.timestamp >= saleStartAt, "CoolCappy: sale has not started");
-		require(_tokenIdCounter.current() < totalSupply, "CoolCappy: max supply reached");
-		require(balanceOf(to) <= 2, "CoolCappy: max 3 per wallet");
+		require(msg.value >= salePrice, "James: not enough ether sent");
+		require(block.timestamp >= saleStartAt, "James: sale has not started");
+		require(_tokenIdCounter.current() < totalSupply, "James: max supply reached");
+		require(balanceOf(to) <= 2, "James: max 3 per wallet");
 		if (whitelistMerkleRoot != bytes32(0)) {
 			require(
 				MerkleProof.verify(merkleProof, whitelistMerkleRoot, keccak256(abi.encodePacked(_msgSender()))),
-				"CoolCappy: invalid merkle proof"
+				"James: invalid merkle proof"
 			);
 		}
 		_tokenIdCounter.increment();
@@ -128,7 +128,7 @@ contract CoolCappy is Initializable, ERC721Upgradeable, AccessControlUpgradeable
 	function withdraw() external onlyRole(MINT_ROLE) {
 		uint256 balance = address(this).balance;
 		(bool success,) = _msgSender().call{value: balance}("");
-		require(success, "CoolCappy: failed to send to owner");
+		require(success, "James: failed to send to owner");
 	}
 	
 	function supportsInterface(
