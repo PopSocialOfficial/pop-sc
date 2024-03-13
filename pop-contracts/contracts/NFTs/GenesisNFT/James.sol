@@ -8,7 +8,6 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155ReceiverUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
-// import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/interfaces/IERC4906Upgradeable.sol";
 
 contract James is Initializable, ERC721Upgradeable, AccessControlUpgradeable, IERC4906Upgradeable, IERC1155ReceiverUpgradeable {
@@ -102,7 +101,7 @@ contract James is Initializable, ERC721Upgradeable, AccessControlUpgradeable, IE
 		_safeMint(to, _tokenIdCounter.current());
 	}
 	
-	function mintBatch(uint _amount) external onlyRole(MINT_ROLE) {
+	function batchMint(uint _amount) external onlyRole(MINT_ROLE) {
 		for (uint256 i = 0; i < _amount; i++) {
 			_tokenIdCounter.increment();
 			_safeMint(msg.sender, _tokenIdCounter.current());

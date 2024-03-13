@@ -175,7 +175,7 @@ contract GenesisV1 is Initializable, ERC721Upgradeable, AccessControlUpgradeable
 		_safeMint(to, _tokenIdCounter.current());
 	}
 	
-	function mintBatch(uint _amount) external onlyRole(MINT_ROLE) {
+	function batchMint(uint _amount) external onlyRole(MINT_ROLE) {
 		for (uint256 i = 0; i < _amount; i++) {
 			_tokenIdCounter.increment();
 			_safeMint(msg.sender, _tokenIdCounter.current());

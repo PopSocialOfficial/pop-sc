@@ -68,7 +68,7 @@ describe("Genesis NFT testing", function () {
     const GenesisNFT = await ethers.getContractFactory("GenesisV1");
     genesisNFT = await upgrades.deployProxy(
       GenesisNFT,
-      [100, 0, 0, fundRaiseClaimer.address],
+      [100, 0, 0, relayer.address],
       { initializer: "initialize" }
     );
     await genesisNFT.deployed();
@@ -91,10 +91,10 @@ describe("Genesis NFT testing", function () {
       console.log(addr, i);
     }
 
-    await hatNFT.connect(relayer).mintBatch(bob.address, [1, 2], [1, 1], []);
+    await hatNFT.connect(relayer).batchMint(bob.address, [1, 2], [1, 1], []);
     await clothesNFT
       .connect(relayer)
-      .mintBatch(bob.address, [1, 2], [1, 1], []);
+      .batchMint(bob.address, [1, 2], [1, 1], []);
 
     await hatNFT.connect(bob).setApprovalForAll(genesisNFT.address, true);
     await clothesNFT.connect(bob).setApprovalForAll(genesisNFT.address, true);
@@ -175,8 +175,8 @@ describe("Genesis NFT testing", function () {
 
   it("Should not revert if equip accessories on Genesis NFT in the right order", async function () {
     // prepare bob's wallet
-    // await hatNFT.mintBatch(bob.address, [1, 2], [1, 1], []);
-    // await clothesNFT.mintBatch(bob.address, [1, 2], [1, 1], []);
+    // await hatNFT.batchMint(bob.address, [1, 2], [1, 1], []);
+    // await clothesNFT.batchMint(bob.address, [1, 2], [1, 1], []);
 
     const merklTreeRoot = generateMerkl([bob.address, alice.address]);
     await genesisNFT.setWhitelistMerkleRoot(merklTreeRoot.getHexRoot());
@@ -203,8 +203,8 @@ describe("Genesis NFT testing", function () {
 
   it("Should revert if not token owner and equip", async function () {
     // prepare bob's wallet
-    // await hatNFT.mintBatch(bob.address, [1, 2], [1, 1], []);
-    // await clothesNFT.mintBatch(bob.address, [1, 2], [1, 1], []);
+    // await hatNFT.batchMint(bob.address, [1, 2], [1, 1], []);
+    // await clothesNFT.batchMint(bob.address, [1, 2], [1, 1], []);
 
     // await hatNFT.connect(bob).setApprovalForAll(genesisNFT.address, true);
     // await clothesNFT.connect(bob).setApprovalForAll(genesisNFT.address, true);
@@ -259,8 +259,8 @@ describe("Genesis NFT testing", function () {
 
   it("Should revert if accessory contract address is duplicated", async function () {
     // prepare bob's wallet
-    // await hatNFT.mintBatch(bob.address, [1, 2], [1, 1], []);
-    // await clothesNFT.mintBatch(bob.address, [1, 2], [1, 1], []);
+    // await hatNFT.batchMint(bob.address, [1, 2], [1, 1], []);
+    // await clothesNFT.batchMint(bob.address, [1, 2], [1, 1], []);
 
     // await hatNFT.connect(bob).setApprovalForAll(genesisNFT.address, true);
     // await clothesNFT.connect(bob).setApprovalForAll(genesisNFT.address, true);
@@ -415,6 +415,13 @@ describe("Genesis NFT testing", function () {
     }
   });
 
+  it("batchMint", async function () {
+    await expect(genesisNFT.connect(relayer).batchMint(10)).to.not.be.reverted;
+    expect(
+      await genesisNFT.connect(relayer).balanceOf(relayer.address)
+    ).to.be.equal(10);
+  });
+
   it("Should support latest changes", async function () {
     await genesisNFT.setSalePrice(ethers.utils.parseEther("1"));
     const merklTreeRoot = generateMerkl([bob.address, alice.address]);
@@ -462,11 +469,9 @@ describe("Genesis NFT testing", function () {
     ).to.be.revertedWith("Genesis: max supply reached");
 
     // should let withdraw funds.
-    const balBefore = await ethers.provider.getBalance(
-      fundRaiseClaimer.address
-    );
-    await genesisNFT.connect(fundRaiseClaimer).withdraw();
-    const balAfter = await ethers.provider.getBalance(fundRaiseClaimer.address);
+    const balBefore = await ethers.provider.getBalance(relayer.address);
+    await genesisNFT.connect(relayer).withdraw();
+    const balAfter = await ethers.provider.getBalance(relayer.address);
     expect(balAfter.sub(balBefore)).to.be.gt(ethers.utils.parseEther("0.99"));
   });
 });

@@ -58,6 +58,13 @@ describe("Cool Cappy NFT testing", function () {
     ).to.not.be.reverted;
   });
 
+  it("batchMint", async function () {
+    await expect(genesisNFT.connect(relayer).batchMint(10)).to.not.be.reverted;
+    expect(
+      await genesisNFT.connect(relayer).balanceOf(relayer.address)
+    ).to.be.equal(10);
+  });
+
   it("Should only allow 3 mints per whitelisted", async function () {
     const merklTreeRoot = generateMerkl([bob.address, alice.address]);
     await genesisNFT.setWhitelistMerkleRoot(merklTreeRoot.getHexRoot());

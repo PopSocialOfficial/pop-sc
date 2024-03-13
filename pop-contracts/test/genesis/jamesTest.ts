@@ -100,6 +100,13 @@ describe("james NFT testing", function () {
     ).to.be.revertedWith("James: invalid merkle proof");
   });
 
+  it("batchMint", async function () {
+    await expect(genesisNFT.connect(relayer).batchMint(10)).to.not.be.reverted;
+    expect(
+      await genesisNFT.connect(relayer).balanceOf(relayer.address)
+    ).to.be.equal(10);
+  });
+
   it("Should support latest changes", async function () {
     await genesisNFT.setSalePrice(ethers.utils.parseEther("1"));
     const merklTreeRoot = generateMerkl([bob.address, alice.address]);

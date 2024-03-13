@@ -70,7 +70,7 @@ contract Accessory is ERC1155Upgradeable, EIP712Upgradeable, AccessControlUpgrad
 		emit ServerReport(order_id);
 	}
 	
-	function mintBatch(address _to, uint[] memory _ids, uint[] memory _amounts, bytes memory _data) external onlyRole(MINT_ROLE) {
+	function batchMint(address _to, uint[] memory _ids, uint[] memory _amounts, bytes memory _data) external onlyRole(MINT_ROLE) {
 		for (
 			uint i; i < _ids.length; i++) {
 			require(_ids[i] > 0 && _ids[i] <= totalSupply, "Accessory: invalid id");
