@@ -12,32 +12,14 @@ import "@openzeppelin/contracts-upgradeable/interfaces/IERC4906Upgradeable.sol";
 
 contract James is Initializable, ERC721Upgradeable, AccessControlUpgradeable, IERC4906Upgradeable, IERC1155ReceiverUpgradeable {
 	using Counters for Counters.Counter;
-	
-	struct Accessory {
-		address contractAddr;
-		uint256 accessoryId;
-	}
-	
 	Counters.Counter private _tokenIdCounter;
-	mapping(address => bool) public whitelistedContracts;
-	mapping(uint256 => mapping(uint256 => Accessory)) public equippedAccessories;
-	mapping(uint256 => address) public accessoryOrder;
 	uint256 public totalSupply;
 	uint256 public salePrice;
 	uint256 public saleStartAt;
 	string public baseURI;
 	bytes32 public whitelistMerkleRoot;
 	uint8 public accessorySlots;
-	
-	event AccessoriesUpdates(uint256 indexed tokenId, Accessory[]);
-	
 	bytes32 public constant MINT_ROLE = keccak256("MINT_ROLE");
-	
-	uint256 public adminMintedCount;
-	uint256 public constant MAX_ADMIN_MINT = 150;
-	
-	event AdminMint(address indexed to, uint256 tokenId);
-	
 	/// @custom:oz-upgrades-unsafe-allow constructor
 	constructor() {
 		_disableInitializers();
@@ -87,7 +69,7 @@ contract James is Initializable, ERC721Upgradeable, AccessControlUpgradeable, IE
 	}
 	
 	function safeMint(address to, bytes32[] calldata merkleProof) external payable {
-		require(msg.value >= salePrice, "James: not enough ether sent");
+		require(msg.value >= salePrice, "James: not enough bnb sent");
 		require(block.timestamp >= saleStartAt, "James: sale has not started");
 		require(_tokenIdCounter.current() < totalSupply, "James: max supply reached");
 		require(balanceOf(to) <= 2, "James: max 3 per wallet");
@@ -99,13 +81,6 @@ contract James is Initializable, ERC721Upgradeable, AccessControlUpgradeable, IE
 		}
 		_tokenIdCounter.increment();
 		_safeMint(to, _tokenIdCounter.current());
-	}
-	
-	function batchMint(uint _amount) external onlyRole(MINT_ROLE) {
-		for (uint256 i = 0; i < _amount; i++) {
-			_tokenIdCounter.increment();
-			_safeMint(msg.sender, _tokenIdCounter.current());
-		}
 	}
 	
 	// The following functions are overrides required by Solidity.

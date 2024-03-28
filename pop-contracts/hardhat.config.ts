@@ -4,10 +4,10 @@ import "@nomicfoundation/hardhat-verify";
 import "@openzeppelin/hardhat-upgrades";
 import "@typechain/hardhat";
 import chai from "chai";
-import {solidity} from "ethereum-waffle";
+import { solidity } from "ethereum-waffle";
 import "hardhat-contract-sizer";
 import "hardhat-gas-reporter";
-import {HardhatUserConfig} from "hardhat/config";
+import { HardhatUserConfig } from "hardhat/config";
 import "solidity-coverage";
 
 chai.use(solidity);
@@ -107,7 +107,7 @@ const config: HardhatUserConfig & {
       accounts: [process.env.OWNER_PRIVATE_KEY ?? ""],
     },
     bsc: {
-      url: "https://rpc.ankr.com/bsc",
+      url: "https://binance.llamarpc.com",
       accounts: [process.env.OWNER_PRIVATE_KEY ?? ""],
     },
     eth: {
@@ -117,8 +117,8 @@ const config: HardhatUserConfig & {
   },
   etherscan: {
     // apiKey: process.env.POLYGONSCAN_API_KEY,
-    // apiKey: process.env.BSC_API_KEY,
-    apiKey: "58UI76KD9RPIC6PFU765DBTVDSXKI16NXW",
+    apiKey: process.env.BSC_API_KEY,
+    // apiKey: "HKQ72BFRFXGUUI5JS7WJ8GYXMYF6PSF3AB",
   },
   gasReporter: {
     currency: "USD",
@@ -130,4 +130,3 @@ const config: HardhatUserConfig & {
 };
 
 export default config;
-
