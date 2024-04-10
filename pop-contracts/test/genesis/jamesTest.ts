@@ -33,6 +33,7 @@ describe("james NFT testing", function () {
         0, // startTime
         0, // startPrice
         relayer.address,
+        2,
       ],
       { initializer: "initialize" }
     );
@@ -86,7 +87,15 @@ describe("james NFT testing", function () {
           bob.address,
           merklTreeRoot.getHexProof(keccak256(bob.address))
         )
-    ).to.be.revertedWith("James: max 3 per wallet");
+    ).to.not.be.reverted;
+    await expect(
+      genesisNFT
+        .connect(bob)
+        .safeMint(
+          bob.address,
+          merklTreeRoot.getHexProof(keccak256(bob.address))
+        )
+    ).to.be.revertedWith("James: mint limit exceeded");
   });
 
   it("Should not be able to claim if not whitelisted", async function () {

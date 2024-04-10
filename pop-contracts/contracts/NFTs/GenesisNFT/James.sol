@@ -16,9 +16,9 @@ contract James is Initializable, ERC721Upgradeable, AccessControlUpgradeable, IE
 	uint256 public totalSupply;
 	uint256 public salePrice;
 	uint256 public saleStartAt;
+	uint256 public macMint;
 	string public baseURI;
 	bytes32 public whitelistMerkleRoot;
-	uint8 public accessorySlots;
 	bytes32 public constant MINT_ROLE = keccak256("MINT_ROLE");
 	/// @custom:oz-upgrades-unsafe-allow constructor
 	constructor() {
@@ -29,7 +29,8 @@ contract James is Initializable, ERC721Upgradeable, AccessControlUpgradeable, IE
 		uint256 _totalSupply,
 		uint256 _startTime,
 		uint256 _salePrice,
-		address _relayer
+		address _relayer,
+		uint256 _maxMint
 	) initializer public {
 		__ERC721_init("James", "J");
 		__AccessControl_init();
@@ -39,14 +40,13 @@ contract James is Initializable, ERC721Upgradeable, AccessControlUpgradeable, IE
 		totalSupply = _totalSupply;
 		salePrice = _salePrice;
 		saleStartAt = _startTime;
+		maxMint = _maxMint;
 	}
 	
 	modifier isTokenOwner(uint256 tokenId) {
 		require(ownerOf(tokenId) == msg.sender, "James: not owner");
 		_;
 	}
-	
-	// ======================================================== NFT Functions ========================================================
 	
 	function setTotalSupply(uint256 _totalSupply) external onlyRole(DEFAULT_ADMIN_ROLE) {
 		totalSupply = _totalSupply;
@@ -72,7 +72,7 @@ contract James is Initializable, ERC721Upgradeable, AccessControlUpgradeable, IE
 		require(msg.value >= salePrice, "James: not enough bnb sent");
 		require(block.timestamp >= saleStartAt, "James: sale has not started");
 		require(_tokenIdCounter.current() < totalSupply, "James: max supply reached");
-		require(balanceOf(to) <= 2, "James: max 3 per wallet");
+		require(balanceOf(to) <= maxMint, "James: mint limit exceeded");
 		if (whitelistMerkleRoot != bytes32(0)) {
 			require(
 				MerkleProof.verify(merkleProof, whitelistMerkleRoot, keccak256(abi.encodePacked(_msgSender()))),

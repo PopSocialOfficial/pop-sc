@@ -19,6 +19,7 @@ async function main() {
       1713434400, // startTime
       utils.parseEther("0.1"), // startPrice 0.01 ETH
       "0x4ec5aebdfbabd8269007248f06cc9d3688515704", // fundRaiseClaimer ETH Msig
+      2,
     ],
     { initializer: "initialize" }
   );
