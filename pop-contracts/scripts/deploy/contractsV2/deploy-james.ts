@@ -1,6 +1,6 @@
 import { Contract } from "ethers";
 import hre, { ethers, upgrades } from "hardhat";
-import { BigNumber, utils } from "ethers";
+import { utils } from "ethers";
 import keccak256 from "keccak256";
 import { MerkleTree } from "merkletreejs";
 import axios from "axios";
@@ -15,9 +15,9 @@ async function main() {
   genesisNFT = await upgrades.deployProxy(
     GenesisNFT,
     [
-      2101, // totalSupply
-      1702576800, // startTime
-      utils.parseEther("0.01"), // startPrice 0.01 ETH
+      700, // totalSupply
+      1713434400, // startTime
+      utils.parseEther("0.1"), // startPrice 0.01 ETH
       "0x4ec5aebdfbabd8269007248f06cc9d3688515704", // fundRaiseClaimer ETH Msig
     ],
     { initializer: "initialize" }
@@ -54,7 +54,7 @@ async function init(nft_address: string) {
   let admin_proxy = accessory.attach(nft_address);
   console.log(await admin_proxy.name());
 
-  console.log(await admin_proxy.setSaleStartAt(1700573355), {
+  console.log(await admin_proxy.setSaleStartAt(1713434400), {
     gasLimit: 10000000,
   });
   await admin_proxy.setBaseURI("https://ipfs.popsocial.io/james/json/");
