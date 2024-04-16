@@ -35,9 +35,13 @@
   "dependencies": {
     "@openzeppelin/contracts": "^4.6.0",
     "@openzeppelin/contracts-upgradeable": "^4.7.0",
+    "@types/atomic-sleep": "^1.0.1",
+    "atomic-sleep": "^1.0.0",
     "csv-parser": "^3.0.0",
     "csv-write-stream": "^2.0.0",
     "fs": "^0.0.1-security",
+    "keccak256": "^1.0.6",
+    "merkletreejs": "^0.3.11",
     "solidity-coverage": "^0.8.4"
   }
 }

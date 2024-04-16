@@ -5,14 +5,16 @@ import { Interface } from "@ethersproject/abi";
 import {expect} from "chai";
 import {ethers, upgrades} from "hardhat";
 import { Accessory, ContractDeployStruct } from "../interfaces";
-
+import { generateMerkl } from './utils'
 const { BigNumber } = ethers;
-
+import keccak256 from 'keccak256'
+  
 describe("Genesis NFT testing", function () {
 
     let owner: SignerWithAddress;
     let bob: SignerWithAddress;
     let alice: SignerWithAddress;
+    let fundRaiseClaimer: SignerWithAddress;
     let genesisNFT: Contract;
 
     let hatNFT: Contract, clothesNFT: Contract, glassesNFT: Contract, furNFT : Contract;
@@ -22,7 +24,7 @@ describe("Genesis NFT testing", function () {
     let accessories: Accessory[] = []
 
     beforeEach(async () => {
-        [owner, bob, alice] = await ethers.getSigners();
+        [owner, bob, alice, fundRaiseClaimer] = await ethers.getSigners();
 
         const HatNFT: ContractFactory = await ethers.getContractFactory("Accessory");
         const ClothesNFT: ContractFactory = await ethers.getContractFactory("Accessory");
@@ -38,7 +40,7 @@ describe("Genesis NFT testing", function () {
         let deployed: Contract[] = [];
         
         const deploymentPromises = contractsToDeploy.map(async (contract: ContractDeployStruct) => {
-            const contractDeploy = await upgrades.deployProxy(contract.factory, [contract.name, contract.symbol], {initializer: "initialize"});
+            const contractDeploy = await upgrades.deployProxy(contract.factory, [contract.name, contract.symbol, "http://example.com", 100], {initializer: "initialize"});
             const deployedContract = await contractDeploy.deployed();
             return deployedContract;
         });
@@ -53,7 +55,12 @@ describe("Genesis NFT testing", function () {
         contractsToWhitelist = deployed.map((contract) => contract.address);
 
         const GenesisNFT = await ethers.getContractFactory("Genesis");
-        genesisNFT = await upgrades.deployProxy(GenesisNFT, [contractsToWhitelist], {initializer: "initialize"});
+        genesisNFT = await upgrades.deployProxy(GenesisNFT, [
+            100, // totalSupply
+            0, // startTime
+            0, // startPrice
+            fundRaiseClaimer.address, // fundRaiseClaimer
+        ], {initializer: "initialize"});
         await genesisNFT.deployed();
 
         accessories = [
@@ -62,7 +69,7 @@ describe("Genesis NFT testing", function () {
             {contractAddr: glassesNFT.address, accessoryId: 0},
             {contractAddr: furNFT.address, accessoryId: 0}
         ]
-          
+        await genesisNFT.setWhitelisted(accessories.map((contract) => contract.contractAddr), accessories.length);
         await genesisNFT.setAccessoryOrder(accessories.map((contract) => contract.contractAddr));
         for (let i = 0; i < accessories.length; i++) {
             const addr = await genesisNFT.accessoryOrder(i);   
@@ -108,12 +115,15 @@ describe("Genesis NFT testing", function () {
     });
 
     it("Should be able to claim if whitelisted", async function() {
-        await genesisNFT.addToWhitelist([bob.address]);
-        await expect(genesisNFT.connect(bob).claim(1)).to.not.be.reverted;
+        const merklTreeRoot = generateMerkl([bob.address, alice.address]);
+        await genesisNFT.setWhitelistMerkleRoot(merklTreeRoot.getHexRoot());
+        await expect(genesisNFT.connect(bob).safeMint(bob.address, merklTreeRoot.getHexProof(keccak256(bob.address)))).to.not.be.reverted;
     });
 
     it("Should not be able to claim if not whitelisted", async function() {
-        await expect(genesisNFT.connect(bob).claim(1)).to.be.revertedWith('not whitelisted');
+        const merklTreeRoot = generateMerkl([owner.address, alice.address]);
+        await genesisNFT.setWhitelistMerkleRoot(merklTreeRoot.getHexRoot());
+        await expect(genesisNFT.safeMint(bob.address, merklTreeRoot.getHexProof(keccak256(bob.address)))).to.be.revertedWith('Genesis: invalid merkle proof');
     });
 
     it("Should not revert if equip accessories on Genesis NFT in the right order (hat, clothes, eyes, ears)", async function() {
@@ -128,7 +138,10 @@ describe("Genesis NFT testing", function () {
         await glassesNFT.connect(bob).setApprovalForAll(genesisNFT.address, true);
         await furNFT.connect(bob).setApprovalForAll(genesisNFT.address, true);
 
-        await genesisNFT.safeMint(bob.address, 1);
+        const merklTreeRoot = generateMerkl([bob.address, alice.address]);
+        await genesisNFT.setWhitelistMerkleRoot(merklTreeRoot.getHexRoot());
+
+        await genesisNFT.connect(bob).safeMint(bob.address, merklTreeRoot.getHexProof(keccak256(bob.address)));
 
         //equip items
 
@@ -139,7 +152,7 @@ describe("Genesis NFT testing", function () {
             {contractAddr: furNFT.address, accessoryId: 1}
         ]
 
-        await genesisNFT.connect(bob).equipAccessories(1, accessoriesToEquip, "");
+        await genesisNFT.connect(bob).equipAccessories(1, accessoriesToEquip);
 
         const equippedHat = await genesisNFT.equippedAccessories(1, 0);
         const equippedClothes = await genesisNFT.equippedAccessories(1, 1);
@@ -164,7 +177,9 @@ describe("Genesis NFT testing", function () {
         await glassesNFT.connect(bob).setApprovalForAll(genesisNFT.address, true);
         await furNFT.connect(bob).setApprovalForAll(genesisNFT.address, true);
 
-        await genesisNFT.safeMint(owner.address, 1);
+        const merklTreeRoot = generateMerkl([owner.address, alice.address]);
+        await genesisNFT.setWhitelistMerkleRoot(merklTreeRoot.getHexRoot());
+        await genesisNFT.safeMint(owner.address, merklTreeRoot.getHexProof(keccak256(owner.address)));
 
         //equip items
 
@@ -175,7 +190,7 @@ describe("Genesis NFT testing", function () {
             {contractAddr: furNFT.address, accessoryId: 1}
         ]
 
-        await expect(genesisNFT.connect(bob).equipAccessories(1, accessoriesToEquip, "", {gasLimit: 800000})).to.be.revertedWith("not owner");
+        await expect(genesisNFT.connect(bob).equipAccessories(1, accessoriesToEquip, {gasLimit: 800000})).to.be.revertedWith("Genesis: not owner");
     });
 
     it("Should revert if accessories are provided in wrong order", async function() {
@@ -190,7 +205,10 @@ describe("Genesis NFT testing", function () {
         await glassesNFT.connect(bob).setApprovalForAll(genesisNFT.address, true);
         await furNFT.connect(bob).setApprovalForAll(genesisNFT.address, true);
 
-        await genesisNFT.safeMint(bob.address, 1);
+        const merklTreeRoot = generateMerkl([bob.address, alice.address]);
+        await genesisNFT.setWhitelistMerkleRoot(merklTreeRoot.getHexRoot());
+
+        await genesisNFT.connect(bob).safeMint(bob.address, merklTreeRoot.getHexProof(keccak256(bob.address)));
 
         //equip items
 
@@ -201,7 +219,7 @@ describe("Genesis NFT testing", function () {
             {contractAddr: glassesNFT.address, accessoryId: 1}
         ]
 
-        await expect(genesisNFT.connect(bob).equipAccessories(1, accessoriesToEquip, "", {gasLimit: 800000})).to.be.revertedWith("wrong order");
+        await expect(genesisNFT.connect(bob).equipAccessories(1, accessoriesToEquip, {gasLimit: 800000})).to.be.revertedWith("Genesis: wrong order");
     });
 
     it("Should revert if accessory contract address is duplicated", async function() {
@@ -216,7 +234,10 @@ describe("Genesis NFT testing", function () {
         await glassesNFT.connect(bob).setApprovalForAll(genesisNFT.address, true);
         await furNFT.connect(bob).setApprovalForAll(genesisNFT.address, true);
 
-        await genesisNFT.safeMint(bob.address, 1);
+        const merklTreeRoot = generateMerkl([bob.address, alice.address]);
+        await genesisNFT.setWhitelistMerkleRoot(merklTreeRoot.getHexRoot());
+
+        await genesisNFT.connect(bob).safeMint(bob.address, merklTreeRoot.getHexProof(keccak256(bob.address)));
 
         //equip items
 
@@ -227,7 +248,7 @@ describe("Genesis NFT testing", function () {
             {contractAddr: furNFT.address, accessoryId: 1}
         ]
 
-        await expect(genesisNFT.connect(bob).equipAccessories(1, accessoriesToEquip, "", {gasLimit: 800000})).to.be.revertedWith("wrong order");
+        await expect(genesisNFT.connect(bob).equipAccessories(1, accessoriesToEquip, {gasLimit: 800000})).to.be.revertedWith("Genesis: wrong order");
     });
 
     it("Should revert if provide more than 4 accessories to equip", async function() {
@@ -243,7 +264,10 @@ describe("Genesis NFT testing", function () {
         await glassesNFT.connect(bob).setApprovalForAll(genesisNFT.address, true);
         await furNFT.connect(bob).setApprovalForAll(genesisNFT.address, true);
 
-        await genesisNFT.safeMint(bob.address, 1);
+        const merklTreeRoot = generateMerkl([bob.address, alice.address]);
+        await genesisNFT.setWhitelistMerkleRoot(merklTreeRoot.getHexRoot());
+
+        await genesisNFT.connect(bob).safeMint(bob.address, merklTreeRoot.getHexProof(keccak256(bob.address)));
 
         //equip items
 
@@ -255,7 +279,7 @@ describe("Genesis NFT testing", function () {
             {contractAddr: hatNFT.address, accessoryId: 1}
         ]
 
-        await expect(genesisNFT.connect(bob).equipAccessories(1, accessoriesToEquip, "")).to.be.revertedWith("wrong length");
+        await expect(genesisNFT.connect(bob).equipAccessories(1, accessoriesToEquip)).to.be.revertedWith("Genesis: wrong length");
     });
 
     it("Should not revert if equip just 2 items", async function() {
@@ -266,7 +290,10 @@ describe("Genesis NFT testing", function () {
         await hatNFT.connect(bob).setApprovalForAll(genesisNFT.address, true);
         await furNFT.connect(bob).setApprovalForAll(genesisNFT.address, true);
 
-        await genesisNFT.safeMint(bob.address, 1);
+        const merklTreeRoot = generateMerkl([bob.address, alice.address]);
+        await genesisNFT.setWhitelistMerkleRoot(merklTreeRoot.getHexRoot());
+
+        await genesisNFT.connect(bob).safeMint(bob.address, merklTreeRoot.getHexProof(keccak256(bob.address)));
 
         //equip items
 
@@ -277,7 +304,7 @@ describe("Genesis NFT testing", function () {
             {contractAddr: furNFT.address, accessoryId: 1}
         ]
 
-        await expect(genesisNFT.connect(bob).equipAccessories(1, accessoriesToEquip, "", {gasLimit: 800000})).to.not.be.reverted;
+        await expect(genesisNFT.connect(bob).equipAccessories(1, accessoriesToEquip, {gasLimit: 800000})).to.not.be.reverted;
     
         for (let i = 0; i < 4; i++) {
             const item = await genesisNFT.equippedAccessories(1, i);
@@ -295,7 +322,10 @@ describe("Genesis NFT testing", function () {
         await hatNFT.connect(bob).setApprovalForAll(genesisNFT.address, true);
         await furNFT.connect(bob).setApprovalForAll(genesisNFT.address, true);
 
-        await genesisNFT.safeMint(bob.address, 1);
+        const merklTreeRoot = generateMerkl([bob.address, alice.address]);
+        await genesisNFT.setWhitelistMerkleRoot(merklTreeRoot.getHexRoot());
+
+        await genesisNFT.connect(bob).safeMint(bob.address, merklTreeRoot.getHexProof(keccak256(bob.address)));
 
         //equip items
 
@@ -306,7 +336,7 @@ describe("Genesis NFT testing", function () {
             {contractAddr: furNFT.address, accessoryId: 1}
         ]
 
-        await expect(genesisNFT.connect(bob).equipAccessories(1, accessoriesToEquip, "", {gasLimit: 800000})).to.not.be.reverted;
+        await expect(genesisNFT.connect(bob).equipAccessories(1, accessoriesToEquip, {gasLimit: 800000})).to.not.be.reverted;
     
         for (let i = 0; i < 4; i++) {
             const item = await genesisNFT.equippedAccessories(1, i);
@@ -331,7 +361,10 @@ describe("Genesis NFT testing", function () {
         await hatNFT.connect(bob).setApprovalForAll(genesisNFT.address, true);
         await furNFT.connect(bob).setApprovalForAll(genesisNFT.address, true);
 
-        await genesisNFT.safeMint(bob.address, 1);
+        const merklTreeRoot = generateMerkl([bob.address, alice.address]);
+        await genesisNFT.setWhitelistMerkleRoot(merklTreeRoot.getHexRoot());
+
+        await genesisNFT.connect(bob).safeMint(bob.address, merklTreeRoot.getHexProof(keccak256(bob.address)));
 
         //equip items
 
@@ -342,7 +375,7 @@ describe("Genesis NFT testing", function () {
             {contractAddr: furNFT.address, accessoryId: 1}
         ]
 
-        await expect(genesisNFT.connect(bob).equipAccessories(1, accessoriesToEquip, "", {gasLimit: 800000})).to.not.be.reverted;
+        await expect(genesisNFT.connect(bob).equipAccessories(1, accessoriesToEquip, {gasLimit: 800000})).to.not.be.reverted;
     
         for (let i = 0; i < 4; i++) {
             const item = await genesisNFT.equippedAccessories(1, i);
@@ -357,6 +390,57 @@ describe("Genesis NFT testing", function () {
             console.log(`AFTER DE EQUIPPED ${i}: `, item);
         }
         
+    });
+
+    it("Should support latest changes", async function() {
+        await genesisNFT.setSalePrice(ethers.utils.parseEther('1'))
+        const merklTreeRoot = generateMerkl([bob.address, alice.address]);
+        await genesisNFT.setWhitelistMerkleRoot(merklTreeRoot.getHexRoot());
+
+        // Should respect mint price.
+        await expect(genesisNFT.connect(bob).safeMint(bob.address, merklTreeRoot.getHexProof(keccak256(bob.address)), {
+            value: ethers.utils.parseEther('0.5')
+        })).to.be.revertedWith('Genesis: not enough ether sent');
+        
+        await expect(genesisNFT.connect(bob).safeMint(bob.address, merklTreeRoot.getHexProof(keccak256(bob.address)), {
+            value: ethers.utils.parseEther('1')
+        })).to.not.be.reverted;
+
+        // Should not let mint more than supply.
+        await genesisNFT.setTotalSupply(1);
+        expect(await genesisNFT.totalSupply()).to.eq(1);
+        expect(await genesisNFT.getCurrentSupply()).to.eq(1);
+        await expect(genesisNFT.connect(alice).safeMint(alice.address, merklTreeRoot.getHexProof(keccak256(alice.address)), {
+            value: ethers.utils.parseEther('1')
+        })).to.be.revertedWith('Genesis: max supply reached');
+
+        // should let withdraw funds.
+        const balBefore = await ethers.provider.getBalance(fundRaiseClaimer.address)
+        await genesisNFT.connect(fundRaiseClaimer).withdraw()
+        const balAfter = await ethers.provider.getBalance(fundRaiseClaimer.address)
+        expect(balAfter.sub(balBefore)).to.be.gt(ethers.utils.parseEther('0.99'))
+    });
+
+    it("mintBatch()", async function() {
+        const seedphrase = 'top throw suggest trophy market sing guitar witness process finger family buzz'
+        
+        const addresses: string[] = [];
+
+        for (let i = 0; i < 50; i++) {
+            const path = `m/44'/60'/0'/0/${i}`;
+            const wallet = ethers.Wallet.fromMnemonic(seedphrase, path); // Random seedphrase
+            addresses.push(wallet.address);
+        }
+        const splitArrays = Array.from({ length: Math.ceil(addresses.length / 10) }, (_, index) =>
+            addresses.slice(index * 10, (index + 1) * 10)
+        );
+
+        expect(await genesisNFT.adminMintedCount()).to.equal(0);
+        for(const arr of splitArrays) {
+            await genesisNFT.mintBatch(arr);
+        }
+        expect(await genesisNFT.adminMintedCount()).to.equal(50);
+        await expect(genesisNFT.mintBatch([bob.address])).to.be.revertedWith('Genesis: Exceeds admin mint limit')        
     });
 
 });
