@@ -16,7 +16,7 @@ contract James is Initializable, ERC721Upgradeable, AccessControlUpgradeable, IE
 	uint256 public totalSupply;
 	uint256 public salePrice;
 	uint256 public saleStartAt;
-	uint256 public macMint;
+	uint256 public maxMint;
 	string public baseURI;
 	bytes32 public whitelistMerkleRoot;
 	bytes32 public constant MINT_ROLE = keccak256("MINT_ROLE");
@@ -66,6 +66,10 @@ contract James is Initializable, ERC721Upgradeable, AccessControlUpgradeable, IE
 	
 	function setWhitelistMerkleRoot(bytes32 _whitelistMerkleRoot) external onlyRole(DEFAULT_ADMIN_ROLE) {
 		whitelistMerkleRoot = _whitelistMerkleRoot;
+	}
+	
+	function setMaxMint(uint256 _maxMint) external onlyRole(DEFAULT_ADMIN_ROLE) {
+		maxMint = _maxMint;
 	}
 	
 	function safeMint(address to, bytes32[] calldata merkleProof) external payable {

@@ -33,7 +33,7 @@ describe("james NFT testing", function () {
         0, // startTime
         0, // startPrice
         relayer.address,
-        2,
+        3,
       ],
       { initializer: "initialize" }
     );
@@ -108,7 +108,40 @@ describe("james NFT testing", function () {
       )
     ).to.be.revertedWith("James: invalid merkle proof");
   });
-  //
+
+  it("test max mint", async function () {
+    const merklTreeRoot = generateMerkl([bob.address, alice.address]);
+    await genesisNFT.setWhitelistMerkleRoot(merklTreeRoot.getHexRoot());
+    await genesisNFT.setMaxMint(2);
+    await expect(
+      genesisNFT
+        .connect(bob)
+        .safeMint(
+          bob.address,
+          merklTreeRoot.getHexProof(keccak256(bob.address))
+        )
+    ).to.not.be.reverted;
+
+    await expect(
+      genesisNFT
+        .connect(bob)
+        .safeMint(
+          bob.address,
+          merklTreeRoot.getHexProof(keccak256(bob.address))
+        )
+    ).to.not.be.reverted;
+
+    expect(await genesisNFT.balanceOf(bob.address)).to.be.eq(2);
+    await expect(
+      genesisNFT
+        .connect(bob)
+        .safeMint(
+          bob.address,
+          merklTreeRoot.getHexProof(keccak256(bob.address))
+        )
+    ).to.not.be.revertedWith("James: mint limit exceeded");
+  });
+
   // it("batchMint", async function () {
   //   await expect(genesisNFT.connect(relayer).batchMint(10)).to.not.be.reverted;
   //   expect(
@@ -132,7 +165,7 @@ describe("james NFT testing", function () {
             value: ethers.utils.parseEther("0.5"),
           }
         )
-    ).to.be.revertedWith("James: not enough ether sent");
+    ).to.be.revertedWith("James: not enough bnb sent");
 
     await expect(
       genesisNFT
